@@ -79,21 +79,36 @@ supabase/
 
 ## Database schema
 
-The migration in `supabase/migrations/001_trueverse_schema.sql` creates:
+The migration in `supabase/migrations/001_trueverse_schema.sql` is the canonical Supabase
+schema for Trueverse. It creates:
 
-- `profiles` with name, photo, bio, trust score, streak, Trueverse ID, and role.
-- `positive_interactions` with pending/accepted/rejected states.
-- `negative_reports` with evidence URL, admin notes, and report status.
-- `disputes` for report escalation workflows.
+- `profiles` with email, name, photo, bio, trust score, streak, Trueverse ID, role, and
+  disabled-user state.
+- `positive_interactions` with pending/accepted/rejected/expired states, expiry, and recipient
+  acceptance/rejection timestamps.
+- `negative_reports` with required evidence URL, admin notes, and pending/under-review/approved/
+  rejected/disputed states.
+- `report_evidence` for structured evidence files/URLs tied to reports.
+- `disputes` for report escalation and resolution workflows.
 - `help_requests` and `community_responses` for the public feed.
 - `trust_score_events` as the immutable score-change ledger.
+- `admin_actions` for moderation/audit history.
+- `notifications` for user-facing trust/feed/admin events.
 
 It also creates:
 
 - `handle_new_user()` to provision profiles after Supabase Auth signup.
+- `sync_profile_email()` to mirror Supabase Auth email changes into profiles.
 - `accept_positive_interaction()` to atomically accept a positive interaction and apply `+3`.
-- `review_negative_report()` to enforce admin review and apply `-5` on approval.
-- Row-level security policies for public profile/feed reads, authenticated writes, and admin review.
+- `reject_positive_interaction()` for recipient rejection without score changes.
+- `review_negative_report()` to enforce admin review, audit the action, notify users, and apply
+  `-5` on approval.
+- `resolve_dispute()` for admin dispute resolution, including optional trust restoration.
+- `admin_adjust_trust()`, `set_user_role()`, and `set_user_disabled()` for audited admin
+  operations.
+- Row-level security policies for profiles, trust events, interactions, reports, evidence,
+  disputes, feed content, admin actions, and notifications.
+- Supabase Storage buckets and policies for public avatars and private report evidence.
 
 ## Local setup
 

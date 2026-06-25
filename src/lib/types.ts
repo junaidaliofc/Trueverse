@@ -1,9 +1,11 @@
 export type UserRole = "member" | "admin";
-export type InteractionStatus = "pending" | "accepted" | "rejected";
-export type ReportStatus = "pending" | "approved" | "rejected" | "disputed";
+export type InteractionStatus = "pending" | "accepted" | "rejected" | "expired";
+export type ReportStatus = "pending" | "under_review" | "approved" | "rejected" | "disputed";
+export type DisputeStatus = "open" | "under_review" | "resolved" | "rejected";
 
 export type Profile = {
   id: string;
+  email: string | null;
   full_name: string;
   photo_url: string | null;
   bio: string;
@@ -11,6 +13,8 @@ export type Profile = {
   streak: number;
   trueverse_id: string;
   role: UserRole;
+  is_disabled: boolean;
+  last_positive_at: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -23,6 +27,8 @@ export type PositiveInteraction = {
   description: string;
   status: InteractionStatus;
   accepted_at: string | null;
+  rejected_at: string | null;
+  expires_at: string;
   created_at: string;
   updated_at: string;
 };
@@ -42,6 +48,30 @@ export type NegativeReport = {
   updated_at: string;
 };
 
+export type ReportEvidence = {
+  id: string;
+  report_id: string;
+  uploaded_by: string;
+  file_url: string;
+  storage_path: string | null;
+  content_type: string | null;
+  description: string | null;
+  created_at: string;
+};
+
+export type Dispute = {
+  id: string;
+  report_id: string;
+  opened_by: string;
+  reason: string;
+  status: DisputeStatus;
+  resolved_by: string | null;
+  resolution_notes: string | null;
+  created_at: string;
+  updated_at: string;
+  resolved_at: string | null;
+};
+
 export type HelpRequest = {
   id: string;
   author_id: string;
@@ -51,6 +81,7 @@ export type HelpRequest = {
   is_open: boolean;
   created_at: string;
   updated_at: string;
+  closed_at: string | null;
   profiles?: Pick<Profile, "full_name" | "photo_url" | "trust_score" | "trueverse_id"> | null;
   community_responses?: CommunityResponse[];
 };
@@ -60,6 +91,7 @@ export type CommunityResponse = {
   request_id: string;
   author_id: string;
   message: string;
+  is_hidden: boolean;
   created_at: string;
   profiles?: Pick<Profile, "full_name" | "photo_url" | "trust_score" | "trueverse_id"> | null;
 };
