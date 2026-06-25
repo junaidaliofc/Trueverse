@@ -41,3 +41,23 @@ present (placeholders are fine for build/lint only).
 
 To make an account an admin (for `/admin`), update its row:
 `docker exec supabase_db_workspace psql -U postgres -d postgres -c "update profiles set role='admin' where ..."`.
+
+### Known gotcha: table GRANTs missing from the migration
+
+`supabase/migrations/001_trueverse_schema.sql` enables RLS and defines policies but does **not**
+`GRANT` table privileges to the `anon` / `authenticated` roles. On Postgres 17 (the version the
+current Supabase CLI ships) the default privileges grant only `TRUNCATE/REFERENCES/TRIGGER` to
+those roles, so every PostgREST read/write fails with `permission denied for table ...`. The
+visible symptom is that signup/login appear to succeed but authenticated pages (e.g. `/profile`)
+bounce back to `/auth/login` (the page's profile query returns nothing). Account creation itself
+still works because the `handle_new_user` trigger runs with elevated privileges.
+
+Until the migration is fixed to include the grants, apply them to the local DB after
+`supabase start` (RLS still enforces row-level rules):
+
+```bash
+docker exec supabase_db_workspace psql -U postgres -d postgres -c "grant usage on schema public to anon, authenticated, service_role; grant all on all tables in schema public to anon, authenticated, service_role; grant all on all sequences in schema public to anon, authenticated, service_role; grant all on all routines in schema public to anon, authenticated, service_role;"
+```
+
+These local grants are dropped by `supabase db reset`, so re-run them after a reset. This is a
+pre-existing application/migration issue, not an environment problem.
