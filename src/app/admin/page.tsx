@@ -1,22 +1,7 @@
-import { requireAdmin } from "@/lib/auth";
-import type { AdminReport, Profile } from "@/lib/types";
-import { AdminReportQueue } from "@/components/admin-report-queue";
+import { adminReports, profiles } from "@/lib/dummy-data";
 import { TrustScoreBadge } from "@/components/trust-score-badge";
 
-export default async function AdminPage() {
-  const { supabase } = await requireAdmin();
-  const [{ data: reports }, { data: users }] = await Promise.all([
-    supabase
-      .from("negative_reports")
-      .select(
-        "*, reporter:profiles!negative_reports_reporter_id_fkey(full_name, trueverse_id, trust_score), reported_user:profiles!negative_reports_reported_user_id_fkey(full_name, trueverse_id, trust_score)"
-      )
-      .in("status", ["pending", "disputed"])
-      .order("created_at", { ascending: true })
-      .returns<AdminReport[]>(),
-    supabase.from("profiles").select("*").order("created_at", { ascending: false }).limit(12).returns<Profile[]>()
-  ]);
-
+export default function AdminPage() {
   return (
     <div className="space-y-8">
       <div>
@@ -29,18 +14,62 @@ export default async function AdminPage() {
       </div>
 
       <section className="grid gap-5 md:grid-cols-3">
-        <Metric label="Reports waiting" value={(reports ?? []).length} />
-        <Metric label="Managed users" value={(users ?? []).length} />
-        <Metric label="Score impact" value="-5 / approved report" />
+        <Metric label="Reports waiting" value={adminReports.length} />
+        <Metric label="Managed users" value={profiles.length} />
+        <Metric label="Disputes open" value={1} />
       </section>
 
       <section className="grid gap-8 xl:grid-cols-[1fr_0.8fr]">
-        <AdminReportQueue reports={reports ?? []} />
+        <div className="space-y-5">
+          {adminReports.map((report) => (
+            <article key={report.id} className="glass-card rounded-3xl p-6">
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <p className="text-sm font-bold uppercase tracking-wide text-rose-700">Evidence report</p>
+                  <h2 className="mt-2 text-2xl font-black text-slate-950">{report.title}</h2>
+                  <p className="mt-3 max-w-3xl text-slate-600">{report.description}</p>
+                </div>
+                <span className="rounded-full bg-amber-100 px-3 py-1 text-sm font-bold text-amber-800">
+                  {report.status}
+                </span>
+              </div>
+
+              <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                <div className="rounded-2xl bg-white/80 p-4">
+                  <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Reporter</p>
+                  <p className="mt-2 font-black text-slate-950">
+                    {report.reporter?.full_name} · {report.reporter?.trueverse_id}
+                  </p>
+                </div>
+                <div className="rounded-2xl bg-white/80 p-4">
+                  <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Reported user</p>
+                  <p className="mt-2 font-black text-slate-950">
+                    {report.reported_user?.full_name} · {report.reported_user?.trueverse_id}
+                  </p>
+                </div>
+              </div>
+
+              <textarea
+                className="mt-5 min-h-24 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3"
+                placeholder="Admin notes..."
+                defaultValue={report.admin_notes ?? ""}
+              />
+
+              <div className="mt-5 flex flex-wrap gap-3">
+                <button className="rounded-2xl bg-rose-600 px-5 py-3 font-bold text-white">Approve -5</button>
+                <button className="rounded-2xl bg-slate-950 px-5 py-3 font-bold text-white">Reject</button>
+                <button className="rounded-2xl border border-slate-300 px-5 py-3 font-bold text-slate-700">
+                  Mark disputed
+                </button>
+              </div>
+            </article>
+          ))}
+        </div>
 
         <div className="glass-card rounded-3xl p-6">
           <h2 className="text-2xl font-black text-slate-950">Recent users</h2>
           <div className="mt-5 space-y-3">
-            {(users ?? []).map((user) => (
+            {profiles.map((user) => (
               <div key={user.id} className="flex items-center justify-between gap-3 rounded-2xl bg-white/80 p-4">
                 <div>
                   <p className="font-bold text-slate-950">{user.full_name || "Unnamed member"}</p>
@@ -49,6 +78,15 @@ export default async function AdminPage() {
                 <TrustScoreBadge score={user.trust_score} />
               </div>
             ))}
+          </div>
+
+          <div className="mt-6 rounded-2xl bg-slate-950 p-5 text-white">
+            <p className="text-sm font-bold uppercase tracking-wide text-teal-200">Audit trail</p>
+            <div className="mt-4 space-y-3 text-sm text-slate-300">
+              <p>Lena reviewed report-missed-dropoff</p>
+              <p>System queued receipt dispute</p>
+              <p>Trust score event ledger synced</p>
+            </div>
           </div>
         </div>
       </section>

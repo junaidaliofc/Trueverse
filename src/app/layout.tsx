@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "@/components/app-shell";
-import { getCurrentProfile } from "@/lib/auth";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -20,12 +19,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const profile = await getCurrentProfile();
-
   return (
     <html lang="en">
       <body className={`${inter.variable} font-sans antialiased`}>
-        <AppShell profile={profile}>{children}</AppShell>
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );

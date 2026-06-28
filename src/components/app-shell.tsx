@@ -1,20 +1,20 @@
 import Link from "next/link";
-import type { Profile } from "@/lib/types";
+import { currentUser } from "@/lib/dummy-data";
 
 const navigation = [
   { href: "/", label: "Home" },
-  { href: "/profile", label: "Profile" },
-  { href: "/interactions", label: "Interactions" },
+  { href: "/dashboard", label: "Dashboard" },
   { href: "/feed", label: "Feed" },
+  { href: "/interactions/create", label: "Create" },
+  { href: "/interactions/interaction-ride-home", label: "Detail" },
+  { href: "/profile", label: "Profile" },
   { href: "/admin", label: "Admin" }
 ];
 
 export function AppShell({
-  children,
-  profile
+  children
 }: {
   children: React.ReactNode;
-  profile: Profile | null;
 }) {
   return (
     <div className="min-h-screen">
@@ -27,7 +27,7 @@ export function AppShell({
             <span>Trueverse</span>
           </Link>
 
-          <nav className="hidden items-center gap-6 text-sm font-medium text-slate-600 md:flex">
+          <nav className="hidden items-center gap-5 text-sm font-medium text-slate-600 lg:flex">
             {navigation.map((item) => (
               <Link key={item.href} href={item.href} className="hover:text-teal-700">
                 {item.label}
@@ -36,26 +36,15 @@ export function AppShell({
           </nav>
 
           <div className="flex items-center gap-3 text-sm">
-            {profile ? (
-              <Link
-                href="/profile"
-                className="rounded-full border border-teal-200 bg-teal-50 px-4 py-2 font-semibold text-teal-800"
-              >
-                {profile.trueverse_id}
-              </Link>
-            ) : (
-              <>
-                <Link href="/auth/login" className="font-semibold text-slate-700 hover:text-teal-700">
-                  Log in
-                </Link>
-                <Link
-                  href="/auth/signup"
-                  className="rounded-full bg-slate-950 px-4 py-2 font-semibold text-white shadow-sm hover:bg-slate-800"
-                >
-                  Sign up
-                </Link>
-              </>
-            )}
+            <Link href="/auth/login" className="hidden font-semibold text-slate-700 hover:text-teal-700 sm:inline">
+              Sign in
+            </Link>
+            <Link
+              href="/profile"
+              className="rounded-full border border-teal-200 bg-teal-50 px-4 py-2 font-semibold text-teal-800"
+            >
+              {currentUser.trueverse_id}
+            </Link>
           </div>
         </div>
       </header>
