@@ -42,7 +42,7 @@ present (placeholders are fine for build/lint only).
 To make an account an admin (for `/admin`), update its row:
 `docker exec supabase_db_workspace psql -U postgres -d postgres -c "update profiles set role='admin' where ..."`.
 
-### Known gotcha: table GRANTs missing from the migration
+### Known gotcha: table GRANTs missing from the migration (auto-fixed locally via seed)
 
 `supabase/migrations/001_trueverse_schema.sql` enables RLS and defines policies but does **not**
 `GRANT` table privileges to the `anon` / `authenticated` roles. On Postgres 17 (the version the
@@ -52,12 +52,14 @@ visible symptom is that signup/login appear to succeed but authenticated pages (
 bounce back to `/auth/login` (the page's profile query returns nothing). Account creation itself
 still works because the `handle_new_user` trigger runs with elevated privileges.
 
-Until the migration is fixed to include the grants, apply them to the local DB after
-`supabase start` (RLS still enforces row-level rules):
+`supabase/seed.sql` applies those grants for **local development only**, and Supabase runs it
+automatically after migrations on the first `supabase start` and on every `supabase db reset`
+(`[db.seed]` in `supabase/config.toml`). So a fresh local stack works without any manual step —
+you do **not** need to run the grants by hand anymore. RLS still enforces row-level rules.
+
+The committed application migration is intentionally left unchanged (the seed is the local-dev
+fix). If you ever wipe the DB in a way that skips the seed, re-apply the same grants manually:
 
 ```bash
 docker exec supabase_db_workspace psql -U postgres -d postgres -c "grant usage on schema public to anon, authenticated, service_role; grant all on all tables in schema public to anon, authenticated, service_role; grant all on all sequences in schema public to anon, authenticated, service_role; grant all on all routines in schema public to anon, authenticated, service_role;"
 ```
-
-These local grants are dropped by `supabase db reset`, so re-run them after a reset. This is a
-pre-existing application/migration issue, not an environment problem.
