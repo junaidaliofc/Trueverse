@@ -34,6 +34,17 @@ export const reportReviewSchema = z.object({
   admin_notes: z.string().trim().max(1000).optional()
 });
 
+export const disputeSchema = z.object({
+  report_id: z.string().uuid(),
+  reason: z.string().trim().min(10).max(1000)
+});
+
+export const resolveDisputeSchema = z.object({
+  status: z.enum(["resolved", "rejected"]),
+  resolution_notes: z.string().trim().max(1000).optional(),
+  restore_score: z.boolean().optional().default(true)
+});
+
 export const otpVerificationSchema = z.object({
   email: z.string().email(),
   token: z.string().trim().min(6).max(12),
