@@ -37,12 +37,22 @@ export function AppShell({
 
           <div className="flex items-center gap-3 text-sm">
             {profile ? (
-              <Link
-                href="/profile"
-                className="rounded-full border border-teal-200 bg-teal-50 px-4 py-2 font-semibold text-teal-800"
-              >
-                {profile.trueverse_id}
-              </Link>
+              <>
+                <Link
+                  href="/profile"
+                  className="rounded-full border border-teal-200 bg-teal-50 px-4 py-2 font-semibold text-teal-800"
+                >
+                  {profile.trueverse_id}
+                </Link>
+                <form action="/auth/signout" method="post">
+                  <button
+                    type="submit"
+                    className="font-semibold text-slate-700 hover:text-teal-700"
+                  >
+                    Log out
+                  </button>
+                </form>
+              </>
             ) : (
               <>
                 <Link href="/auth/login" className="font-semibold text-slate-700 hover:text-teal-700">
