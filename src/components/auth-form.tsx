@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { resolveNextPath } from "@/lib/routes";
 
 type AuthMode = "signup" | "login";
 
-export function AuthForm({ mode }: { mode: AuthMode }) {
+export function AuthForm({ mode, next }: { mode: AuthMode; next?: string }) {
   const router = useRouter();
   const supabase = createSupabaseBrowserClient();
   const [email, setEmail] = useState("");
@@ -15,19 +16,32 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const destination = resolveNextPath(next);
+
+  function buildCallbackUrl() {
+    const url = new URL("/auth/callback", window.location.origin);
+    url.searchParams.set("next", destination);
+    return url.toString();
+  }
+
+  function verifyUrl(type: "signup" | "email") {
+    const params = new URLSearchParams({ email, type, next: destination });
+    return `/auth/verify?${params.toString()}`;
+  }
+
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setLoading(true);
     setMessage("");
 
-    const redirectTo = `${window.location.origin}/auth/callback`;
+    const callbackUrl = buildCallbackUrl();
     const result =
       mode === "signup"
         ? await supabase.auth.signUp({
             email,
             password,
             options: {
-              emailRedirectTo: redirectTo,
+              emailRedirectTo: callbackUrl,
               data: { full_name: fullName }
             }
           })
@@ -41,12 +55,12 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
     }
 
     if (mode === "signup" && !result.data.session) {
-      router.push(`/auth/verify?email=${encodeURIComponent(email)}&type=signup`);
+      router.push(verifyUrl("signup"));
       return;
     }
 
     router.refresh();
-    router.push("/profile");
+    router.push(destination);
   }
 
   async function sendOtp() {
@@ -57,7 +71,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
       email,
       options: {
         shouldCreateUser: mode === "signup",
-        emailRedirectTo: `${window.location.origin}/auth/callback`
+        emailRedirectTo: buildCallbackUrl()
       }
     });
 
@@ -68,7 +82,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
       return;
     }
 
-    router.push(`/auth/verify?email=${encodeURIComponent(email)}&type=email`);
+    router.push(verifyUrl("email"));
   }
 
   return (

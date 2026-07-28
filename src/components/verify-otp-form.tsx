@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { resolveNextPath } from "@/lib/routes";
 
 export function VerifyOtpForm() {
   const router = useRouter();
@@ -13,6 +14,7 @@ export function VerifyOtpForm() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const type = (searchParams.get("type") as "signup" | "email" | "magiclink" | null) ?? "signup";
+  const destination = resolveNextPath(searchParams.get("next"));
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -33,7 +35,7 @@ export function VerifyOtpForm() {
     }
 
     router.refresh();
-    router.push("/profile");
+    router.push(destination);
   }
 
   return (
