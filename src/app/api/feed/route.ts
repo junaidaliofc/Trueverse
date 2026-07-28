@@ -8,7 +8,7 @@ export async function GET() {
   const { data, error } = await supabase
     .from("help_requests")
     .select(
-      "*, profiles(full_name, photo_url, trust_score, trueverse_id), community_responses(*, profiles(full_name, photo_url, trust_score, trueverse_id))"
+      "*, profiles:profiles!help_requests_author_id_fkey(full_name, photo_url, trust_score, trueverse_id), helper:profiles!help_requests_helper_id_fkey(full_name, photo_url, trust_score, trueverse_id), community_responses(*, profiles(full_name, photo_url, trust_score, trueverse_id))"
     )
     .eq("is_open", true)
     .order("created_at", { ascending: false });
