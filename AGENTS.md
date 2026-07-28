@@ -42,6 +42,16 @@ present (placeholders are fine for build/lint only).
 To make an account an admin (for `/admin`), update its row:
 `docker exec supabase_db_workspace psql -U postgres -d postgres -c "update profiles set role='admin' where ..."`.
 
+### Routing/auth gotcha: middleware lives in `src/proxy.ts`
+
+Next.js 16 renamed the `middleware` file convention to `proxy` (`export function proxy()`).
+Because this project uses a `src/` directory, the file must be `src/proxy.ts` (a root-level
+`middleware.ts`/`proxy.ts` is silently ignored in dev). Route protection for private pages
+(`/profile`, `/interactions`, `/admin`) runs there via `updateSession` in
+`src/lib/supabase/middleware.ts`; the private-route list and the post-login `next` redirect
+helpers live in `src/lib/routes.ts`. Editing `proxy.ts` sometimes needs a dev-server restart to
+take effect. Pages still call `requireUser`/`requireAdmin` (`src/lib/auth.ts`) as defense in depth.
+
 ### Known gotcha: table GRANTs missing from the migration (auto-fixed locally via seed)
 
 `supabase/migrations/001_trueverse_schema.sql` enables RLS and defines policies but does **not**
