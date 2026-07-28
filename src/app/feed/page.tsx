@@ -9,10 +9,11 @@ export default async function FeedPage() {
   const { data: requests } = await supabase
     .from("help_requests")
     .select(
-      "*, profiles(full_name, photo_url, trust_score, trueverse_id), community_responses(*, profiles(full_name, photo_url, trust_score, trueverse_id))"
+      "*, profiles(full_name, photo_url, trust_score, trueverse_id), helper:profiles!help_requests_helper_id_fkey(full_name, photo_url, trust_score, trueverse_id), community_responses(*, profiles(full_name, photo_url, trust_score, trueverse_id))"
     )
-    .eq("is_open", true)
+    .neq("status", "cancelled")
     .order("created_at", { ascending: false })
+    .limit(50)
     .returns<HelpRequest[]>();
 
   return (
@@ -21,8 +22,8 @@ export default async function FeedPage() {
         <p className="text-sm font-bold uppercase tracking-wide text-teal-700">Public community feed</p>
         <h1 className="mt-2 text-4xl font-black text-slate-950">Help requests</h1>
         <p className="mt-3 max-w-2xl text-slate-600">
-          Ask for practical help, answer requests, and use visible trust signals to decide who to
-          interact with in the real world.
+          Post a request, let a trusted member accept it, and confirm completion. Completing a
+          request automatically credits the helper with a positive interaction (+3 trust).
         </p>
       </div>
 
@@ -30,13 +31,13 @@ export default async function FeedPage() {
         <FeedComposer />
       ) : (
         <div className="glass-card rounded-3xl p-6 text-slate-700">
-          Log in to publish or respond to help requests.
+          Log in to publish, accept, or complete help requests.
         </div>
       )}
 
       <div className="space-y-5">
         {(requests ?? []).map((request) => (
-          <HelpRequestCard key={request.id} request={request} />
+          <HelpRequestCard key={request.id} request={request} viewerId={profile?.id ?? null} />
         ))}
       </div>
     </div>
