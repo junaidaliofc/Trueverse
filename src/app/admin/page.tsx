@@ -1,11 +1,12 @@
 import { requireAdmin } from "@/lib/auth";
-import type { AdminReport, Profile } from "@/lib/types";
+import type { AdminDispute, AdminReport, Profile } from "@/lib/types";
 import { AdminReportQueue } from "@/components/admin-report-queue";
+import { AdminDisputeQueue } from "@/components/admin-dispute-queue";
 import { TrustScoreBadge } from "@/components/trust-score-badge";
 
 export default async function AdminPage() {
   const { supabase } = await requireAdmin();
-  const [{ data: reports }, { data: users }] = await Promise.all([
+  const [{ data: reports }, { data: disputes }, { data: users }] = await Promise.all([
     supabase
       .from("negative_reports")
       .select(
@@ -14,6 +15,14 @@ export default async function AdminPage() {
       .in("status", ["pending", "disputed"])
       .order("created_at", { ascending: true })
       .returns<AdminReport[]>(),
+    supabase
+      .from("disputes")
+      .select(
+        "*, report:negative_reports(id, title, description, evidence_url, status, reported_user_id, reported_user:profiles!negative_reports_reported_user_id_fkey(full_name, trueverse_id, trust_score)), opener:profiles!disputes_opened_by_fkey(full_name, trueverse_id)"
+      )
+      .eq("status", "open")
+      .order("created_at", { ascending: true })
+      .returns<AdminDispute[]>(),
     supabase.from("profiles").select("*").order("created_at", { ascending: false }).limit(12).returns<Profile[]>()
   ]);
 
@@ -30,12 +39,15 @@ export default async function AdminPage() {
 
       <section className="grid gap-5 md:grid-cols-3">
         <Metric label="Reports waiting" value={(reports ?? []).length} />
+        <Metric label="Open disputes" value={(disputes ?? []).length} />
         <Metric label="Managed users" value={(users ?? []).length} />
-        <Metric label="Score impact" value="-5 / approved report" />
       </section>
 
       <section className="grid gap-8 xl:grid-cols-[1fr_0.8fr]">
-        <AdminReportQueue reports={reports ?? []} />
+        <div className="space-y-8">
+          <AdminReportQueue reports={reports ?? []} />
+          <AdminDisputeQueue disputes={disputes ?? []} />
+        </div>
 
         <div className="glass-card rounded-3xl p-6">
           <h2 className="text-2xl font-black text-slate-950">Recent users</h2>
