@@ -62,13 +62,12 @@ visible symptom is that signup/login appear to succeed but authenticated pages (
 bounce back to `/auth/login` (the page's profile query returns nothing). Account creation itself
 still works because the `handle_new_user` trigger runs with elevated privileges.
 
-`supabase/seed.sql` applies those grants for **local development only**, and Supabase runs it
-automatically after migrations on the first `supabase start` and on every `supabase db reset`
-(`[db.seed]` in `supabase/config.toml`). So a fresh local stack works without any manual step —
-you do **not** need to run the grants by hand anymore. RLS still enforces row-level rules.
+Migration `supabase/migrations/004_table_grants.sql` applies these grants (so hosted deployments
+via `supabase db push` work), and `supabase/seed.sql` re-applies them locally after every
+`supabase start` / `supabase db reset` (`[db.seed]` in `supabase/config.toml`). So both a fresh
+local stack and a hosted project work without any manual step. RLS still enforces row-level rules.
 
-The committed application migration is intentionally left unchanged (the seed is the local-dev
-fix). If you ever wipe the DB in a way that skips the seed, re-apply the same grants manually:
+If you ever wipe the DB in a way that skips both, re-apply the same grants manually:
 
 ```bash
 docker exec supabase_db_workspace psql -U postgres -d postgres -c "grant usage on schema public to anon, authenticated, service_role; grant all on all tables in schema public to anon, authenticated, service_role; grant all on all sequences in schema public to anon, authenticated, service_role; grant all on all routines in schema public to anon, authenticated, service_role;"

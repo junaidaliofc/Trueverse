@@ -122,3 +122,22 @@ supabase db push
 npm run lint
 npm run build
 ```
+
+## Deployment (Vercel)
+
+This is a standard Next.js App Router project and deploys to Vercel with no extra build configuration.
+
+1. Import the repository into Vercel (Framework preset: **Next.js**).
+2. Set these Environment Variables in the Vercel project (Production and Preview):
+   - `NEXT_PUBLIC_SUPABASE_URL` — hosted Supabase project URL
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` — Supabase anon/publishable key
+   - `SUPABASE_SERVICE_ROLE_KEY` — Supabase service-role key (server-only; never exposed to the browser)
+   - `NEXT_PUBLIC_SITE_URL` — the deployed URL (e.g. `https://your-app.vercel.app`), used for auth redirect callbacks
+3. Apply the SQL migrations in `supabase/migrations/` to the hosted Supabase project in order (`001` → `004`), e.g. `supabase db push`. Migration `004` grants the API-role privileges the app requires.
+4. In Supabase Auth settings, add `${NEXT_PUBLIC_SITE_URL}/auth/callback` to the allowed redirect URLs.
+5. Deploy. `next build` also runs type-checking; the routing/auth layer runs from `src/proxy.ts` (Next.js 16 proxy convention) on the Node.js runtime.
+
+Notes:
+
+- `NEXT_PUBLIC_*` values are inlined at build time, so they must be set before the build runs.
+- The build does not require a reachable database — every route renders dynamically at request time.
