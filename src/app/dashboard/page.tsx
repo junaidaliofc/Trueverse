@@ -1,245 +1,149 @@
+"use client";
+
 import Link from "next/link";
+import { motion, useReducedMotion } from "framer-motion";
+import { ArrowRight, BadgeCheck, Check } from "lucide-react";
 import {
-  activities,
-  badges,
   currentUser,
   currentUserReputation,
   missions,
-  notifications,
-  suggestedPeople,
-  trustTimeline,
   userXp
 } from "@/lib/dummy-data";
 import { getGreeting } from "@/lib/utils";
-import { scoreToTrustLevel } from "@/lib/design";
-import { TrustReputationCard } from "@/components/trust/trust-reputation-card";
-import { ReputationDnaCard } from "@/components/trust/reputation-dna";
+import { scoreToTrustLevel, TRUST_LEVEL_META } from "@/lib/design";
+import { TrustStars } from "@/components/trust/trust-reputation-card";
 import { XPProgress, StreakPill } from "@/components/xp/xp-progress";
-import { TrustLevelBadge } from "@/components/trust/trust-level-badge";
-import { Surface, SurfaceDescription, SurfaceHeader, SurfaceTitle } from "@/components/ui/surface";
 import { Button } from "@/components/ui/button";
-import { LabeledProgress } from "@/components/ui/progress-field";
 import { StatusBadge } from "@/components/ui/status-badge";
-import { UserAvatar } from "@/components/ui/user-avatar";
+import { LabeledProgress } from "@/components/ui/progress-field";
+import { MotionCard, MotionItem, MotionPage, fadeUp, stagger } from "@/components/motion/primitives";
 
-export default function DashboardPage() {
+/**
+ * Phase 1 Home — consumer composition, not a dashboard.
+ * Above the fold: greeting, trust level, XP, streak, today's missions.
+ */
+export default function HomePage() {
   const firstName = currentUser.full_name.split(" ")[0] ?? "there";
   const todayMissions = missions.filter((mission) => mission.cadence === "daily");
-  const recentBadges = badges.filter((badge) => badge.earned).slice(0, 3);
-  const unread = notifications.filter((item) => !item.read).length;
-  const weeklyProgress = Math.round((userXp.weekly_xp / userXp.weekly_goal) * 100);
+  const level = scoreToTrustLevel(currentUserReputation.trustIndex);
+  const meta = TRUST_LEVEL_META[level];
+  const reduceMotion = useReducedMotion();
+  const nextMission = todayMissions.find((mission) => !mission.completed) ?? todayMissions[0];
 
   return (
-    <div className="space-y-6 sm:space-y-8">
-      <div className="flex flex-col gap-4 animate-fade-up sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-xs font-bold uppercase tracking-[0.22em] text-primary">Home</p>
-          <h1 className="mt-2 font-display text-3xl font-bold tracking-tight sm:text-4xl">
-            {getGreeting()}, {firstName}
-          </h1>
-          <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">
-            Trust signals and daily progress — calm, personal, never a control panel.
-          </p>
-          <div className="mt-4 flex flex-wrap items-center gap-2">
-            <TrustLevelBadge level={scoreToTrustLevel(currentUserReputation.trustIndex)} />
-            <StreakPill streak={userXp.daily_streak} />
+    <MotionPage className="mx-auto max-w-lg space-y-5 sm:space-y-6">
+      <MotionItem className="pt-1">
+        <p className="text-sm font-medium text-muted-foreground">{getGreeting()}</p>
+        <h1 className="mt-1 font-display text-3xl font-bold tracking-tight sm:text-4xl">
+          {firstName}
+        </h1>
+      </MotionItem>
+
+      <MotionCard className="glass rounded-[1.75rem] p-5 sm:p-6">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">Trust level</p>
+            <p className="mt-2 font-display text-3xl font-bold tracking-tight">{meta.label}</p>
+            <div className="mt-3">
+              <TrustStars stars={meta.stars} />
+            </div>
+            {currentUserReputation.identityVerified ? (
+              <p className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-success">
+                <BadgeCheck className="size-4" aria-hidden />
+                Verified Identity
+              </p>
+            ) : (
+              <p className="mt-4 text-sm text-muted-foreground">Verify identity to strengthen signals</p>
+            )}
           </div>
+          <StreakPill streak={userXp.daily_streak} />
         </div>
-        <div className="flex gap-2">
-          <Button asChild className="flex-1 sm:flex-none">
-            <Link href="/interactions/create">Log interaction</Link>
-          </Button>
-          <Button asChild variant="outline" className="flex-1 sm:flex-none">
-            <Link href="/missions">Missions</Link>
-          </Button>
+      </MotionCard>
+
+      <MotionCard className="glass rounded-[1.75rem] p-5 sm:p-6">
+        <XPProgress totalXp={userXp.total_xp} />
+      </MotionCard>
+
+      <MotionItem>
+        <div className="mb-3 flex items-end justify-between gap-3">
+          <div>
+            <h2 className="font-display text-xl font-bold tracking-tight">Today&apos;s missions</h2>
+            <p className="mt-1 text-sm text-muted-foreground">Small steps. Real momentum.</p>
+          </div>
+          <Link href="/missions" className="text-sm font-semibold text-primary">
+            All
+          </Link>
         </div>
-      </div>
 
-      <div className="grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
-        <TrustReputationCard
-          stats={{
-            trustIndex: currentUserReputation.trustIndex,
-            identityVerified: currentUserReputation.identityVerified,
-            trustActs: currentUserReputation.trustActs,
-            appreciations: currentUserReputation.appreciations,
-            communityRank: currentUserReputation.communityRank
-          }}
-        />
-        <Surface className="animate-fade-up stagger-1">
-          <XPProgress totalXp={userXp.total_xp} />
-          <div className="mt-5">
-            <LabeledProgress
-              value={weeklyProgress}
-              indicatorClassName="bg-xp"
-              label={`Weekly goal · ${userXp.weekly_xp} / ${userXp.weekly_goal} XP`}
-            />
-          </div>
-        </Surface>
-      </div>
-
-      <div className="grid gap-4 xl:grid-cols-2">
-        <Surface>
-          <SurfaceHeader>
-            <div>
-              <SurfaceTitle>Today&apos;s missions</SurfaceTitle>
-              <SurfaceDescription>Earn XP through participation — not trust.</SurfaceDescription>
-            </div>
-            <Button asChild variant="ghost" size="sm">
-              <Link href="/missions">View all</Link>
-            </Button>
-          </SurfaceHeader>
-          <ul className="space-y-3">
-            {todayMissions.map((mission) => (
-              <li key={mission.id} className="rounded-2xl bg-muted/50 px-4 py-3">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="font-semibold">{mission.title}</p>
-                    <p className="mt-1 text-xs text-muted-foreground">{mission.description}</p>
+        <motion.ul
+          className="space-y-3"
+          initial={reduceMotion ? false : "hidden"}
+          animate="show"
+          variants={stagger}
+        >
+          {todayMissions.map((mission, index) => (
+            <motion.li
+              key={mission.id}
+              variants={fadeUp}
+              whileHover={reduceMotion ? undefined : { y: -2 }}
+              whileTap={reduceMotion ? undefined : { scale: 0.985 }}
+              className="glass rounded-[1.5rem] p-4"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    {mission.completed ? (
+                      <span className="flex size-6 items-center justify-center rounded-full bg-success-soft text-success">
+                        <Check className="size-3.5" strokeWidth={3} />
+                      </span>
+                    ) : (
+                      <span className="flex size-6 items-center justify-center rounded-full bg-muted text-xs font-bold text-muted-foreground">
+                        {index + 1}
+                      </span>
+                    )}
+                    <p className="font-semibold text-foreground">{mission.title}</p>
                   </div>
-                  <StatusBadge tone={mission.completed ? "success" : "xp"}>
-                    +{mission.xp_reward} XP
-                  </StatusBadge>
+                  <p className="mt-2 pl-8 text-xs leading-5 text-muted-foreground">
+                    {mission.description}
+                  </p>
                 </div>
-                <div className="mt-3">
-                  <LabeledProgress
-                    value={(mission.progress / mission.target) * 100}
-                    indicatorClassName="bg-xp"
-                  />
-                </div>
-              </li>
-            ))}
-          </ul>
-        </Surface>
+                <StatusBadge tone={mission.completed ? "success" : "xp"}>
+                  +{mission.xp_reward}
+                </StatusBadge>
+              </div>
+              <div className="mt-3 pl-8">
+                <LabeledProgress
+                  value={(mission.progress / mission.target) * 100}
+                  indicatorClassName="bg-xp"
+                />
+              </div>
+            </motion.li>
+          ))}
+        </motion.ul>
+      </MotionItem>
 
-        <ReputationDnaCard
-          dna={currentUserReputation.dna}
-          dimensions={["helping", "reliability", "communication", "leadership"]}
-        />
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-3">
-        <Surface>
-          <SurfaceHeader>
-            <SurfaceTitle>Recent achievements</SurfaceTitle>
-          </SurfaceHeader>
-          <ul className="space-y-3">
-            {recentBadges.map((badge) => (
-              <li key={badge.id} className="rounded-2xl bg-muted/50 px-4 py-3">
-                <p className="font-semibold">{badge.name}</p>
-                <p className="mt-1 text-xs text-muted-foreground">{badge.description}</p>
-              </li>
-            ))}
-          </ul>
-        </Surface>
-
-        <Surface>
-          <SurfaceHeader>
-            <div>
-              <SurfaceTitle>Community</SurfaceTitle>
-              <SurfaceDescription>Latest verified moments</SurfaceDescription>
-            </div>
-            <Button asChild variant="ghost" size="sm">
-              <Link href="/activity">Feed</Link>
+      {nextMission && !nextMission.completed ? (
+        <MotionItem>
+          <Button asChild size="lg" className="w-full">
+            <Link href="/missions">
+              Continue · {nextMission.title}
+              <ArrowRight className="size-4" />
+            </Link>
+          </Button>
+        </MotionItem>
+      ) : (
+        <MotionItem>
+          <div className="glass rounded-[1.5rem] px-5 py-8 text-center">
+            <p className="font-display text-lg font-bold">You&apos;re on a roll</p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Come back tomorrow — or explore your community.
+            </p>
+            <Button asChild variant="secondary" className="mt-5">
+              <Link href="/community">Explore community</Link>
             </Button>
-          </SurfaceHeader>
-          <ul className="space-y-3">
-            {activities.slice(0, 3).map((activity) => (
-              <li key={activity.id} className="rounded-2xl bg-muted/50 px-4 py-3">
-                <p className="text-sm font-semibold">{activity.title}</p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  {activity.appreciations} appreciations
-                </p>
-              </li>
-            ))}
-          </ul>
-        </Surface>
-
-        <Surface>
-          <SurfaceHeader>
-            <div>
-              <SurfaceTitle>Appreciate</SurfaceTitle>
-              <SurfaceDescription>Suggested people</SurfaceDescription>
-            </div>
-          </SurfaceHeader>
-          <ul className="space-y-2">
-            {suggestedPeople.map((person) => (
-              <li key={person.id}>
-                <Link
-                  href={`/u/${person.trueverse_id}`}
-                  className="flex items-center gap-3 rounded-2xl bg-muted/50 px-3 py-2.5 transition hover:bg-muted"
-                >
-                  <UserAvatar name={person.full_name} src={person.photo_url} size="sm" />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold">{person.full_name}</p>
-                    <p className="truncate font-mono text-[10px] text-muted-foreground">
-                      {person.trueverse_id}
-                    </p>
-                  </div>
-                  <TrustLevelBadge level={scoreToTrustLevel(person.trust_score)} showLabel={false} />
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </Surface>
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-2">
-        <Surface>
-          <SurfaceHeader>
-            <div>
-              <SurfaceTitle>Trust events</SurfaceTitle>
-              <SurfaceDescription>Server-side ledger signals</SurfaceDescription>
-            </div>
-          </SurfaceHeader>
-          <ul className="space-y-3">
-            {trustTimeline.map((event) => (
-              <li
-                key={`${event.title}-${event.date}`}
-                className="flex items-center gap-4 rounded-2xl bg-muted/50 px-4 py-3"
-              >
-                <span
-                  className={`flex size-11 items-center justify-center rounded-2xl text-sm font-bold ${
-                    event.tone === "positive"
-                      ? "bg-success-soft text-success"
-                      : "bg-muted text-muted-foreground"
-                  }`}
-                >
-                  {event.delta}
-                </span>
-                <div>
-                  <p className="font-semibold">{event.title}</p>
-                  <p className="text-xs text-muted-foreground">{event.date}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </Surface>
-
-        <Surface>
-          <SurfaceHeader>
-            <div>
-              <SurfaceTitle>Quick actions</SurfaceTitle>
-              <SurfaceDescription>
-                {unread > 0 ? `${unread} unread notifications` : "You're caught up"}
-              </SurfaceDescription>
-            </div>
-          </SurfaceHeader>
-          <div className="grid grid-cols-2 gap-2">
-            {[
-              ["/activity", "Activity"],
-              ["/notifications", "Notifications"],
-              ["/badges", "Badges"],
-              ["/insights", "Insights"],
-              ["/profile", "Profile"],
-              [`/u/${currentUser.trueverse_id}`, "Public view"]
-            ].map(([href, label]) => (
-              <Button key={href} asChild variant="secondary" className="justify-start">
-                <Link href={href}>{label}</Link>
-              </Button>
-            ))}
           </div>
-        </Surface>
-      </div>
-    </div>
+        </MotionItem>
+      )}
+    </MotionPage>
   );
 }

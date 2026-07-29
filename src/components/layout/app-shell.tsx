@@ -2,44 +2,24 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Award,
-  Bell,
-  Home,
-  Menu,
-  Shield,
-  Sparkles,
-  Trophy,
-  Users
-} from "lucide-react";
+import { Bell, Home, MessageCircle, UserRound, Users } from "lucide-react";
 import { currentUser } from "@/lib/dummy-data";
 import { UserAvatar } from "@/components/ui/user-avatar";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger
-} from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
-const primaryNav = [
+const appNav: Array<{
+  href: string;
+  label: string;
+  icon: typeof Home;
+  soon?: boolean;
+}> = [
   { href: "/dashboard", label: "Home", icon: Home },
-  { href: "/activity", label: "Activity", icon: Sparkles },
-  { href: "/missions", label: "Missions", icon: Trophy },
+  { href: "/profile", label: "Profile", icon: UserRound },
   { href: "/community", label: "Community", icon: Users },
-  { href: "/profile", label: "Profile", icon: Award }
-];
-
-const secondaryNav = [
-  { href: "/design-system", label: "Design system" },
-  { href: "/leaderboards", label: "Leaderboards" },
-  { href: "/badges", label: "Badges" },
-  { href: "/notifications", label: "Notifications" },
-  { href: "/insights", label: "Insights" },
-  { href: "/admin", label: "Admin" }
+  { href: "/notifications", label: "Notifications", icon: Bell },
+  { href: "/messages", label: "Messages", icon: MessageCircle, soon: true }
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -49,55 +29,35 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-dvh">
-      <header className="sticky top-0 z-40 border-b border-border/70 bg-background/70 backdrop-blur-xl">
-        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 px-4 sm:h-16 sm:px-6">
-          <div className="flex items-center gap-2">
-            {!isMarketing ? (
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Open menu">
-                    <Menu className="size-5" />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="left" className="w-[min(20rem,88vw)] p-0">
-                  <SheetHeader className="border-b border-border px-5 py-4 text-left">
-                    <SheetTitle className="font-display text-lg">Menu</SheetTitle>
-                  </SheetHeader>
-                  <nav className="flex flex-col gap-1 p-3">
-                    {[...primaryNav, ...secondaryNav].map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className={cn(
-                          "rounded-2xl px-4 py-3 text-sm font-semibold",
-                          pathname === item.href || pathname.startsWith(`${item.href}/`)
-                            ? "bg-brand-soft text-brand"
-                            : "text-foreground hover:bg-muted"
-                        )}
-                      >
-                        {item.label}
-                      </Link>
-                    ))}
-                  </nav>
-                </SheetContent>
-              </Sheet>
-            ) : null}
-
-            <Link
-              href="/"
-              className="flex items-center gap-2.5 font-display text-lg font-bold tracking-tight"
-            >
-              <span className="flex size-9 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
-                <Shield className="size-4" aria-hidden />
-              </span>
-              <span>Trueverse</span>
-            </Link>
-          </div>
+      <header className="sticky top-0 z-40 border-b border-border/60 bg-background/65 backdrop-blur-xl">
+        <div className="mx-auto flex h-14 max-w-lg items-center justify-between gap-3 px-4 sm:h-16 sm:max-w-6xl sm:px-6">
+          <Link
+            href={isMarketing ? "/" : "/dashboard"}
+            className="flex items-center gap-2 font-display text-lg font-bold tracking-tight"
+          >
+            <span className="flex size-8 items-center justify-center rounded-xl bg-primary text-sm text-primary-foreground sm:size-9 sm:rounded-2xl">
+              T
+            </span>
+            <span className={cn(isMarketing ? "inline" : "hidden sm:inline")}>Trueverse</span>
+          </Link>
 
           {!isMarketing ? (
             <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary">
-              {primaryNav.map((item) => {
-                const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+              {appNav.map((item) => {
+                const active =
+                  !item.soon &&
+                  (pathname === item.href || pathname.startsWith(`${item.href}/`));
+                if (item.soon) {
+                  return (
+                    <span
+                      key={item.href}
+                      className="rounded-2xl px-3.5 py-2 text-sm font-semibold text-muted-foreground/50"
+                      title="Coming soon"
+                    >
+                      {item.label}
+                    </span>
+                  );
+                }
                 return (
                   <Link
                     key={item.href}
@@ -115,50 +75,34 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               })}
             </nav>
           ) : (
-            <nav className="hidden items-center gap-6 text-sm font-semibold text-muted-foreground md:flex">
-              <Link href="/design-system" className="hover:text-foreground">
-                Design system
-              </Link>
-              <Link href="/auth/login" className="hover:text-foreground">
-                Sign in
-              </Link>
+            <nav className="flex items-center gap-2 sm:gap-3">
+              <ThemeToggle />
+              <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
+                <Link href="/auth/login">Sign in</Link>
+              </Button>
+              <Button asChild size="sm">
+                <Link href="/auth/signup">Get Started</Link>
+              </Button>
             </nav>
           )}
 
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            <ThemeToggle />
-            {!isMarketing ? (
-              <Link
-                href="/notifications"
-                className="inline-flex size-11 items-center justify-center rounded-2xl text-muted-foreground transition hover:bg-muted hover:text-foreground"
-                aria-label="Notifications"
-              >
-                <Bell className="size-4" />
-              </Link>
-            ) : null}
-            {isMarketing ? (
-              <Button asChild size="sm" className="hidden sm:inline-flex">
-                <Link href="/auth/signup">Get started</Link>
-              </Button>
-            ) : (
-              <Link
-                href="/profile"
-                className="flex items-center gap-2 rounded-2xl border border-border bg-surface px-1.5 py-1.5 pr-3"
-              >
+          {!isMarketing ? (
+            <div className="flex items-center gap-1.5">
+              <ThemeToggle />
+              <Link href="/profile" className="rounded-2xl p-1 transition hover:bg-muted">
                 <UserAvatar name={currentUser.full_name} src={currentUser.photo_url} size="sm" />
-                <span className="hidden font-mono text-xs text-muted-foreground sm:inline">
-                  {currentUser.trueverse_id}
-                </span>
               </Link>
-            )}
-          </div>
+            </div>
+          ) : null}
         </div>
       </header>
 
       <main
         className={cn(
-          "mx-auto max-w-6xl px-4 sm:px-6",
-          isMarketing ? "pb-16 pt-0" : "pb-28 pt-6 sm:pt-8 lg:pb-12"
+          "mx-auto px-4 sm:px-6",
+          isMarketing
+            ? "max-w-6xl pb-10 pt-0"
+            : "max-w-lg pb-28 pt-5 sm:max-w-6xl sm:pb-12 sm:pt-8"
         )}
       >
         {children}
@@ -166,19 +110,36 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       {!isMarketing ? (
         <nav
-          className="fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-background/90 backdrop-blur-xl lg:hidden"
+          className="fixed inset-x-0 bottom-0 z-40 border-t border-border/70 bg-background/90 backdrop-blur-xl lg:hidden"
           aria-label="Mobile"
         >
           <ul className="mx-auto grid max-w-lg grid-cols-5 px-1 safe-bottom">
-            {primaryNav.map((item) => {
+            {appNav.map((item) => {
               const Icon = item.icon;
-              const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+              const active =
+                !item.soon &&
+                (pathname === item.href || pathname.startsWith(`${item.href}/`));
+
+              if (item.soon) {
+                return (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      className="flex flex-col items-center gap-1 px-1 py-2.5 text-[10px] font-semibold text-muted-foreground/45"
+                    >
+                      <Icon className="size-5" />
+                      {item.label}
+                    </Link>
+                  </li>
+                );
+              }
+
               return (
                 <li key={item.href}>
                   <Link
                     href={item.href}
                     className={cn(
-                      "flex flex-col items-center gap-1 px-1 py-2.5 text-[10px] font-semibold",
+                      "flex flex-col items-center gap-1 px-1 py-2.5 text-[10px] font-semibold transition-colors",
                       active ? "text-primary" : "text-muted-foreground"
                     )}
                   >
