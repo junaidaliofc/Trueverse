@@ -1,7 +1,12 @@
 import Link from "next/link";
 import { weeklyInsights, currentUser } from "@/lib/dummy-data";
 import { PageHeader } from "@/components/ui/section";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Surface,
+  SurfaceDescription,
+  SurfaceHeader,
+  SurfaceTitle
+} from "@/components/ui/surface";
 import { Button } from "@/components/ui/button";
 
 export default function InsightsPage() {
@@ -20,24 +25,24 @@ export default function InsightsPage() {
         title="Your weekly summary"
         description="Gentle guidance based on your verified activity and engagement — never a safety judgment."
         actions={
-          <Link href={`/u/${currentUser.trueverse_id}`}>
-            <Button variant="outline">Share profile</Button>
-          </Link>
+          <Button asChild variant="outline">
+            <Link href={`/u/${currentUser.trueverse_id}`}>Share profile</Link>
+          </Button>
         }
       />
 
       <div className="grid gap-4">
         {items.map((item) => (
-          <Card key={item.label} elevated>
-            <CardHeader>
+          <Surface key={item.label} elevated>
+            <SurfaceHeader>
               <div>
-                <CardTitle>{item.label}</CardTitle>
-                <CardDescription className="mt-2 text-base text-foreground">
+                <SurfaceTitle>{item.label}</SurfaceTitle>
+                <SurfaceDescription className="mt-2 text-base text-foreground">
                   {item.value}
-                </CardDescription>
+                </SurfaceDescription>
               </div>
-            </CardHeader>
-          </Card>
+            </SurfaceHeader>
+          </Surface>
         ))}
       </div>
     </div>

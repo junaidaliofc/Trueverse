@@ -5,7 +5,7 @@ import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Heart, MessageCircle, Share2 } from "lucide-react";
 import { activities, type ActivityItem } from "@/lib/dummy-data";
-import { Avatar } from "@/components/ui/avatar";
+import { UserAvatar } from "@/components/ui/user-avatar";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/section";
 import { cn, formatRelativeTime } from "@/lib/utils";
@@ -72,7 +72,7 @@ function ActivityCard({ activity, index }: { activity: ActivityItem; index: numb
     >
       <div className="flex items-start gap-3">
         <Link href={`/u/${activity.actor_trueverse_id}`}>
-          <Avatar name={activity.actor_name} size="md" />
+          <UserAvatar name={activity.actor_name} size="md" />
         </Link>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
@@ -91,12 +91,13 @@ function ActivityCard({ activity, index }: { activity: ActivityItem; index: numb
 
           <div className="mt-5 flex flex-wrap gap-2">
             <Button
-              variant={liked ? "soft" : "secondary"}
+              variant="secondary"
               size="sm"
               onClick={() => {
                 setLiked((value) => !value);
                 setCount((value) => (liked ? value - 1 : value + 1));
               }}
+              className={liked ? "bg-brand-soft text-brand" : undefined}
             >
               <Heart className={cn("size-4", liked && "fill-current")} />
               {count}

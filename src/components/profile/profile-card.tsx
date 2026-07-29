@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Profile } from "@/lib/types";
-import { Avatar } from "@/components/ui/avatar";
+import { UserAvatar } from "@/components/ui/user-avatar";
 import { TrustLevelBadge } from "@/components/trust/trust-level-badge";
 import { scoreToTrustLevel } from "@/lib/design";
 import { cn } from "@/lib/utils";
@@ -21,7 +21,7 @@ export function ProfileCard({
   const content = (
     <section className={cn("glass rounded-3xl p-5 sm:p-6", className)}>
       <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
-        <Avatar name={profile.full_name} src={profile.photo_url} size="lg" className="rounded-3xl" />
+        <UserAvatar name={profile.full_name} src={profile.photo_url} size="lg" className="rounded-3xl" />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <h2 className="font-display text-2xl font-bold text-foreground">
@@ -40,7 +40,7 @@ export function ProfileCard({
             <p className="text-[10px] uppercase tracking-wide opacity-80">streak</p>
           </div>
           {typeof xp === "number" ? (
-            <div className="rounded-2xl bg-xp-soft px-5 py-4 text-center text-xp ring-1 ring-xp/20">
+            <div className="rounded-2xl bg-xp-soft px-5 py-4 text-center text-xp ring-1 ring-xp/15">
               <p className="font-display text-2xl font-bold">{xp}</p>
               <p className="text-[10px] uppercase tracking-wide">XP</p>
             </div>

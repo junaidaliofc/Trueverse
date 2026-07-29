@@ -13,9 +13,9 @@ import { ProfileCard } from "@/components/profile/profile-card";
 import { TrustReputationCard } from "@/components/trust/trust-reputation-card";
 import { ReputationDnaCard } from "@/components/trust/reputation-dna";
 import { PageHeader } from "@/components/ui/section";
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { Surface, SurfaceHeader, SurfaceTitle } from "@/components/ui/surface";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/ui/status-badge";
 
 export default async function PublicProfilePage({
   params
@@ -64,12 +64,12 @@ export default async function PublicProfilePage({
         description="Verified reputation signals for informed decisions — not a safety guarantee."
         actions={
           <>
-            <Link href={`/u/${profile.trueverse_id}/share`}>
-              <Button>Share profile</Button>
-            </Link>
-            <Link href="/interactions/create">
-              <Button variant="outline">Create interaction</Button>
-            </Link>
+            <Button asChild>
+              <Link href={`/u/${profile.trueverse_id}/share`}>Share profile</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/interactions/create">Create interaction</Link>
+            </Button>
           </>
         }
       />
@@ -94,23 +94,23 @@ export default async function PublicProfilePage({
       />
 
       <div className="grid gap-5 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Badges</CardTitle>
-          </CardHeader>
+        <Surface>
+          <SurfaceHeader>
+            <SurfaceTitle>Badges</SurfaceTitle>
+          </SurfaceHeader>
           <div className="flex flex-wrap gap-2">
             {earnedBadges.map((badge) => (
-              <Badge key={badge.id} tone="success">
+              <StatusBadge key={badge.id} tone="success">
                 {badge.name}
-              </Badge>
+              </StatusBadge>
             ))}
           </div>
-        </Card>
+        </Surface>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent activities</CardTitle>
-          </CardHeader>
+        <Surface>
+          <SurfaceHeader>
+            <SurfaceTitle>Recent activities</SurfaceTitle>
+          </SurfaceHeader>
           <ul className="space-y-3">
             {publicActivities.length > 0
               ? publicActivities.map((item) => (
@@ -130,7 +130,7 @@ export default async function PublicProfilePage({
               </li>
             ))}
           </ul>
-        </Card>
+        </Surface>
       </div>
 
       <p className="text-center text-xs leading-5 text-muted-foreground">{PRODUCT_DISCLAIMER}</p>

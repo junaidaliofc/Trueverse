@@ -1,8 +1,13 @@
 import { missions } from "@/lib/dummy-data";
 import { PageHeader } from "@/components/ui/section";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
+import {
+  Surface,
+  SurfaceDescription,
+  SurfaceHeader,
+  SurfaceTitle
+} from "@/components/ui/surface";
+import { StatusBadge } from "@/components/ui/status-badge";
+import { LabeledProgress } from "@/components/ui/progress-field";
 
 export default function MissionsPage() {
   const daily = missions.filter((mission) => mission.cadence === "daily");
@@ -34,20 +39,22 @@ function MissionSection({
       <h2 className="font-display text-2xl font-bold tracking-tight">{title}</h2>
       <div className="grid gap-4 md:grid-cols-2">
         {items.map((mission) => (
-          <Card key={mission.id} elevated>
-            <CardHeader>
+          <Surface key={mission.id} elevated>
+            <SurfaceHeader>
               <div>
-                <CardTitle>{mission.title}</CardTitle>
-                <CardDescription>{mission.description}</CardDescription>
+                <SurfaceTitle>{mission.title}</SurfaceTitle>
+                <SurfaceDescription>{mission.description}</SurfaceDescription>
               </div>
-              <Badge tone={mission.completed ? "success" : "xp"}>+{mission.xp_reward} XP</Badge>
-            </CardHeader>
-            <Progress
+              <StatusBadge tone={mission.completed ? "success" : "xp"}>
+                +{mission.xp_reward} XP
+              </StatusBadge>
+            </SurfaceHeader>
+            <LabeledProgress
               value={(mission.progress / mission.target) * 100}
-              barClassName="bg-xp"
+              indicatorClassName="bg-xp"
               label={`${mission.progress} / ${mission.target}`}
             />
-          </Card>
+          </Surface>
         ))}
       </div>
     </section>

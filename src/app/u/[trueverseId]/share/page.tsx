@@ -3,7 +3,12 @@ import { notFound } from "next/navigation";
 import { currentUser, profiles } from "@/lib/dummy-data";
 import { PRODUCT_DISCLAIMER, scoreToTrustLevel, TRUST_LEVEL_META } from "@/lib/design";
 import { PageHeader } from "@/components/ui/section";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Surface,
+  SurfaceDescription,
+  SurfaceHeader,
+  SurfaceTitle
+} from "@/components/ui/surface";
 import { Button } from "@/components/ui/button";
 import { TrustLevelBadge } from "@/components/trust/trust-level-badge";
 
@@ -32,7 +37,7 @@ export default async function ShareProfilePage({
         description="Portable trust signals for dating apps, marketplaces, campuses, and communities."
       />
 
-      <Card elevated className="overflow-hidden p-0">
+      <Surface elevated className="overflow-hidden p-0">
         <div className="bg-accent px-6 py-8 text-accent-foreground">
           <p className="text-xs font-bold uppercase tracking-[0.22em] opacity-80">Trueverse</p>
           <h2 className="mt-3 font-display text-3xl font-bold">{member.full_name}</h2>
@@ -58,21 +63,19 @@ export default async function ShareProfilePage({
           <p className="break-all text-center font-mono text-xs text-muted-foreground">{shareUrl}</p>
           <div className="flex w-full flex-wrap gap-3">
             <Button className="flex-1">Copy link</Button>
-            <Link href={`/u/${member.trueverse_id}`} className="flex-1">
-              <Button variant="outline" className="w-full">
-                Open profile
-              </Button>
-            </Link>
+            <Button asChild variant="outline" className="flex-1">
+              <Link href={`/u/${member.trueverse_id}`}>Open profile</Link>
+            </Button>
           </div>
         </div>
-      </Card>
+      </Surface>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Privacy respected</CardTitle>
-          <CardDescription>{PRODUCT_DISCLAIMER}</CardDescription>
-        </CardHeader>
-      </Card>
+      <Surface>
+        <SurfaceHeader>
+          <SurfaceTitle>Privacy respected</SurfaceTitle>
+          <SurfaceDescription>{PRODUCT_DISCLAIMER}</SurfaceDescription>
+        </SurfaceHeader>
+      </Surface>
     </div>
   );
 }

@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { leaderboards } from "@/lib/dummy-data";
 import { PageHeader } from "@/components/ui/section";
-import { Card } from "@/components/ui/card";
+import { Surface } from "@/components/ui/surface";
 import { cn } from "@/lib/utils";
 
 const tabs = [
@@ -49,7 +49,7 @@ export default function LeaderboardsPage() {
         ))}
       </div>
 
-      <Card elevated className="overflow-hidden p-0">
+      <Surface elevated className="overflow-hidden p-0">
         <ol>
           {rows.map((row, index) => (
             <li
@@ -72,7 +72,7 @@ export default function LeaderboardsPage() {
             </li>
           ))}
         </ol>
-      </Card>
+      </Surface>
     </div>
   );
 }

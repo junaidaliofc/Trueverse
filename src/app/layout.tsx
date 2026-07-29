@@ -3,6 +3,8 @@ import { IBM_Plex_Mono, Outfit, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "@/components/layout/app-shell";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 const display = Outfit({
   subsets: ["latin"],
@@ -33,9 +35,11 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${display.variable} ${body.variable} ${mono.variable} font-sans antialiased`}>
+      <body className={cn(display.variable, body.variable, mono.variable, "font-sans antialiased")}>
         <ThemeProvider>
-          <AppShell>{children}</AppShell>
+          <TooltipProvider delayDuration={200}>
+            <AppShell>{children}</AppShell>
+          </TooltipProvider>
         </ThemeProvider>
       </body>
     </html>

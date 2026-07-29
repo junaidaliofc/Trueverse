@@ -1,7 +1,12 @@
 import { badges, achievements } from "@/lib/dummy-data";
 import { PageHeader } from "@/components/ui/section";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import {
+  Surface,
+  SurfaceDescription,
+  SurfaceHeader,
+  SurfaceTitle
+} from "@/components/ui/surface";
+import { StatusBadge } from "@/components/ui/status-badge";
 
 export default function BadgesPage() {
   return (
@@ -16,17 +21,17 @@ export default function BadgesPage() {
         <h2 className="mb-4 font-display text-2xl font-bold">Badges</h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {badges.map((badge) => (
-            <Card key={badge.id} className={badge.earned ? "" : "opacity-55"}>
-              <CardHeader>
+            <Surface key={badge.id} className={badge.earned ? "" : "opacity-55"}>
+              <SurfaceHeader>
                 <div>
-                  <CardTitle>{badge.name}</CardTitle>
-                  <CardDescription>{badge.description}</CardDescription>
+                  <SurfaceTitle>{badge.name}</SurfaceTitle>
+                  <SurfaceDescription>{badge.description}</SurfaceDescription>
                 </div>
-                <Badge tone={badge.earned ? "success" : "neutral"}>
+                <StatusBadge tone={badge.earned ? "success" : "neutral"}>
                   {badge.earned ? "Earned" : "Locked"}
-                </Badge>
-              </CardHeader>
-            </Card>
+                </StatusBadge>
+              </SurfaceHeader>
+            </Surface>
           ))}
         </div>
       </section>
@@ -35,17 +40,17 @@ export default function BadgesPage() {
         <h2 className="mb-4 font-display text-2xl font-bold">Achievements</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           {achievements.map((item) => (
-            <Card key={item.id} className={item.unlocked ? "" : "opacity-55"}>
-              <CardHeader>
+            <Surface key={item.id} className={item.unlocked ? "" : "opacity-55"}>
+              <SurfaceHeader>
                 <div>
-                  <CardTitle>{item.name}</CardTitle>
-                  <CardDescription>{item.description}</CardDescription>
+                  <SurfaceTitle>{item.name}</SurfaceTitle>
+                  <SurfaceDescription>{item.description}</SurfaceDescription>
                 </div>
-                <Badge tone={item.unlocked ? "brand" : "neutral"}>
+                <StatusBadge tone={item.unlocked ? "brand" : "neutral"}>
                   {item.unlocked ? "Unlocked" : "Locked"}
-                </Badge>
-              </CardHeader>
-            </Card>
+                </StatusBadge>
+              </SurfaceHeader>
+            </Surface>
           ))}
         </div>
       </section>

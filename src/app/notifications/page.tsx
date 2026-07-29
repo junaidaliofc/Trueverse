@@ -1,7 +1,7 @@
 import { notifications } from "@/lib/dummy-data";
 import { PageHeader } from "@/components/ui/section";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Surface } from "@/components/ui/surface";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { formatRelativeTime } from "@/lib/utils";
 
 export default function NotificationsPage() {
@@ -15,7 +15,7 @@ export default function NotificationsPage() {
 
       <div className="space-y-3">
         {notifications.map((item) => (
-          <Card
+          <Surface
             key={item.id}
             className={item.read ? "opacity-80" : "ring-1 ring-brand/25"}
           >
@@ -27,9 +27,9 @@ export default function NotificationsPage() {
                   {formatRelativeTime(item.created_at)}
                 </p>
               </div>
-              {!item.read ? <Badge tone="brand">New</Badge> : null}
+              {!item.read ? <StatusBadge tone="brand">New</StatusBadge> : null}
             </div>
-          </Card>
+          </Surface>
         ))}
       </div>
     </div>

@@ -13,10 +13,15 @@ import { TrustReputationCard } from "@/components/trust/trust-reputation-card";
 import { ReputationDnaCard } from "@/components/trust/reputation-dna";
 import { XPProgress } from "@/components/xp/xp-progress";
 import { PageHeader } from "@/components/ui/section";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Surface,
+  SurfaceDescription,
+  SurfaceHeader,
+  SurfaceTitle
+} from "@/components/ui/surface";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
+import { StatusBadge } from "@/components/ui/status-badge";
+import { LabeledProgress } from "@/components/ui/progress-field";
 
 export default function ProfilePage() {
   const earned = badges.filter((badge) => badge.earned);
@@ -30,12 +35,12 @@ export default function ProfilePage() {
         description="Share verified reputation signals anywhere — dating, marketplaces, work, and communities."
         actions={
           <>
-            <Link href={`/u/${currentUser.trueverse_id}`}>
-              <Button variant="dark">Public preview</Button>
-            </Link>
-            <Link href={`/u/${currentUser.trueverse_id}/share`}>
-              <Button variant="outline">Share & QR</Button>
-            </Link>
+            <Button asChild>
+              <Link href={`/u/${currentUser.trueverse_id}`}>Public preview</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href={`/u/${currentUser.trueverse_id}/share`}>Share & QR</Link>
+            </Button>
           </>
         }
       />
@@ -54,38 +59,38 @@ export default function ProfilePage() {
 
       <div className="grid gap-5 lg:grid-cols-2">
         <ReputationDnaCard dna={currentUserReputation.dna} />
-        <Card elevated>
+        <Surface elevated>
           <XPProgress totalXp={userXp.total_xp} />
           <div className="mt-6">
-            <Progress value={completion} label="Profile completion" />
+            <LabeledProgress value={completion} label="Profile completion" />
             <p className="mt-3 text-xs text-muted-foreground">
               XP unlocks cosmetics, badges, themes, and achievements. XP never increases trust.
             </p>
           </div>
-        </Card>
+        </Surface>
       </div>
 
       <div className="grid gap-5 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Badges</CardTitle>
+        <Surface>
+          <SurfaceHeader>
+            <SurfaceTitle>Badges</SurfaceTitle>
             <Link href="/badges" className="text-sm font-semibold text-brand">
               View all
             </Link>
-          </CardHeader>
+          </SurfaceHeader>
           <div className="flex flex-wrap gap-2">
             {earned.map((badge) => (
-              <Badge key={badge.id} tone="success">
+              <StatusBadge key={badge.id} tone="success">
                 {badge.name}
-              </Badge>
+              </StatusBadge>
             ))}
           </div>
-        </Card>
+        </Surface>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent verified activities</CardTitle>
-          </CardHeader>
+        <Surface>
+          <SurfaceHeader>
+            <SurfaceTitle>Recent verified activities</SurfaceTitle>
+          </SurfaceHeader>
           <ul className="space-y-3">
             {interactions.map((interaction) => (
               <li key={interaction.id}>
@@ -99,16 +104,16 @@ export default function ProfilePage() {
               </li>
             ))}
           </ul>
-        </Card>
+        </Surface>
       </div>
 
-      <Card>
-        <CardHeader>
+      <Surface>
+        <SurfaceHeader>
           <div>
-            <CardTitle>Reputation history</CardTitle>
-            <CardDescription>Trust events are calculated server-side.</CardDescription>
+            <SurfaceTitle>Reputation history</SurfaceTitle>
+            <SurfaceDescription>Trust events are calculated server-side.</SurfaceDescription>
           </div>
-        </CardHeader>
+        </SurfaceHeader>
         <ul className="space-y-3">
           {trustTimeline.map((item) => (
             <li
@@ -123,7 +128,7 @@ export default function ProfilePage() {
             </li>
           ))}
         </ul>
-      </Card>
+      </Surface>
 
       <p className="text-center text-xs leading-5 text-muted-foreground">{PRODUCT_DISCLAIMER}</p>
     </div>
