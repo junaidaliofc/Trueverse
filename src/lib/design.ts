@@ -1,3 +1,13 @@
+/**
+ * Trueverse product constants.
+ *
+ * Architecture layers:
+ * 1) Tokens (globals.css) → 2) shadcn primitives (components/ui)
+ * → 3) product components (trust/xp/profile/layout) → 4) pages
+ *
+ * Trust and XP are strictly separate. XP never increases trust.
+ */
+
 /** Public trust index is 0–100. XP never affects trust. */
 
 export const TRUST_LEVELS = [
