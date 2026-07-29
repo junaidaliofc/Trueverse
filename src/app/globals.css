@@ -1,26 +1,243 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono), ui-monospace, monospace;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-brand-soft: var(--brand-soft);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-xp: var(--xp);
+  --color-xp-soft: var(--xp-soft);
+}
+
 :root {
   color-scheme: light;
+  --background: #f4f7f6;
+  --foreground: #0c1a17;
+  --surface: rgba(255, 255, 255, 0.78);
+  --surface-elevated: #ffffff;
+  --muted: #e7eeec;
+  --muted-foreground: #5b6f6a;
+  --border: rgba(15, 40, 34, 0.1);
+  --ring: #0d9488;
+  --brand: #0f766e;
+  --brand-foreground: #ffffff;
+  --brand-soft: rgba(15, 118, 110, 0.12);
+  --accent: #134e4a;
+  --accent-foreground: #ecfdf8;
+  --success: #047857;
+  --success-soft: rgba(4, 120, 87, 0.12);
+  --warning: #b45309;
+  --warning-soft: rgba(180, 83, 9, 0.12);
+  --danger: #be123c;
+  --danger-soft: rgba(190, 18, 60, 0.12);
+  --xp: #d97706;
+  --xp-soft: rgba(217, 119, 6, 0.14);
+  --glow: rgba(13, 148, 136, 0.18);
+  --hero-gradient: radial-gradient(ellipse 80% 60% at 20% -10%, rgba(13, 148, 136, 0.22), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 90% 10%, rgba(15, 118, 110, 0.12), transparent 50%),
+    linear-gradient(165deg, #f7faf9 0%, #eef5f3 42%, #e6f0ed 100%);
 }
 
-body {
-  min-height: 100vh;
-  background:
-    radial-gradient(circle at top left, rgba(20, 184, 166, 0.12), transparent 28rem),
-    linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
-  color: #0f172a;
+.dark {
+  color-scheme: dark;
+  --background: #071210;
+  --foreground: #e8f5f1;
+  --surface: rgba(14, 28, 25, 0.82);
+  --surface-elevated: #10201c;
+  --muted: #16302b;
+  --muted-foreground: #9bb5ae;
+  --border: rgba(180, 220, 210, 0.12);
+  --ring: #2dd4bf;
+  --brand: #14b8a6;
+  --brand-foreground: #042f2e;
+  --brand-soft: rgba(20, 184, 166, 0.16);
+  --accent: #99f6e4;
+  --accent-foreground: #042f2e;
+  --success: #34d399;
+  --success-soft: rgba(52, 211, 153, 0.14);
+  --warning: #fbbf24;
+  --warning-soft: rgba(251, 191, 36, 0.14);
+  --danger: #fb7185;
+  --danger-soft: rgba(251, 113, 133, 0.14);
+  --xp: #f59e0b;
+  --xp-soft: rgba(245, 158, 11, 0.16);
+  --glow: rgba(45, 212, 191, 0.14);
+  --hero-gradient: radial-gradient(ellipse 80% 60% at 15% -5%, rgba(20, 184, 166, 0.2), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 95% 0%, rgba(13, 148, 136, 0.12), transparent 45%),
+    linear-gradient(165deg, #071210 0%, #0a1815 50%, #0c1c18 100%);
 }
 
-button,
-input,
-textarea {
-  font: inherit;
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    min-height: 100vh;
+    background: var(--hero-gradient);
+    background-attachment: fixed;
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  .font-display {
+    font-family: var(--font-display);
+    letter-spacing: -0.03em;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  ::selection {
+    background: var(--brand-soft);
+    color: var(--foreground);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 }
 
+@layer utilities {
+  .glass {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: 0 18px 50px rgba(7, 18, 16, 0.06);
+    backdrop-filter: blur(18px);
+  }
+
+  .glass-elevated {
+    border: 1px solid var(--border);
+    background: var(--surface-elevated);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.4) inset,
+      0 24px 60px rgba(7, 18, 16, 0.08);
+  }
+
+  .dark .glass-elevated {
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.04) inset,
+      0 24px 60px rgba(0, 0, 0, 0.35);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .animate-fade-up {
+    animation: fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.35s ease-out both;
+  }
+
+  .animate-scale-in {
+    animation: scale-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .stagger-1 {
+    animation-delay: 60ms;
+  }
+  .stagger-2 {
+    animation-delay: 120ms;
+  }
+  .stagger-3 {
+    animation-delay: 180ms;
+  }
+  .stagger-4 {
+    animation-delay: 240ms;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes progress-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Legacy alias used by existing pages during migration */
 .glass-card {
-  border: 1px solid rgba(148, 163, 184, 0.22);
-  background: rgba(255, 255, 255, 0.82);
-  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.08);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: 0 24px 80px rgba(7, 18, 16, 0.08);
   backdrop-filter: blur(18px);
 }

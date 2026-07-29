@@ -1,61 +1,131 @@
 import Link from "next/link";
-import { currentUser, interactions, trustTimeline } from "@/lib/dummy-data";
-import { ProfileCard } from "@/components/profile-card";
+import {
+  badges,
+  currentUser,
+  currentUserReputation,
+  interactions,
+  trustTimeline,
+  userXp
+} from "@/lib/dummy-data";
+import { PRODUCT_DISCLAIMER } from "@/lib/design";
+import { ProfileCard } from "@/components/profile/profile-card";
+import { TrustReputationCard } from "@/components/trust/trust-reputation-card";
+import { ReputationDnaCard } from "@/components/trust/reputation-dna";
+import { XPProgress } from "@/components/xp/xp-progress";
+import { PageHeader } from "@/components/ui/section";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 
 export default function ProfilePage() {
+  const earned = badges.filter((badge) => badge.earned);
+  const completion = 72;
+
   return (
     <div className="space-y-8">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="text-sm font-bold uppercase tracking-wide text-teal-700">Profile</p>
-          <h1 className="mt-2 text-4xl font-black text-slate-950">Your Trueverse identity</h1>
-        </div>
-        <Link href={`/u/${currentUser.trueverse_id}`} className="rounded-2xl bg-slate-950 px-5 py-3 font-bold text-white">
-          View public profile
-        </Link>
+      <PageHeader
+        eyebrow="Profile"
+        title="Your Trueverse identity"
+        description="Share verified reputation signals anywhere — dating, marketplaces, work, and communities."
+        actions={
+          <>
+            <Link href={`/u/${currentUser.trueverse_id}`}>
+              <Button variant="dark">Public preview</Button>
+            </Link>
+            <Link href={`/u/${currentUser.trueverse_id}/share`}>
+              <Button variant="outline">Share & QR</Button>
+            </Link>
+          </>
+        }
+      />
+
+      <ProfileCard profile={currentUser} xp={userXp.total_xp} streak={userXp.daily_streak} />
+
+      <TrustReputationCard
+        stats={{
+          trustIndex: currentUserReputation.trustIndex,
+          identityVerified: currentUserReputation.identityVerified,
+          trustActs: currentUserReputation.trustActs,
+          appreciations: currentUserReputation.appreciations,
+          communityRank: currentUserReputation.communityRank
+        }}
+      />
+
+      <div className="grid gap-5 lg:grid-cols-2">
+        <ReputationDnaCard dna={currentUserReputation.dna} />
+        <Card elevated>
+          <XPProgress totalXp={userXp.total_xp} />
+          <div className="mt-6">
+            <Progress value={completion} label="Profile completion" />
+            <p className="mt-3 text-xs text-muted-foreground">
+              XP unlocks cosmetics, badges, themes, and achievements. XP never increases trust.
+            </p>
+          </div>
+        </Card>
       </div>
 
-      <ProfileCard profile={currentUser} />
-
-      <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-        <form className="glass-card space-y-4 rounded-3xl p-6">
-          <h2 className="text-2xl font-black text-slate-950">Edit profile</h2>
-          <input className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3" defaultValue={currentUser.full_name} />
-          <input className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3" placeholder="Photo URL" />
-          <textarea
-            className="min-h-32 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3"
-            defaultValue={currentUser.bio}
-          />
-          <button className="rounded-2xl bg-teal-600 px-5 py-3 font-bold text-white">Save changes</button>
-        </form>
-
-        <div className="glass-card rounded-3xl p-6">
-          <h2 className="text-2xl font-black text-slate-950">Reputation history</h2>
-          <div className="mt-5 space-y-4">
-            {trustTimeline.map((item) => (
-              <div key={`${item.title}-${item.date}`} className="flex items-center justify-between rounded-2xl bg-white/80 p-4">
-                <div>
-                  <p className="font-bold text-slate-950">{item.title}</p>
-                  <p className="text-sm text-slate-500">{item.date}</p>
-                </div>
-                <span className="font-black text-teal-700">{item.delta}</span>
-              </div>
+      <div className="grid gap-5 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Badges</CardTitle>
+            <Link href="/badges" className="text-sm font-semibold text-brand">
+              View all
+            </Link>
+          </CardHeader>
+          <div className="flex flex-wrap gap-2">
+            {earned.map((badge) => (
+              <Badge key={badge.id} tone="success">
+                {badge.name}
+              </Badge>
             ))}
           </div>
-        </div>
-      </section>
+        </Card>
 
-      <section className="glass-card rounded-3xl p-6">
-        <h2 className="text-2xl font-black text-slate-950">Recent interactions</h2>
-        <div className="mt-5 grid gap-4 md:grid-cols-3">
-          {interactions.map((interaction) => (
-            <Link key={interaction.id} href={`/interactions/${interaction.id}`} className="rounded-2xl bg-white/80 p-4">
-              <p className="font-black text-slate-950">{interaction.title}</p>
-              <p className="mt-2 text-sm text-slate-600">{interaction.status}</p>
-            </Link>
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent verified activities</CardTitle>
+          </CardHeader>
+          <ul className="space-y-3">
+            {interactions.map((interaction) => (
+              <li key={interaction.id}>
+                <Link
+                  href={`/interactions/${interaction.id}`}
+                  className="block rounded-2xl bg-muted/50 px-4 py-3 ring-1 ring-border/50"
+                >
+                  <p className="font-semibold text-foreground">{interaction.title}</p>
+                  <p className="mt-1 text-xs capitalize text-muted-foreground">{interaction.status}</p>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <div>
+            <CardTitle>Reputation history</CardTitle>
+            <CardDescription>Trust events are calculated server-side.</CardDescription>
+          </div>
+        </CardHeader>
+        <ul className="space-y-3">
+          {trustTimeline.map((item) => (
+            <li
+              key={`${item.title}-${item.date}`}
+              className="flex items-center justify-between rounded-2xl bg-muted/50 px-4 py-3 ring-1 ring-border/50"
+            >
+              <div>
+                <p className="font-semibold text-foreground">{item.title}</p>
+                <p className="text-xs text-muted-foreground">{item.date}</p>
+              </div>
+              <span className="font-bold text-brand">{item.delta}</span>
+            </li>
           ))}
-        </div>
-      </section>
+        </ul>
+      </Card>
+
+      <p className="text-center text-xs leading-5 text-muted-foreground">{PRODUCT_DISCLAIMER}</p>
     </div>
   );
 }
