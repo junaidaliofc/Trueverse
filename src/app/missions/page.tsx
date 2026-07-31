@@ -1,62 +1,35 @@
-import { missions } from "@/lib/dummy-data";
-import { PageHeader } from "@/components/ui/section";
-import {
-  Surface,
-  SurfaceDescription,
-  SurfaceHeader,
-  SurfaceTitle
-} from "@/components/ui/surface";
-import { StatusBadge } from "@/components/ui/status-badge";
-import { LabeledProgress } from "@/components/ui/progress-field";
+"use client";
+
+import { dailyMissions, missions } from "@/lib/dummy-data";
+import { DailyMissions, MissionCard } from "@/components/missions/daily-missions";
+import { MotionItem, MotionPage } from "@/components/motion/primitives";
 
 export default function MissionsPage() {
-  const daily = missions.filter((mission) => mission.cadence === "daily");
   const weekly = missions.filter((mission) => mission.cadence === "weekly");
 
   return (
-    <div className="space-y-8">
-      <PageHeader
-        eyebrow="Missions"
-        title="Daily & weekly goals"
-        description="Complete missions to earn XP, badges, and profile cosmetics. Missions never change trust."
-      />
+    <MotionPage className="mx-auto max-w-lg space-y-8">
+      <MotionItem>
+        <h1 className="font-display text-3xl font-bold tracking-tight">Missions</h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Three daily missions keep the habit alive. Rewards are XP and badges — never trust.
+        </p>
+      </MotionItem>
 
-      <MissionSection title="Today" items={daily} />
-      <MissionSection title="This week" items={weekly} />
-    </div>
-  );
-}
+      <MotionItem>
+        <DailyMissions missions={dailyMissions} showContinue />
+      </MotionItem>
 
-function MissionSection({
-  title,
-  items
-}: {
-  title: string;
-  items: typeof missions;
-}) {
-  return (
-    <section className="space-y-4">
-      <h2 className="font-display text-2xl font-bold tracking-tight">{title}</h2>
-      <div className="grid gap-4 md:grid-cols-2">
-        {items.map((mission) => (
-          <Surface key={mission.id} elevated>
-            <SurfaceHeader>
-              <div>
-                <SurfaceTitle>{mission.title}</SurfaceTitle>
-                <SurfaceDescription>{mission.description}</SurfaceDescription>
-              </div>
-              <StatusBadge tone={mission.completed ? "success" : "xp"}>
-                +{mission.xp_reward} XP
-              </StatusBadge>
-            </SurfaceHeader>
-            <LabeledProgress
-              value={(mission.progress / mission.target) * 100}
-              indicatorClassName="bg-xp"
-              label={`${mission.progress} / ${mission.target}`}
-            />
-          </Surface>
-        ))}
-      </div>
-    </section>
+      <MotionItem>
+        <h2 className="mb-3 font-display text-xl font-bold tracking-tight">This week</h2>
+        <ul className="space-y-3">
+          {weekly.map((mission, index) => (
+            <li key={mission.id}>
+              <MissionCard mission={mission} index={index} />
+            </li>
+          ))}
+        </ul>
+      </MotionItem>
+    </MotionPage>
   );
 }

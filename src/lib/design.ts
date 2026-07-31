@@ -152,21 +152,8 @@ export const EMPTY_REPUTATION_DNA: ReputationDna = {
   leadership: 0
 };
 
-/** XP unlocks cosmetics, badges, themes, achievements — never trust. */
-export const XP_LEVEL_THRESHOLDS = [0, 100, 300, 700, 1200, 2000, 3200, 5000, 7500, 10000];
-
-export function xpToLevel(totalXp: number) {
-  let level = 1;
-  for (let i = 1; i < XP_LEVEL_THRESHOLDS.length; i += 1) {
-    if (totalXp >= XP_LEVEL_THRESHOLDS[i]) level = i + 1;
-    else break;
-  }
-  const currentFloor = XP_LEVEL_THRESHOLDS[level - 1] ?? 0;
-  const nextFloor =
-    XP_LEVEL_THRESHOLDS[level] ?? currentFloor + Math.max(1000, Math.round(currentFloor * 0.35));
-  const progress = Math.min(1, (totalXp - currentFloor) / (nextFloor - currentFloor || 1));
-  return { level, currentFloor, nextFloor, progress, totalXp };
-}
+/** Re-export XP engine — XP never increases trust. */
+export { XP_LEVEL_THRESHOLDS, xpToLevel } from "@/lib/xp-engine";
 
 export const PRODUCT_DISCLAIMER =
   "Trueverse presents verified reputation signals only. It does not claim anyone is safe, trustworthy, or a good dating partner, and it does not predict compatibility or guarantee safety.";

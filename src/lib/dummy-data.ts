@@ -4,6 +4,19 @@ import {
   type ReputationDna,
   type TrustLevel
 } from "@/lib/design";
+import type { StreakState, XpUnlock } from "@/lib/xp-engine";
+
+export type Mission = {
+  id: string;
+  title: string;
+  description: string;
+  cadence: "daily" | "weekly";
+  xp_reward: number;
+  progress: number;
+  target: number;
+  completed: boolean;
+  href?: string;
+};
 
 /** Public trust index is 0–100. Dummy profiles use this scale for UI. */
 export const currentUser: Profile = {
@@ -129,6 +142,102 @@ export const userXp = {
   weekly_xp: 240,
   weekly_goal: 400
 };
+
+export const userStreaks: StreakState = {
+  daily: 14,
+  weekly: 3,
+  monthly: 2,
+  lastActiveDate: "2026-06-25"
+};
+
+/** Exactly 3 daily missions — the habit loop. */
+export const dailyMissions: Mission[] = [
+  {
+    id: "daily-appreciate",
+    title: "Appreciate someone",
+    description: "Send an appreciation on a community activity.",
+    cadence: "daily",
+    xp_reward: 25,
+    progress: 0,
+    target: 1,
+    completed: false,
+    href: "/community"
+  },
+  {
+    id: "daily-help",
+    title: "Help one person",
+    description: "Finish one Trust Act or offer verified help.",
+    cadence: "daily",
+    xp_reward: 40,
+    progress: 0,
+    target: 1,
+    completed: false,
+    href: "/interactions/create"
+  },
+  {
+    id: "daily-photo",
+    title: "Upload profile photo",
+    description: "Add a clear photo so people recognize you.",
+    cadence: "daily",
+    xp_reward: 30,
+    progress: 0,
+    target: 1,
+    completed: false,
+    href: "/profile"
+  }
+];
+
+export const xpUnlockCatalog: XpUnlock[] = [
+  {
+    id: "u-level-5",
+    kind: "level",
+    title: "Level 5",
+    description: "A warmer profile glow animation.",
+    requiredLevel: 5,
+    unlocked: true
+  },
+  {
+    id: "u-badge-helper",
+    kind: "badge",
+    title: "Community Helper",
+    description: "Badge for consistent verified help.",
+    requiredLevel: 5,
+    requiredXp: 1200,
+    unlocked: true
+  },
+  {
+    id: "u-theme-dawn",
+    kind: "theme",
+    title: "Dawn Theme",
+    description: "Soft sunrise profile theme.",
+    requiredLevel: 6,
+    unlocked: false
+  },
+  {
+    id: "u-deco-ring",
+    kind: "decoration",
+    title: "Verdant Ring",
+    description: "Decorative avatar ring.",
+    requiredLevel: 6,
+    unlocked: false
+  },
+  {
+    id: "u-anim-streak",
+    kind: "animation",
+    title: "Streak Flame",
+    description: "Animated streak celebration.",
+    requiredLevel: 4,
+    unlocked: true
+  },
+  {
+    id: "u-badge-neighbor",
+    kind: "badge",
+    title: "Reliable Neighbor",
+    description: "Upcoming badge for local consistency.",
+    requiredLevel: 7,
+    unlocked: false
+  }
+];
 
 /** XP never increases trust — cosmetics / badges / themes / achievements only. */
 export const XP_UNLOCK_NOTE =
@@ -341,57 +450,29 @@ export const activities: ActivityItem[] = [
   }
 ];
 
-export type Mission = {
-  id: string;
-  title: string;
-  description: string;
-  cadence: "daily" | "weekly";
-  xp_reward: number;
-  progress: number;
-  target: number;
-  completed: boolean;
-};
-
 export const missions: Mission[] = [
+  ...dailyMissions,
   {
-    id: "m-help",
-    title: "Help one person",
-    description: "Complete or verify one real-world help action.",
-    cadence: "daily",
+    id: "m-verify-email",
+    title: "Verify email",
+    description: "Confirm your email to secure your account.",
+    cadence: "weekly",
     xp_reward: 40,
-    progress: 0,
-    target: 1,
-    completed: false
-  },
-  {
-    id: "m-profile",
-    title: "Complete your profile",
-    description: "Add a photo, bio, and cover image.",
-    cadence: "daily",
-    xp_reward: 25,
-    progress: 2,
-    target: 3,
-    completed: false
-  },
-  {
-    id: "m-appreciate",
-    title: "Receive an appreciation",
-    description: "Earn appreciation on a shared activity.",
-    cadence: "daily",
-    xp_reward: 30,
     progress: 1,
     target: 1,
-    completed: true
+    completed: true,
+    href: "/profile"
   },
   {
-    id: "m-verify",
-    title: "Verify identity",
-    description: "Complete identity verification for stronger trust signals.",
+    id: "m-trust-act",
+    title: "Finish one Trust Act",
+    description: "Complete a verified interaction this week.",
     cadence: "weekly",
-    xp_reward: 120,
+    xp_reward: 60,
     progress: 0,
     target: 1,
-    completed: false
+    completed: false,
+    href: "/interactions/create"
   },
   {
     id: "m-volunteer",
@@ -401,7 +482,71 @@ export const missions: Mission[] = [
     xp_reward: 80,
     progress: 0,
     target: 1,
-    completed: false
+    completed: false,
+    href: "/community"
+  }
+];
+
+export type TimelineEvent = {
+  id: string;
+  type: "help" | "appreciation" | "badge" | "streak" | "identity" | "mission" | "xp";
+  title: string;
+  body: string;
+  created_at: string;
+  actor_name?: string;
+  meta?: string;
+};
+
+export const profileTimeline: TimelineEvent[] = [
+  {
+    id: "tl-1",
+    type: "help",
+    title: "Aria helped Maya after a community event",
+    body: "Coordinated safe rides home for three volunteers.",
+    created_at: "2026-06-24T18:20:00Z",
+    actor_name: "Aria Morgan",
+    meta: "Trust Act"
+  },
+  {
+    id: "tl-2",
+    type: "appreciation",
+    title: "Sarah appreciated your Trust Act",
+    body: "“Clear communication and showed up exactly on time.”",
+    created_at: "2026-06-25T10:15:00Z",
+    actor_name: "Sarah Kim",
+    meta: "+25 XP"
+  },
+  {
+    id: "tl-3",
+    type: "badge",
+    title: "You earned Community Helper",
+    body: "Unlocked through consistent verified help — an XP reward, not a trust change.",
+    created_at: "2026-06-23T16:00:00Z",
+    meta: "Badge"
+  },
+  {
+    id: "tl-4",
+    type: "streak",
+    title: "Completed 7-day streak",
+    body: "Daily presence celebrated. Streaks never increase trust.",
+    created_at: "2026-06-22T08:00:00Z",
+    meta: "Streak"
+  },
+  {
+    id: "tl-5",
+    type: "identity",
+    title: "Identity verified",
+    body: "A verified identity signal is now visible on your public profile.",
+    created_at: "2026-06-18T12:00:00Z",
+    meta: "Verified"
+  },
+  {
+    id: "tl-6",
+    type: "mission",
+    title: "Mission completed",
+    body: "Appreciate someone — daily mission cleared.",
+    created_at: "2026-06-17T19:30:00Z",
+    meta: "+25 XP"
   }
 ];
 
@@ -431,18 +576,33 @@ export type Achievement = {
   name: string;
   description: string;
   unlocked: boolean;
+  progress?: number;
+  target?: number;
 };
 
 export const achievements: Achievement[] = [
-  { id: "a-first", name: "First Verified Help", description: "Complete your first accepted interaction.", unlocked: true },
-  { id: "a-streak7", name: "Week of Presence", description: "Maintain a 7-day XP streak.", unlocked: true },
-  { id: "a-100", name: "Century of Trust", description: "Reach 100 verified interactions.", unlocked: false },
-  { id: "a-referral", name: "Trusted Invite", description: "Refer a friend who verifies.", unlocked: false }
+  { id: "a-first-act", name: "First Trust Act", description: "Complete your first verified interaction.", unlocked: true },
+  { id: "a-10-appreciations", name: "10 Appreciations", description: "Receive 10 appreciations from the community.", unlocked: true, progress: 10, target: 10 },
+  { id: "a-100-xp", name: "100 XP", description: "Earn your first 100 experience points.", unlocked: true },
+  { id: "a-helper", name: "Community Helper", description: "Help people consistently in your community.", unlocked: true },
+  { id: "a-neighbor", name: "Reliable Neighbor", description: "Build a local reputation for follow-through.", unlocked: false, progress: 4, target: 8 },
+  { id: "a-mentor", name: "Mentor", description: "Guide newcomers through their first Trust Acts.", unlocked: false, progress: 1, target: 3 },
+  { id: "a-volunteer", name: "Volunteer", description: "Log verified volunteer contributions.", unlocked: true },
+  { id: "a-identity", name: "Verified Identity", description: "Complete identity verification.", unlocked: true }
 ];
+
+export type NotificationType =
+  | "appreciation"
+  | "mission"
+  | "trust"
+  | "badge"
+  | "recap"
+  | "streak"
+  | "xp";
 
 export type NotificationItem = {
   id: string;
-  type: string;
+  type: NotificationType;
   title: string;
   body: string;
   created_at: string;
@@ -453,41 +613,49 @@ export const notifications: NotificationItem[] = [
   {
     id: "n1",
     type: "appreciation",
-    title: "Someone appreciated your help",
+    title: "Someone appreciated you",
     body: "Maya appreciated your ride coordination.",
     created_at: "2026-06-25T18:00:00Z",
     read: false
   },
   {
     id: "n2",
-    type: "badge",
-    title: "You earned a badge",
-    body: "Safe Driver was added to your profile.",
-    created_at: "2026-06-24T12:00:00Z",
+    type: "mission",
+    title: "Mission completed",
+    body: "Appreciate someone — +25 XP",
+    created_at: "2026-06-25T11:00:00Z",
     read: false
   },
   {
     id: "n3",
-    type: "mission",
-    title: "Mission completed",
-    body: "Receive an appreciation — +30 XP",
-    created_at: "2026-06-24T11:00:00Z",
-    read: true
+    type: "badge",
+    title: "Badge unlocked",
+    body: "Community Helper is now on your profile.",
+    created_at: "2026-06-24T12:00:00Z",
+    read: false
   },
   {
     id: "n4",
     type: "trust",
-    title: "Trust level updated",
+    title: "Trust level changed",
     body: "Your trust level is now Established.",
     created_at: "2026-06-20T09:00:00Z",
     read: true
   },
   {
     id: "n5",
-    type: "friend",
-    title: "Friend joined",
-    body: "Ahmed Hassan joined Trueverse.",
-    created_at: "2026-06-18T16:00:00Z",
+    type: "streak",
+    title: "Streak milestone",
+    body: "14-day streak is alive. Keep showing up.",
+    created_at: "2026-06-25T08:05:00Z",
+    read: true
+  },
+  {
+    id: "n6",
+    type: "recap",
+    title: "Weekly recap",
+    body: "You earned 240 XP and received 12 appreciations this week.",
+    created_at: "2026-06-22T09:00:00Z",
     read: true
   }
 ];
