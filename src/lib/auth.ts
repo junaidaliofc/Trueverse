@@ -1,8 +1,16 @@
 import { redirect } from "next/navigation";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Profile } from "@/lib/types";
 
+function hasSupabaseEnv() {
+  return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+}
+
 export async function getSessionUser() {
+  if (!hasSupabaseEnv()) {
+    return { supabase: null, user: null };
+  }
+
+  const { createSupabaseServerClient } = await import("@/lib/supabase/server");
   const supabase = await createSupabaseServerClient();
   const {
     data: { user }
@@ -14,7 +22,7 @@ export async function getSessionUser() {
 export async function requireUser() {
   const { supabase, user } = await getSessionUser();
 
-  if (!user) {
+  if (!user || !supabase) {
     redirect("/auth/login");
   }
 
@@ -24,7 +32,7 @@ export async function requireUser() {
 export async function getCurrentProfile() {
   const { supabase, user } = await getSessionUser();
 
-  if (!user) {
+  if (!user || !supabase) {
     return null;
   }
 

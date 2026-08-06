@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { buildPassportViewModel, profiles } from "@/lib/dummy-data";
 import { findProfileByPublicSlug } from "@/lib/passport";
-import { PRODUCT_DISCLAIMER, TRUST_LEVEL_META } from "@/lib/design";
+import { PUBLIC_PROFILE_DISCLAIMER, TRUST_LEVEL_META } from "@/lib/design";
 import { TrustLevelBadge } from "@/components/trust/trust-level-badge";
 import { PassportSharePanel } from "@/components/passport/passport-share-panel";
 import { UserAvatar } from "@/components/ui/user-avatar";
@@ -69,7 +69,9 @@ export default async function SharePassportPage({
         absoluteOrigin="https://trueverse.app"
       />
 
-      <p className="text-center text-xs leading-5 text-muted-foreground">{PRODUCT_DISCLAIMER}</p>
+      <p className="text-center text-xs leading-5 text-muted-foreground">
+        {PUBLIC_PROFILE_DISCLAIMER}
+      </p>
     </div>
   );
 }

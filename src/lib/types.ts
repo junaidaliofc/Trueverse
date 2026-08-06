@@ -12,6 +12,7 @@ export type Profile = {
   trust_score: number;
   streak: number;
   trueverse_id: string;
+  username?: string | null;
   role: UserRole;
   is_disabled: boolean;
   last_positive_at: string | null;

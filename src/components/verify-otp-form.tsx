@@ -7,7 +7,6 @@ import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 export function VerifyOtpForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const supabase = createSupabaseBrowserClient();
   const [email, setEmail] = useState(searchParams.get("email") ?? "");
   const [token, setToken] = useState("");
   const [message, setMessage] = useState("");
@@ -19,21 +18,29 @@ export function VerifyOtpForm() {
     setLoading(true);
     setMessage("");
 
-    const { error } = await supabase.auth.verifyOtp({
-      email,
-      token,
-      type
-    });
+    try {
+      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+        throw new Error("Supabase is not configured.");
+      }
+      const supabase = createSupabaseBrowserClient();
+      const { error } = await supabase.auth.verifyOtp({
+        email,
+        token,
+        type
+      });
 
-    setLoading(false);
+      if (error) {
+        setMessage(error.message);
+        return;
+      }
 
-    if (error) {
-      setMessage(error.message);
-      return;
+      router.refresh();
+      router.push("/dashboard");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Unable to verify.");
+    } finally {
+      setLoading(false);
     }
-
-    router.refresh();
-    router.push("/profile");
   }
 
   return (
@@ -41,9 +48,7 @@ export function VerifyOtpForm() {
       <div>
         <p className="text-sm font-semibold uppercase tracking-wide text-teal-700">OTP verification</p>
         <h1 className="mt-2 text-3xl font-black text-slate-950">Confirm your email</h1>
-        <p className="mt-2 text-sm text-slate-600">
-          Enter the one-time password sent by Supabase Auth.
-        </p>
+        <p className="mt-2 text-sm text-slate-600">Enter the one-time password sent to your email.</p>
       </div>
 
       <label className="block text-sm font-semibold text-slate-700">

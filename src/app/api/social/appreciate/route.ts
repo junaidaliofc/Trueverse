@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { jsonError, validationError } from "@/lib/api";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { appreciationSchema } from "@/lib/validators";
+import { rateLimit } from "@/lib/rate-limit";
 
 /**
  * Appreciate an activity. Social reciprocity only.
@@ -16,6 +17,9 @@ export async function POST(request: NextRequest) {
     } = await supabase.auth.getUser();
 
     if (!user) return jsonError("Authentication required.", 401);
+
+    const limited = rateLimit(`appreciate:${user.id}`, 40, 60_000);
+    if (!limited.ok) return jsonError("Too many appreciations. Try again shortly.", 429);
 
     const { error } = await supabase.from("activity_appreciations").upsert({
       activity_id: payload.activity_id,

@@ -1,10 +1,9 @@
 "use client";
 
-import { PRODUCT_DISCLAIMER } from "@/lib/design";
+import { PUBLIC_PROFILE_DISCLAIMER } from "@/lib/design";
 import type { PassportMode, PassportViewModel } from "@/lib/passport";
 import { MotionItem, MotionPage } from "@/components/motion/primitives";
 import { PassportHero } from "@/components/passport/passport-hero";
-import { PassportReputationDna } from "@/components/passport/reputation-dna";
 import { PassportVerification } from "@/components/passport/verification-section";
 import { PassportBadgeGallery } from "@/components/passport/badge-gallery";
 import { PassportReputationTimeline } from "@/components/passport/reputation-timeline";
@@ -67,15 +66,8 @@ export function TrueversePassport({
       ) : null}
 
       <MotionItem>
-        <PassportReputationDna
-          dna={passport.dna}
-          hidden={mode === "public" && !privacy.showDna}
-        />
-      </MotionItem>
-
-      <MotionItem>
         <PassportVerification
-          items={passport.verifications}
+          items={passport.verifications.filter((item) => item.kind !== "organization")}
           hidden={mode === "public" && !privacy.showVerifications}
         />
       </MotionItem>
@@ -110,7 +102,7 @@ export function TrueversePassport({
       </MotionItem>
 
       <p className="pb-6 text-center text-xs leading-5 text-muted-foreground">
-        {PRODUCT_DISCLAIMER}
+        {PUBLIC_PROFILE_DISCLAIMER}
       </p>
     </MotionPage>
   );

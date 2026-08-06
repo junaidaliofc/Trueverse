@@ -8,67 +8,83 @@ type AuthMode = "signup" | "login";
 
 export function AuthForm({ mode }: { mode: AuthMode }) {
   const router = useRouter();
-  const supabase = createSupabaseBrowserClient();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
+  function client() {
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      throw new Error("Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and ANON_KEY.");
+    }
+    return createSupabaseBrowserClient();
+  }
+
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setLoading(true);
     setMessage("");
 
-    const redirectTo = `${window.location.origin}/auth/callback`;
-    const result =
-      mode === "signup"
-        ? await supabase.auth.signUp({
-            email,
-            password,
-            options: {
-              emailRedirectTo: redirectTo,
-              data: { full_name: fullName }
-            }
-          })
-        : await supabase.auth.signInWithPassword({ email, password });
+    try {
+      const supabase = client();
+      const redirectTo = `${window.location.origin}/auth/callback`;
+      const result =
+        mode === "signup"
+          ? await supabase.auth.signUp({
+              email,
+              password,
+              options: {
+                emailRedirectTo: redirectTo,
+                data: { full_name: fullName }
+              }
+            })
+          : await supabase.auth.signInWithPassword({ email, password });
 
-    setLoading(false);
+      if (result.error) {
+        setMessage(result.error.message);
+        return;
+      }
 
-    if (result.error) {
-      setMessage(result.error.message);
-      return;
+      if (mode === "signup" && !result.data.session) {
+        router.push(`/auth/verify?email=${encodeURIComponent(email)}&type=signup`);
+        return;
+      }
+
+      router.refresh();
+      router.push("/dashboard");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Unable to authenticate.");
+    } finally {
+      setLoading(false);
     }
-
-    if (mode === "signup" && !result.data.session) {
-      router.push(`/auth/verify?email=${encodeURIComponent(email)}&type=signup`);
-      return;
-    }
-
-    router.refresh();
-    router.push("/profile");
   }
 
   async function sendOtp() {
     setLoading(true);
     setMessage("");
 
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        shouldCreateUser: mode === "signup",
-        emailRedirectTo: `${window.location.origin}/auth/callback`
+    try {
+      const supabase = client();
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          shouldCreateUser: mode === "signup",
+          emailRedirectTo: `${window.location.origin}/auth/callback`
+        }
+      });
+
+      if (error) {
+        setMessage(error.message);
+        return;
       }
-    });
 
-    setLoading(false);
-
-    if (error) {
-      setMessage(error.message);
-      return;
+      router.push(`/auth/verify?email=${encodeURIComponent(email)}&type=email`);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Unable to send code.");
+    } finally {
+      setLoading(false);
     }
-
-    router.push(`/auth/verify?email=${encodeURIComponent(email)}&type=email`);
   }
 
   return (

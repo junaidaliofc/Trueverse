@@ -250,6 +250,10 @@ export { XP_LEVEL_THRESHOLDS, xpToLevel } from "@/lib/xp-engine";
 export const PRODUCT_DISCLAIMER =
   "Trueverse presents verified reputation signals only. It does not claim anyone is safe, trustworthy, or a good dating partner, and it does not predict compatibility or guarantee safety.";
 
+/** Required on public profiles for beta. */
+export const PUBLIC_PROFILE_DISCLAIMER =
+  "Trueverse displays community-provided and verified reputation signals. It does not guarantee personal safety, compatibility, identity, or future behavior.";
+
 export const RELATIONSHIP_DISCLAIMER =
   "This information provides verified signals only. It does not predict compatibility or guarantee safety.";
 

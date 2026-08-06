@@ -2,13 +2,15 @@ import { NextResponse, type NextRequest } from "next/server";
 import { jsonError, validationError } from "@/lib/api";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { followSchema } from "@/lib/validators";
+import { rateLimit } from "@/lib/rate-limit";
 
 async function resolveTargetProfile(trueverseId: string) {
   const supabase = await createSupabaseServerClient();
+  const key = trueverseId.replace(/^@/, "");
   const { data, error } = await supabase
     .from("profiles")
     .select("id, trueverse_id, full_name")
-    .eq("trueverse_id", trueverseId)
+    .or(`trueverse_id.eq.${key},username.eq.${key}`)
     .maybeSingle();
 
   if (error) return { supabase, error: error.message, profile: null };
@@ -24,6 +26,9 @@ export async function POST(request: NextRequest) {
     } = await supabase.auth.getUser();
 
     if (!user) return jsonError("Authentication required.", 401);
+
+    const limited = rateLimit(`follow:${user.id}`, 30, 60_000);
+    if (!limited.ok) return jsonError("Too many follow actions. Try again shortly.", 429);
 
     const target = await resolveTargetProfile(payload.following_trueverse_id);
     if (target.error) return jsonError(target.error, 500);

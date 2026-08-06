@@ -33,6 +33,7 @@ export const currentUser: Profile = {
   trust_score: 58,
   streak: 14,
   trueverse_id: "tv_ariamorgan",
+  username: "ariamorgan",
   role: "member",
   is_disabled: false,
   last_positive_at: "2026-06-24T18:20:00Z",
@@ -114,7 +115,7 @@ export const passportStats: PassportStats = {
 };
 
 export const passportPrivacy: PassportPrivacy = {
-  showDna: true,
+  showDna: false,
   showVerifications: true,
   showBadges: true,
   showTimeline: true,
@@ -381,11 +382,12 @@ export const profiles: Profile[] = [
     id: "user-sarah",
     email: "sarah@example.com",
     full_name: "Sarah Kim",
-    photo_url: null,
-    bio: "Regular blood donor and campus safety course facilitator.",
+    photo_url: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=256&h=256&fit=crop",
+    bio: "Regular blood donor and campus safety course facilitator. Building portable trust through verified community work.",
     trust_score: 89,
     streak: 33,
     trueverse_id: "tv_sarahkim",
+    username: "sarahkim",
     role: "member",
     is_disabled: false,
     last_positive_at: "2026-06-24T11:00:00Z",

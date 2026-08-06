@@ -69,7 +69,9 @@ export default function CommunityPage() {
                     {request.description}
                   </p>
                   <div className="mt-4">
-                    <Button size="sm">Offer help</Button>
+                    <Button asChild size="sm" variant="outline">
+                      <Link href="/interactions/create">Record Trust Act</Link>
+                    </Button>
                   </div>
                 </div>
               </div>
