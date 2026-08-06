@@ -3,6 +3,8 @@ import { requireUser } from "@/lib/auth";
 import { PositiveInteractionForm, NegativeReportForm } from "@/components/interaction-forms";
 import { Button } from "@/components/ui/button";
 
+export const dynamic = "force-dynamic";
+
 export default async function CreateInteractionPage() {
   await requireUser();
 

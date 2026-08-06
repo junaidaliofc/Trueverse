@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { requireUser, getCurrentProfile } from "@/lib/auth";
+
+export const dynamic = "force-dynamic";
 import {
   buildPassportViewModel,
   currentUser,
