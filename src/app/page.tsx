@@ -1,106 +1,81 @@
+"use client";
+
 import Link from "next/link";
-import { dashboardMetrics, helpRequests, profiles } from "@/lib/dummy-data";
-import { TrustScoreBadge } from "@/components/trust-score-badge";
+import { motion, useReducedMotion } from "framer-motion";
+import { ArrowRight } from "lucide-react";
+import { PRODUCT_DISCLAIMER } from "@/lib/design";
+import { Button } from "@/components/ui/button";
+import { fadeUp, stagger } from "@/components/motion/primitives";
 
+/**
+ * Phase 1 landing — brand-first, above-the-fold minimal.
+ * No trust statistics in the first viewport.
+ */
 export default function LandingPage() {
+  const reduceMotion = useReducedMotion();
+
   return (
-    <div className="space-y-12">
-      <section className="grid gap-10 py-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-center">
-        <div>
-          <p className="text-sm font-bold uppercase tracking-[0.3em] text-teal-700">
-            Digital trust for real-world interactions
-          </p>
-          <h1 className="mt-5 max-w-4xl text-5xl font-black tracking-tight text-slate-950 sm:text-6xl">
-            Build reputation through verified help, accountability, and community trust.
-          </h1>
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
-            Trueverse gives people a portable reputation: positive interactions increase trust after
-            recipient acceptance, while negative reports require evidence and admin review.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link
-              href="/auth/signup"
-              className="rounded-2xl bg-teal-600 px-6 py-3 font-bold text-white shadow-sm hover:bg-teal-700"
-            >
-              Create your profile
-            </Link>
-            <Link
-              href="/dashboard"
-              className="rounded-2xl border border-slate-300 px-6 py-3 font-bold text-slate-700 hover:border-teal-500"
-            >
-              View dashboard
-            </Link>
-          </div>
-        </div>
+    <div className="relative">
+      <section className="relative flex min-h-[calc(100dvh-3.5rem)] flex-col items-center justify-center px-1 pb-16 pt-8 sm:min-h-[calc(100dvh-4rem)] sm:pb-20">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 -z-10"
+          style={{
+            background:
+              "radial-gradient(ellipse 100% 80% at 50% 0%, rgba(15,118,110,0.22), transparent 55%), radial-gradient(circle at 80% 70%, rgba(13,148,136,0.08), transparent 40%)"
+          }}
+        />
 
-        <div className="glass-card rounded-[2rem] p-6">
-          <div className="rounded-3xl bg-slate-950 p-6 text-white">
-            <p className="text-sm font-semibold text-teal-200">Live trust preview</p>
-            <p className="mt-3 text-5xl font-black">86</p>
-            <p className="mt-1 text-slate-300">Aria Morgan · tv_ariamorgan</p>
-          </div>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            {dashboardMetrics.map((metric) => (
-              <div key={metric.label} className="rounded-3xl bg-white/80 p-5">
-                <p className="text-sm font-semibold text-slate-500">{metric.label}</p>
-                <p className="mt-2 text-2xl font-black text-slate-950">{metric.value}</p>
-                <p className="mt-1 text-xs text-slate-500">{metric.detail}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+        <motion.div
+          className="mx-auto w-full max-w-2xl text-center"
+          initial={reduceMotion ? false : "hidden"}
+          animate="show"
+          variants={stagger}
+        >
+          <motion.p
+            variants={fadeUp}
+            className="font-display text-[clamp(3.5rem,14vw,7.5rem)] font-bold leading-[0.92] tracking-[-0.05em] text-foreground"
+          >
+            Trueverse
+          </motion.p>
 
-      <section className="grid gap-5 md:grid-cols-3">
-        {[
-          ["Positive interactions", "Recipient accepted, +3 trust score"],
-          ["Evidence-backed reports", "Admin reviewed, -5 only after approval"],
-          ["Community feed", "Help requests with public trust context"]
-        ].map(([title, description]) => (
-          <div key={title} className="glass-card rounded-3xl p-6">
-            <h2 className="text-xl font-black text-slate-950">{title}</h2>
-            <p className="mt-3 text-slate-600">{description}</p>
-          </div>
-        ))}
-      </section>
+          <motion.h1
+            variants={fadeUp}
+            className="mx-auto mt-8 max-w-xl text-balance font-display text-2xl font-semibold tracking-tight text-foreground sm:text-3xl"
+          >
+            Portable trust for the real world
+          </motion.h1>
 
-      <section>
-        <div className="mb-5 flex items-end justify-between gap-4">
-          <div>
-            <p className="text-sm font-bold uppercase tracking-wide text-teal-700">Trusted members</p>
-            <h2 className="mt-1 text-3xl font-black text-slate-950">Reputation that travels with you</h2>
-          </div>
-          <Link href="/u/tv_mayachen" className="font-bold text-teal-700 hover:text-teal-900">
-            View public profile
-          </Link>
-        </div>
-        <div className="grid gap-5 md:grid-cols-3">
-          {profiles.slice(1).map((profile) => (
-            <Link key={profile.id} href={`/u/${profile.trueverse_id}`} className="glass-card rounded-3xl p-6">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <h3 className="font-black text-slate-950">{profile.full_name}</h3>
-                  <p className="mt-1 font-mono text-xs text-slate-500">{profile.trueverse_id}</p>
-                </div>
-                <TrustScoreBadge score={profile.trust_score} />
-              </div>
-              <p className="mt-4 text-sm text-slate-600">{profile.bio}</p>
-            </Link>
-          ))}
-        </div>
-      </section>
+          <motion.p
+            variants={fadeUp}
+            className="mx-auto mt-4 max-w-md text-base leading-7 text-muted-foreground sm:text-lg"
+          >
+            Verified reputation signals from real interactions — so people can make safer, more
+            informed decisions.
+          </motion.p>
 
-      <section className="glass-card rounded-3xl p-6">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <p className="text-sm font-bold uppercase tracking-wide text-teal-700">Recent public request</p>
-            <h2 className="mt-1 text-2xl font-black text-slate-950">{helpRequests[0].title}</h2>
-            <p className="mt-2 max-w-2xl text-slate-600">{helpRequests[0].description}</p>
-          </div>
-          <Link href="/feed" className="rounded-2xl bg-slate-950 px-5 py-3 font-bold text-white">
-            Open feed
-          </Link>
-        </div>
+          <motion.div
+            variants={fadeUp}
+            className="mt-10 flex w-full flex-col items-stretch gap-3 sm:flex-row sm:justify-center"
+          >
+            <Button asChild size="lg" className="min-h-12 sm:min-w-44">
+              <Link href="/auth/signup">
+                Get Started
+                <ArrowRight className="size-4" />
+              </Link>
+            </Button>
+            <Button asChild size="lg" variant="outline" className="min-h-12 sm:min-w-44">
+              <Link href="/u/tv_sarahkim">View Demo Profile</Link>
+            </Button>
+          </motion.div>
+
+          <motion.p
+            variants={fadeUp}
+            className="mx-auto mt-10 max-w-sm text-[11px] leading-5 text-muted-foreground/80"
+          >
+            {PRODUCT_DISCLAIMER}
+          </motion.p>
+        </motion.div>
       </section>
     </div>
   );

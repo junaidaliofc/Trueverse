@@ -1,61 +1,72 @@
-import Link from "next/link";
-import { currentUser, interactions, trustTimeline } from "@/lib/dummy-data";
-import { ProfileCard } from "@/components/profile-card";
+"use client";
 
+import Link from "next/link";
+import {
+  achievements,
+  currentUser,
+  currentUserReputation,
+  profileTimeline,
+  userXp,
+  xpUnlockCatalog
+} from "@/lib/dummy-data";
+import { PRODUCT_DISCLAIMER } from "@/lib/design";
+import { ProfileCard } from "@/components/profile/profile-card";
+import { TrustReputationCard } from "@/components/trust/trust-reputation-card";
+import { ReputationDnaCard } from "@/components/trust/reputation-dna";
+import { XPJourney } from "@/components/xp/xp-journey";
+import { ActivityTimeline } from "@/components/activity/timeline";
+import { AchievementGrid } from "@/components/achievements/achievement-grid";
+import { MotionItem, MotionPage } from "@/components/motion/primitives";
+import { Button } from "@/components/ui/button";
+
+/**
+ * Phase 2 Profile — living activity timeline replaces static history blocks.
+ */
 export default function ProfilePage() {
   return (
-    <div className="space-y-8">
-      <div className="flex flex-wrap items-end justify-between gap-4">
+    <MotionPage className="mx-auto max-w-lg space-y-6 sm:max-w-3xl">
+      <MotionItem className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-sm font-bold uppercase tracking-wide text-teal-700">Profile</p>
-          <h1 className="mt-2 text-4xl font-black text-slate-950">Your Trueverse identity</h1>
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">Profile</p>
+          <h1 className="mt-2 font-display text-3xl font-bold tracking-tight">Your identity</h1>
+          <p className="mt-2 max-w-md text-sm text-muted-foreground">
+            Share verified signals anywhere. XP decorations stay separate from trust.
+          </p>
         </div>
-        <Link href={`/u/${currentUser.trueverse_id}`} className="rounded-2xl bg-slate-950 px-5 py-3 font-bold text-white">
-          View public profile
-        </Link>
+        <div className="flex gap-2">
+          <Button asChild size="sm">
+            <Link href={`/u/${currentUser.trueverse_id}`}>Public</Link>
+          </Button>
+          <Button asChild size="sm" variant="outline">
+            <Link href={`/u/${currentUser.trueverse_id}/share`}>Share</Link>
+          </Button>
+        </div>
+      </MotionItem>
+
+      <MotionItem>
+        <ProfileCard profile={currentUser} xp={userXp.total_xp} streak={currentUser.streak} />
+      </MotionItem>
+
+      <TrustReputationCard
+        stats={{
+          trustIndex: currentUserReputation.trustIndex,
+          identityVerified: currentUserReputation.identityVerified,
+          trustActs: currentUserReputation.trustActs,
+          appreciations: currentUserReputation.appreciations,
+          communityRank: currentUserReputation.communityRank
+        }}
+      />
+
+      <div className="grid gap-5 lg:grid-cols-2">
+        <ReputationDnaCard dna={currentUserReputation.dna} />
+        <XPJourney totalXp={userXp.total_xp} unlocks={xpUnlockCatalog} />
       </div>
 
-      <ProfileCard profile={currentUser} />
+      <ActivityTimeline events={profileTimeline} title="Activity timeline" />
 
-      <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-        <form className="glass-card space-y-4 rounded-3xl p-6">
-          <h2 className="text-2xl font-black text-slate-950">Edit profile</h2>
-          <input className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3" defaultValue={currentUser.full_name} />
-          <input className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3" placeholder="Photo URL" />
-          <textarea
-            className="min-h-32 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3"
-            defaultValue={currentUser.bio}
-          />
-          <button className="rounded-2xl bg-teal-600 px-5 py-3 font-bold text-white">Save changes</button>
-        </form>
+      <AchievementGrid achievements={achievements} />
 
-        <div className="glass-card rounded-3xl p-6">
-          <h2 className="text-2xl font-black text-slate-950">Reputation history</h2>
-          <div className="mt-5 space-y-4">
-            {trustTimeline.map((item) => (
-              <div key={`${item.title}-${item.date}`} className="flex items-center justify-between rounded-2xl bg-white/80 p-4">
-                <div>
-                  <p className="font-bold text-slate-950">{item.title}</p>
-                  <p className="text-sm text-slate-500">{item.date}</p>
-                </div>
-                <span className="font-black text-teal-700">{item.delta}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="glass-card rounded-3xl p-6">
-        <h2 className="text-2xl font-black text-slate-950">Recent interactions</h2>
-        <div className="mt-5 grid gap-4 md:grid-cols-3">
-          {interactions.map((interaction) => (
-            <Link key={interaction.id} href={`/interactions/${interaction.id}`} className="rounded-2xl bg-white/80 p-4">
-              <p className="font-black text-slate-950">{interaction.title}</p>
-              <p className="mt-2 text-sm text-slate-600">{interaction.status}</p>
-            </Link>
-          ))}
-        </div>
-      </section>
-    </div>
+      <p className="pb-4 text-center text-xs leading-5 text-muted-foreground">{PRODUCT_DISCLAIMER}</p>
+    </MotionPage>
   );
 }
