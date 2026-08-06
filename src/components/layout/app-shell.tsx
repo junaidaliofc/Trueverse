@@ -16,7 +16,7 @@ const appNav: Array<{
   soon?: boolean;
 }> = [
   { href: "/dashboard", label: "Home", icon: Home },
-  { href: "/profile", label: "Profile", icon: UserRound },
+  { href: "/profile", label: "Passport", icon: UserRound },
   { href: "/community", label: "Community", icon: Users },
   { href: "/notifications", label: "Notifications", icon: Bell },
   { href: "/messages", label: "Messages", icon: MessageCircle, soon: true }

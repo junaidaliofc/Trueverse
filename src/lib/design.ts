@@ -152,6 +152,98 @@ export const EMPTY_REPUTATION_DNA: ReputationDna = {
   leadership: 0
 };
 
+/**
+ * Passport Reputation DNA (Milestone 3).
+ * Server-computed presentation dimensions — users cannot edit.
+ * Integrity aggregates honesty / report history / dispute outcomes server-side.
+ */
+export const PASSPORT_DNA_DIMENSIONS = [
+  "helping",
+  "reliability",
+  "integrity",
+  "community",
+  "leadership"
+] as const;
+
+export type PassportDnaDimension = (typeof PASSPORT_DNA_DIMENSIONS)[number];
+
+export type PassportDna = Record<PassportDnaDimension, number>;
+
+export const PASSPORT_DNA_META: Record<
+  PassportDnaDimension,
+  { label: string; description: string }
+> = {
+  helping: {
+    label: "Helping",
+    description: "Verified help given to people in need."
+  },
+  reliability: {
+    label: "Reliability",
+    description: "Showing up and following through on commitments."
+  },
+  integrity: {
+    label: "Integrity",
+    description: "Clean report history, honest disputes, and consistent identity signals."
+  },
+  community: {
+    label: "Community",
+    description: "Sustained participation in community missions and contributions."
+  },
+  leadership: {
+    label: "Leadership",
+    description: "Organizing, mentoring, and elevating others."
+  }
+};
+
+/** Derive passport DNA from full reputation DNA (server would compute Integrity directly). */
+export function toPassportDna(dna: ReputationDna): PassportDna {
+  const integrity = Math.round(
+    (dna.communication + dna.professionalism + dna.safety) / 3
+  );
+  return {
+    helping: dna.helping,
+    reliability: dna.reliability,
+    integrity: Math.max(0, Math.min(100, integrity)),
+    community: dna.community,
+    leadership: dna.leadership
+  };
+}
+
+export type VerificationKind =
+  | "email"
+  | "phone"
+  | "identity"
+  | "professional"
+  | "community"
+  | "organization";
+
+export type VerificationStatus = "verified" | "pending" | "unverified";
+
+export type VerificationItem = {
+  kind: VerificationKind;
+  label: string;
+  status: VerificationStatus;
+  completed_at?: string | null;
+  detail?: string;
+};
+
+export type PassportStats = {
+  trustActs: number;
+  uniqueContributors: number;
+  references: number;
+  yearsActive: number;
+  appreciationsReceived: number;
+  missionsCompleted: number;
+};
+
+export type PassportPrivacy = {
+  showDna: boolean;
+  showVerifications: boolean;
+  showBadges: boolean;
+  showTimeline: boolean;
+  showStatistics: boolean;
+};
+
 /** Re-export XP engine — XP never increases trust. */
 export { XP_LEVEL_THRESHOLDS, xpToLevel } from "@/lib/xp-engine";
 

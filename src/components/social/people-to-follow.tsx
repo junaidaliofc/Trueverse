@@ -32,12 +32,12 @@ export function PeopleToFollow({ people }: { people: Profile[] }) {
         {people.map((person) => (
           <MotionCard key={person.id} className="glass rounded-[1.5rem] p-4">
             <div className="flex items-center gap-3">
-              <Link href={`/u/${person.trueverse_id}`}>
+              <Link href={`/u/${person.trueverse_id.replace(/^tv_/, "")}`}>
                 <UserAvatar name={person.full_name} src={person.photo_url} size="md" />
               </Link>
               <div className="min-w-0 flex-1">
                 <Link
-                  href={`/u/${person.trueverse_id}`}
+                  href={`/u/${person.trueverse_id.replace(/^tv_/, "")}`}
                   className="font-semibold hover:underline"
                 >
                   {person.full_name}

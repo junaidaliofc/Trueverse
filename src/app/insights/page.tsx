@@ -26,7 +26,7 @@ export default function InsightsPage() {
         description="Gentle guidance based on your verified activity and engagement — never a safety judgment."
         actions={
           <Button asChild variant="outline">
-            <Link href={`/u/${currentUser.trueverse_id}`}>Share profile</Link>
+            <Link href={`/u/${currentUser.trueverse_id.replace(/^tv_/, "")}`}>Share profile</Link>
           </Button>
         }
       />

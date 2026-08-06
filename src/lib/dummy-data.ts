@@ -1,10 +1,15 @@
 import type { AdminReport, HelpRequest, PositiveInteraction, Profile } from "@/lib/types";
 import {
   scoreToTrustLevel,
+  toPassportDna,
+  type PassportPrivacy,
+  type PassportStats,
   type ReputationDna,
-  type TrustLevel
+  type TrustLevel,
+  type VerificationItem
 } from "@/lib/design";
 import type { StreakState, XpUnlock } from "@/lib/xp-engine";
+import { xpToLevel } from "@/lib/xp-engine";
 
 export type Mission = {
   id: string;
@@ -51,6 +56,264 @@ export const currentUserReputation = {
     leadership: 54
   } satisfies ReputationDna
 };
+
+export const passportDna = toPassportDna(currentUserReputation.dna);
+
+export const passportVerifications: VerificationItem[] = [
+  {
+    kind: "email",
+    label: "Email",
+    status: "verified",
+    completed_at: "2026-01-12T10:05:00Z",
+    detail: "aria@trueverse.app"
+  },
+  {
+    kind: "phone",
+    label: "Phone",
+    status: "pending",
+    completed_at: null,
+    detail: "Verification in progress"
+  },
+  {
+    kind: "identity",
+    label: "Identity",
+    status: "verified",
+    completed_at: "2026-06-18T12:00:00Z",
+    detail: "Government ID verified"
+  },
+  {
+    kind: "professional",
+    label: "Professional",
+    status: "unverified",
+    completed_at: null,
+    detail: "Add workplace or credential"
+  },
+  {
+    kind: "community",
+    label: "Community",
+    status: "verified",
+    completed_at: "2026-05-02T09:00:00Z",
+    detail: "Neighborhood mutual-aid circle"
+  },
+  {
+    kind: "organization",
+    label: "Organization",
+    status: "unverified",
+    completed_at: null,
+    detail: "No organization link yet"
+  }
+];
+
+export const passportStats: PassportStats = {
+  trustActs: 127,
+  uniqueContributors: 46,
+  references: 8,
+  yearsActive: 0.5,
+  appreciationsReceived: 98,
+  missionsCompleted: 34
+};
+
+export const passportPrivacy: PassportPrivacy = {
+  showDna: true,
+  showVerifications: true,
+  showBadges: true,
+  showTimeline: true,
+  showStatistics: true
+};
+
+export const passportProfileCompletion = 72;
+
+export function getPassportXpLevel(totalXp = userXp.total_xp) {
+  return xpToLevel(totalXp).level;
+}
+
+/** Build a Passport view model for owner or public surfaces. */
+export function buildPassportViewModel(
+  profile: Profile,
+  options?: {
+    mode?: "owner" | "public";
+    privacy?: PassportPrivacy;
+  }
+) {
+  const isCurrent = profile.id === currentUser.id;
+  const trustIndex = isCurrent
+    ? currentUserReputation.trustIndex
+    : profile.trust_score;
+  const identityVerified = isCurrent
+    ? currentUserReputation.identityVerified
+    : profile.trust_score >= 50;
+  const dna = isCurrent
+    ? passportDna
+    : toPassportDna({
+        helping: Math.min(100, trustIndex + 20),
+        reliability: Math.min(100, trustIndex + 8),
+        communication: Math.min(100, trustIndex + 12),
+        professionalism: Math.max(0, Math.min(100, trustIndex - 5)),
+        safety: Math.min(100, trustIndex + 5),
+        community: Math.min(100, trustIndex + 10),
+        leadership: Math.max(20, Math.min(100, trustIndex - 10))
+      });
+
+  const years =
+    Math.round(
+      ((Date.now() - new Date(profile.created_at).getTime()) /
+        (365.25 * 24 * 60 * 60 * 1000)) *
+        10
+    ) / 10;
+
+  const stats: PassportStats = isCurrent
+    ? passportStats
+    : {
+        trustActs: Math.round(trustIndex * 1.8),
+        uniqueContributors: Math.round(trustIndex * 0.7),
+        references: Math.max(1, Math.round(trustIndex / 12)),
+        yearsActive: Math.max(0.1, years),
+        appreciationsReceived: Math.round(trustIndex * 1.2),
+        missionsCompleted: Math.round(trustIndex / 2)
+      };
+
+  const verifications: VerificationItem[] = isCurrent
+    ? passportVerifications
+    : [
+        {
+          kind: "email",
+          label: "Email",
+          status: "verified",
+          completed_at: profile.created_at,
+          detail: "Verified"
+        },
+        {
+          kind: "phone",
+          label: "Phone",
+          status: "unverified",
+          completed_at: null
+        },
+        {
+          kind: "identity",
+          label: "Identity",
+          status: identityVerified ? "verified" : "unverified",
+          completed_at: identityVerified ? profile.updated_at : null,
+          detail: identityVerified ? "Government ID verified" : undefined
+        },
+        {
+          kind: "professional",
+          label: "Professional",
+          status: "unverified",
+          completed_at: null
+        },
+        {
+          kind: "community",
+          label: "Community",
+          status: trustIndex >= 40 ? "verified" : "unverified",
+          completed_at: trustIndex >= 40 ? profile.updated_at : null,
+          detail: trustIndex >= 40 ? "Community participation verified" : undefined
+        },
+        {
+          kind: "organization",
+          label: "Organization",
+          status: "unverified",
+          completed_at: null
+        }
+      ];
+
+  const username = profile.trueverse_id.replace(/^tv_/, "").toLowerCase();
+  const sharePath = `/u/${username}`;
+  const mode = options?.mode ?? "owner";
+  const privacy = options?.privacy ?? passportPrivacy;
+
+  const timelineSource = isCurrent
+    ? profileTimeline
+    : profileTimeline.slice(0, 2).map((event, i) => ({
+        ...event,
+        id: `${profile.id}-tl-${i}`,
+        actor_name: profile.full_name
+      }));
+
+  const passportBadges = isCurrent
+    ? badges
+    : badges.map((badge, i) => ({
+        ...badge,
+        earned: i < 3,
+        earned_at: i < 3 ? badge.earned_at ?? profile.updated_at.slice(0, 10) : undefined
+      }));
+
+  const totalXp = isCurrent ? userXp.total_xp : Math.round(trustIndex * 18);
+  const xpLevel = xpToLevel(totalXp).level;
+
+  const view = {
+    profile,
+    username,
+    displayName: profile.full_name,
+    trueverseId: profile.trueverse_id,
+    trustIndex,
+    trustLevel: scoreToTrustLevel(trustIndex),
+    identityVerified,
+    xpLevel,
+    totalXp,
+    profileCompletion: isCurrent
+      ? passportProfileCompletion
+      : Math.min(100, 40 + Math.round(trustIndex / 2)),
+    dna,
+    verifications:
+      mode === "public"
+        ? verifications.map((item) =>
+            item.kind === "email" || item.kind === "phone"
+              ? {
+                  ...item,
+                  detail:
+                    item.status === "verified"
+                      ? "Verified"
+                      : item.status === "pending"
+                        ? "In progress"
+                        : undefined
+                }
+              : item
+          )
+        : verifications,
+    badges: passportBadges,
+    timeline: timelineSource.map((event) => {
+      let kind: "trust_act" | "achievement" | "verification" | "contribution" | "mission" =
+        "contribution";
+      if (event.type === "help") kind = "trust_act";
+      else if (event.type === "badge" || event.type === "streak" || event.type === "xp")
+        kind = "achievement";
+      else if (event.type === "identity") kind = "verification";
+      else if (event.type === "mission") kind = "mission";
+      else if (event.type === "appreciation") kind = "contribution";
+      return {
+        id: event.id,
+        kind,
+        title: event.title,
+        body: event.body,
+        created_at: event.created_at,
+        actor_name: event.actor_name,
+        meta: event.meta
+      };
+    }),
+    stats,
+    privacy,
+    sharePath,
+    bio: profile.bio
+  };
+
+  if (mode === "public") {
+    return {
+      ...view,
+      dna: privacy.showDna ? view.dna : {
+        helping: 0,
+        reliability: 0,
+        integrity: 0,
+        community: 0,
+        leadership: 0
+      },
+      badges: privacy.showBadges ? view.badges : [],
+      timeline: privacy.showTimeline ? view.timeline : [],
+      stats: privacy.showStatistics ? view.stats : view.stats
+    };
+  }
+
+  return view;
+}
 
 export const profiles: Profile[] = [
   currentUser,

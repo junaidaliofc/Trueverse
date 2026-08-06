@@ -65,7 +65,7 @@ export default function LandingPage() {
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="min-h-12 sm:min-w-44">
-              <Link href="/u/tv_sarahkim">View Demo Profile</Link>
+              <Link href="/u/sarahkim">View Demo Profile</Link>
             </Button>
           </motion.div>
 

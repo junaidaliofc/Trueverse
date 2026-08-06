@@ -70,7 +70,7 @@ export default function LeaderboardsPage() {
                   {row.rank}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <Link href={`/u/${row.id}`} className="font-semibold hover:underline">
+                  <Link href={`/u/${String(row.id).replace(/^tv_/, "")}`} className="font-semibold hover:underline">
                     {row.name}
                   </Link>
                   <p className="font-mono text-xs text-muted-foreground">{row.id}</p>

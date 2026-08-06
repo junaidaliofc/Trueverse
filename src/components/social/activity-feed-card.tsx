@@ -35,14 +35,14 @@ export function ActivityFeedCard({
       className="glass rounded-[1.75rem] p-5 sm:p-6"
     >
       <div className="flex items-start gap-3">
-        <Link href={`/u/${activity.actor_trueverse_id}`}>
+        <Link href={`/u/${activity.actor_trueverse_id.replace(/^tv_/, "")}`}>
           <UserAvatar name={activity.actor_name} size="md" />
         </Link>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex flex-wrap items-center gap-2">
               <Link
-                href={`/u/${activity.actor_trueverse_id}`}
+                href={`/u/${activity.actor_trueverse_id.replace(/^tv_/, "")}`}
                 className="font-semibold text-foreground hover:underline"
               >
                 {activity.actor_name}

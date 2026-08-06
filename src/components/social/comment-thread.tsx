@@ -59,7 +59,7 @@ export function CommentThread({
             <div className="min-w-0 flex-1 rounded-2xl bg-muted/50 px-3 py-2.5">
               <div className="flex flex-wrap items-center gap-2">
                 <Link
-                  href={`/u/${comment.author_trueverse_id}`}
+                  href={`/u/${comment.author_trueverse_id.replace(/^tv_/, "")}`}
                   className="text-sm font-semibold hover:underline"
                 >
                   {comment.author_name}
