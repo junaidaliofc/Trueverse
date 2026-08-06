@@ -1,10 +1,18 @@
 # Trueverse Trust Engine v1 — Technical Specification
 
-**Status:** Awaiting product/engineering approval — **do not implement until approved**  
-**Milestone:** 4  
+**Status:** **Approved as long-term architecture — implementation deferred**  
+**Milestone:** 4 (future)  
 **Classification:** Confidential — Trueverse intellectual property  
 **Audience:** Engineering, product, security, trust & safety  
 **Related systems:** XP Engine (isolated), Mission Engine (habit/XP only), Moderation Engine, Passport  
+
+### Implementation freeze
+
+- This specification is the **future design** of the Trueverse Trust Engine.  
+- **Do not implement Trust Engine v1** during MVP / public beta.  
+- Beta continues to use the **current simple trust calculation** (legacy accept/report deltas + public Trust Level bands).  
+- Implementation begins only **after real users provide feedback**, and only with an explicit kickoff.  
+- Until then, treat this document as frozen architecture: edit only for clarifications that do not trigger build work.
 
 ---
 
@@ -675,9 +683,11 @@ Compatibility shim: map old 0–1000 score → temporary index only during shado
 
 ---
 
-## 9. Deliverables After Approval
+## 9. Deliverables (when implementation is kicked off)
 
-When this spec is approved, implementation should proceed in this order (still no vanity pages first):
+**Prerequisite:** Public beta has shipped; real-user feedback reviewed; explicit “start Trust Engine v1” decision.
+
+Then implement in this order (still no vanity pages first):
 
 1. Migration `006_trust_engine_v1.sql` (tables, RLS, `recompute_trust`, v2 interaction RPCs)  
 2. Private policy seed (dev weights) + admin recompute tools  
@@ -687,25 +697,30 @@ When this spec is approved, implementation should proceed in this order (still n
 6. Cutover + remove naïve `+3`/`−5` as sole logic  
 7. Only then: any Passport/Home copy tweaks if presentation needs alignment  
 
+Until that kickoff, engineering priority is **MVP launch** — see [`MVP_LAUNCH_PLAN.md`](./MVP_LAUNCH_PLAN.md).
+
 ---
 
-## 10. Approval Checklist
+## 10. Approval Record
 
-Please confirm before any implementation PR:
+| Item | Decision |
+|------|----------|
+| Public output is **Trust Level only** | Approved (future) |
+| XP / daily missions / social appreciate remain non-inputs | Approved |
+| “Mission Completion” = verified community missions only | Approved |
+| Formula/weights in private policy storage | Approved |
+| Anti-abuse controls in v1 scope | Approved |
+| Admin-only index / factor snapshots | Approved |
+| Phased cutover from legacy `+3`/`−5` | Approved (post-beta) |
+| Implement now? | **No — deferred until after real-user feedback** |
+| Beta trust calculation | Keep current simple engine |
 
-- [ ] Public output is **Trust Level only** (no raw index on member/public APIs)  
-- [ ] XP / daily missions / social appreciate remain non-inputs  
-- [ ] “Mission Completion” means **verified community missions**, not habit XP missions  
-- [ ] Formula/weights remain in private policy storage (not client)  
-- [ ] Anti-abuse: reciprocity, velocity, sybil, mass report, purchased, bots, duplicate ID — in scope for v1 controls  
-- [ ] Admin-only visibility for index / factor snapshots  
-- [ ] Legacy `+3`/`−5` replaced via phased cutover (§7)  
-- [ ] No new pages in the implementation milestone’s first PRs  
-
-**Approver notes / requested changes:**
+**Approver notes:**
 
 ```text
-(awaiting feedback)
+Approved as long-term architecture (2026-08-06).
+Do not implement for MVP/beta. Priority is MVP polish and public beta launch.
+Trust Engine v1 begins only after real users provide feedback.
 ```
 
 ---
