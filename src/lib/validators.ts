@@ -39,3 +39,16 @@ export const otpVerificationSchema = z.object({
   token: z.string().trim().min(6).max(12),
   type: z.enum(["signup", "email", "magiclink"]).default("signup")
 });
+
+export const followSchema = z.object({
+  following_trueverse_id: z.string().trim().min(4).max(32)
+});
+
+export const appreciationSchema = z.object({
+  activity_id: z.string().trim().min(1).max(64)
+});
+
+export const activityCommentSchema = z.object({
+  activity_id: z.string().trim().min(1).max(64),
+  body: z.string().trim().min(1).max(500)
+});

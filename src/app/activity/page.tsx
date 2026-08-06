@@ -1,37 +1,37 @@
 "use client";
 
-import Link from "next/link";
-import { useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
-import { Heart, MessageCircle, Share2 } from "lucide-react";
-import { activities, type ActivityItem } from "@/lib/dummy-data";
-import { UserAvatar } from "@/components/ui/user-avatar";
-import { Button } from "@/components/ui/button";
-import { PageHeader } from "@/components/ui/section";
-import { cn, formatRelativeTime } from "@/lib/utils";
+import { useMemo, useState } from "react";
+import { activities, followingIds } from "@/lib/dummy-data";
+import { ActivityFeedCard } from "@/components/social/activity-feed-card";
+import { MotionItem, MotionPage } from "@/components/motion/primitives";
+import { cn } from "@/lib/utils";
 
-const filters = ["All", "Help", "Milestones", "Badges", "Donations"] as const;
+const filters = ["Following", "All", "Help", "Milestones", "Badges"] as const;
 
 export default function ActivityPage() {
-  const [filter, setFilter] = useState<(typeof filters)[number]>("All");
-  const filtered = activities.filter((item) => {
-    if (filter === "All") return true;
-    if (filter === "Help") return item.type === "help";
-    if (filter === "Milestones") return item.type === "milestone";
-    if (filter === "Badges") return item.type === "badge";
-    if (filter === "Donations") return item.type === "donation";
-    return true;
-  });
+  const [filter, setFilter] = useState<(typeof filters)[number]>("Following");
+
+  const filtered = useMemo(() => {
+    return activities.filter((item) => {
+      if (filter === "Following") return followingIds.includes(item.actor_id);
+      if (filter === "All") return true;
+      if (filter === "Help") return item.type === "help";
+      if (filter === "Milestones") return item.type === "milestone";
+      if (filter === "Badges") return item.type === "badge";
+      return true;
+    });
+  }, [filter]);
 
   return (
-    <div className="mx-auto max-w-2xl space-y-8">
-      <PageHeader
-        eyebrow="Activity"
-        title="Community timeline"
-        description="Verified moments from people you follow and communities you belong to."
-      />
+    <MotionPage className="mx-auto max-w-lg space-y-6">
+      <MotionItem>
+        <h1 className="font-display text-3xl font-bold tracking-tight">Activity</h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Verified moments from people you follow. Appreciate and comment — never a trust scoreboard.
+        </p>
+      </MotionItem>
 
-      <div className="flex flex-wrap gap-2">
+      <MotionItem className="flex flex-wrap gap-2">
         {filters.map((item) => (
           <button
             key={item}
@@ -40,79 +40,34 @@ export default function ActivityPage() {
             className={cn(
               "rounded-full px-4 py-2 text-sm font-semibold transition",
               filter === item
-                ? "bg-brand text-brand-foreground"
+                ? "bg-primary text-primary-foreground"
                 : "bg-muted text-muted-foreground hover:text-foreground"
             )}
           >
             {item}
           </button>
         ))}
-      </div>
+      </MotionItem>
 
       <div className="space-y-4">
         {filtered.map((activity, index) => (
-          <ActivityCard key={activity.id} activity={activity} index={index} />
+          <ActivityFeedCard
+            key={activity.id}
+            activity={activity}
+            index={index}
+            showFollow={filter !== "Following"}
+          />
         ))}
       </div>
-    </div>
-  );
-}
 
-function ActivityCard({ activity, index }: { activity: ActivityItem; index: number }) {
-  const reduceMotion = useReducedMotion();
-  const [liked, setLiked] = useState(Boolean(activity.appreciated_by_me));
-  const [count, setCount] = useState(activity.appreciations);
-
-  return (
-    <motion.article
-      initial={reduceMotion ? false : { opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.04, duration: 0.35 }}
-      className="glass rounded-[1.75rem] p-5 sm:p-6"
-    >
-      <div className="flex items-start gap-3">
-        <Link href={`/u/${activity.actor_trueverse_id}`}>
-          <UserAvatar name={activity.actor_name} size="md" />
-        </Link>
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <Link
-              href={`/u/${activity.actor_trueverse_id}`}
-              className="font-semibold text-foreground hover:underline"
-            >
-              {activity.actor_name}
-            </Link>
-            <span className="text-xs text-muted-foreground">{formatRelativeTime(activity.created_at)}</span>
-          </div>
-          <h2 className="mt-2 font-display text-xl font-bold tracking-tight text-foreground">
-            {activity.title}
-          </h2>
-          <p className="mt-2 text-sm leading-6 text-muted-foreground">{activity.body}</p>
-
-          <div className="mt-5 flex flex-wrap gap-2">
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => {
-                setLiked((value) => !value);
-                setCount((value) => (liked ? value - 1 : value + 1));
-              }}
-              className={liked ? "bg-brand-soft text-brand" : undefined}
-            >
-              <Heart className={cn("size-4", liked && "fill-current")} />
-              {count}
-            </Button>
-            <Button variant="secondary" size="sm">
-              <MessageCircle className="size-4" />
-              {activity.comments}
-            </Button>
-            <Button variant="ghost" size="sm">
-              <Share2 className="size-4" />
-              Share
-            </Button>
-          </div>
-        </div>
-      </div>
-    </motion.article>
+      {filtered.length === 0 ? (
+        <MotionItem className="glass rounded-[1.75rem] px-6 py-12 text-center">
+          <p className="font-display text-lg font-bold">No activity yet</p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Follow people in Community to fill this timeline.
+          </p>
+        </MotionItem>
+      ) : null}
+    </MotionPage>
   );
 }

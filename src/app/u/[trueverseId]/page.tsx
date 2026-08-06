@@ -4,6 +4,7 @@ import {
   activities,
   badges,
   currentUserReputation,
+  followingIds,
   helpRequests,
   interactions,
   profiles
@@ -16,6 +17,8 @@ import { PageHeader } from "@/components/ui/section";
 import { Surface, SurfaceHeader, SurfaceTitle } from "@/components/ui/surface";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { FollowButton } from "@/components/social/follow-button";
+import { ActivityFeedCard } from "@/components/social/activity-feed-card";
 
 export default async function PublicProfilePage({
   params
@@ -64,6 +67,12 @@ export default async function PublicProfilePage({
         description="Verified reputation signals for informed decisions — not a safety guarantee."
         actions={
           <>
+            {!isCurrent ? (
+              <FollowButton
+                trueverseId={profile.trueverse_id}
+                initialFollowing={followingIds.includes(profile.id)}
+              />
+            ) : null}
             <Button asChild>
               <Link href={`/u/${profile.trueverse_id}/share`}>Share profile</Link>
             </Button>
@@ -93,45 +102,48 @@ export default async function PublicProfilePage({
         dimensions={["helping", "reliability", "communication", "leadership"]}
       />
 
-      <div className="grid gap-5 lg:grid-cols-2">
-        <Surface>
-          <SurfaceHeader>
-            <SurfaceTitle>Badges</SurfaceTitle>
-          </SurfaceHeader>
-          <div className="flex flex-wrap gap-2">
-            {earnedBadges.map((badge) => (
-              <StatusBadge key={badge.id} tone="success">
-                {badge.name}
-              </StatusBadge>
-            ))}
-          </div>
-        </Surface>
+      <Surface>
+        <SurfaceHeader>
+          <SurfaceTitle>Badges</SurfaceTitle>
+        </SurfaceHeader>
+        <div className="flex flex-wrap gap-2">
+          {earnedBadges.map((badge) => (
+            <StatusBadge key={badge.id} tone="success">
+              {badge.name}
+            </StatusBadge>
+          ))}
+        </div>
+      </Surface>
 
-        <Surface>
-          <SurfaceHeader>
-            <SurfaceTitle>Recent activities</SurfaceTitle>
-          </SurfaceHeader>
-          <ul className="space-y-3">
-            {publicActivities.length > 0
-              ? publicActivities.map((item) => (
-                  <li key={item.id} className="rounded-2xl bg-muted/50 px-4 py-3 ring-1 ring-border/50">
-                    <p className="font-semibold text-foreground">{item.title}</p>
-                  </li>
-                ))
-              : publicInteractions.slice(0, 3).map((item) => (
-                  <li key={item.id} className="rounded-2xl bg-muted/50 px-4 py-3 ring-1 ring-border/50">
-                    <p className="font-semibold text-foreground">{item.title}</p>
-                  </li>
-                ))}
-            {publicRequests.map((request) => (
-              <li key={request.id} className="rounded-2xl bg-muted/50 px-4 py-3 ring-1 ring-border/50">
-                <p className="font-semibold text-foreground">{request.title}</p>
-                <p className="mt-1 text-xs text-muted-foreground">{request.location}</p>
-              </li>
-            ))}
-          </ul>
-        </Surface>
-      </div>
+      <section className="space-y-4">
+        <h2 className="font-display text-xl font-bold tracking-tight">Recent activities</h2>
+        {publicActivities.length > 0 ? (
+          publicActivities.map((item, index) => (
+            <ActivityFeedCard
+              key={item.id}
+              activity={item}
+              index={index}
+              showFollow={false}
+            />
+          ))
+        ) : (
+          <Surface>
+            <ul className="space-y-3">
+              {publicInteractions.slice(0, 3).map((item) => (
+                <li key={item.id} className="rounded-2xl bg-muted/50 px-4 py-3">
+                  <p className="font-semibold text-foreground">{item.title}</p>
+                </li>
+              ))}
+              {publicRequests.map((request) => (
+                <li key={request.id} className="rounded-2xl bg-muted/50 px-4 py-3">
+                  <p className="font-semibold text-foreground">{request.title}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{request.location}</p>
+                </li>
+              ))}
+            </ul>
+          </Surface>
+        )}
+      </section>
 
       <p className="text-center text-xs leading-5 text-muted-foreground">{PRODUCT_DISCLAIMER}</p>
     </div>

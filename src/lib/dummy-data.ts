@@ -385,6 +385,16 @@ export const trustTimeline = [
   { title: "Positive interaction accepted", delta: "+3", date: "Jun 19", tone: "positive" as const }
 ];
 
+export type ActivityCommentItem = {
+  id: string;
+  activity_id: string;
+  author_id: string;
+  author_name: string;
+  author_trueverse_id: string;
+  body: string;
+  created_at: string;
+};
+
 export type ActivityItem = {
   id: string;
   actor_id: string;
@@ -397,7 +407,11 @@ export type ActivityItem = {
   appreciations: number;
   comments: number;
   appreciated_by_me?: boolean;
+  comment_items?: ActivityCommentItem[];
 };
+
+/** Profile IDs the current user follows (social graph — not a trust signal). */
+export const followingIds = ["user-maya", "user-sarah", "user-ahmed"];
 
 export const activities: ActivityItem[] = [
   {
@@ -410,7 +424,27 @@ export const activities: ActivityItem[] = [
     body: "Verified help moving boxes into a new apartment near campus.",
     created_at: "2026-06-25T14:00:00Z",
     appreciations: 24,
-    comments: 5
+    comments: 2,
+    comment_items: [
+      {
+        id: "c-1",
+        activity_id: "act-1",
+        author_id: "user-maya",
+        author_name: "Maya Chen",
+        author_trueverse_id: "tv_mayachen",
+        body: "This is what community looks like. Grateful for people like Ahmed.",
+        created_at: "2026-06-25T14:40:00Z"
+      },
+      {
+        id: "c-2",
+        activity_id: "act-1",
+        author_id: "user-aria",
+        author_name: "Aria Morgan",
+        author_trueverse_id: "tv_ariamorgan",
+        body: "Appreciating this — reliable and kind.",
+        created_at: "2026-06-25T15:10:00Z"
+      }
+    ]
   },
   {
     id: "act-2",
@@ -422,7 +456,19 @@ export const activities: ActivityItem[] = [
     body: "Completed a verified blood donation at the city center drive.",
     created_at: "2026-06-25T11:30:00Z",
     appreciations: 41,
-    comments: 8
+    comments: 1,
+    appreciated_by_me: true,
+    comment_items: [
+      {
+        id: "c-3",
+        activity_id: "act-2",
+        author_id: "user-omar",
+        author_name: "Omar Patel",
+        author_trueverse_id: "tv_omarpatel",
+        body: "Inspiring — booking my next donation.",
+        created_at: "2026-06-25T12:05:00Z"
+      }
+    ]
   },
   {
     id: "act-3",
@@ -434,7 +480,18 @@ export const activities: ActivityItem[] = [
     body: "A community milestone unlocked after sustained verified help.",
     created_at: "2026-06-24T20:00:00Z",
     appreciations: 67,
-    comments: 12
+    comments: 1,
+    comment_items: [
+      {
+        id: "c-4",
+        activity_id: "act-3",
+        author_id: "user-sarah",
+        author_name: "Sarah Kim",
+        author_trueverse_id: "tv_sarahkim",
+        body: "Century club! Your consistency lifts the whole neighborhood.",
+        created_at: "2026-06-24T20:30:00Z"
+      }
+    ]
   },
   {
     id: "act-4",
@@ -443,12 +500,17 @@ export const activities: ActivityItem[] = [
     actor_trueverse_id: "tv_omarpatel",
     type: "badge",
     title: "Omar earned Community Leader",
-    body: "Badge awarded for organizing pantry volunteers this month.",
+    body: "Badge awarded for organizing pantry volunteers this month. XP/cosmetic recognition — not a trust change.",
     created_at: "2026-06-24T16:10:00Z",
     appreciations: 18,
-    comments: 3
+    comments: 0,
+    comment_items: []
   }
 ];
+
+export const peopleToFollow = profiles.filter(
+  (profile) => profile.id !== currentUser.id && !followingIds.includes(profile.id)
+);
 
 export const missions: Mission[] = [
   ...dailyMissions,
