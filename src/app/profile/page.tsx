@@ -1,43 +1,26 @@
 import Link from "next/link";
-import { requireUser, getCurrentProfile } from "@/lib/auth";
-
-export const dynamic = "force-dynamic";
-import {
-  buildPassportViewModel,
-  currentUser,
-  profiles
-} from "@/lib/dummy-data";
+import { requireProfile } from "@/lib/auth";
+import { buildLivePassportViewModel } from "@/lib/passport";
 import { TrueversePassport } from "@/components/passport/trueverse-passport";
 import { ProfileForm } from "@/components/profile-form";
 import { LogoutButton } from "@/components/auth/logout-button";
 import { Button } from "@/components/ui/button";
-import { scoreToTrustLevel } from "@/lib/design";
-import type { Profile } from "@/lib/types";
+
+export const dynamic = "force-dynamic";
 
 export default async function ProfilePage() {
-  await requireUser();
-  const liveProfile = await getCurrentProfile();
+  const { supabase, user, profile } = await requireProfile();
 
-  const profile: Profile = liveProfile ?? currentUser;
-  const demoMatch = profiles.find((item) => item.id === profile.id);
-  const passport = buildPassportViewModel(demoMatch ?? profile, { mode: "owner" });
+  const { data: xpRow } = await supabase
+    .from("user_xp")
+    .select("total_xp")
+    .eq("profile_id", profile.id)
+    .maybeSingle<{ total_xp: number }>();
 
-  // Prefer live editable fields on the passport hero.
-  passport.profile = {
-    ...passport.profile,
-    ...profile,
-    trust_score: profile.trust_score
-  };
-  passport.displayName = profile.full_name;
-  passport.trueverseId = profile.trueverse_id;
-  passport.username =
-    profile.username ?? profile.trueverse_id.replace(/^tv_/, "");
-  passport.sharePath = `/u/${passport.username}`;
-  passport.bio = profile.bio;
-  passport.trustLevel = scoreToTrustLevel(profile.trust_score);
-  passport.identityVerified = Boolean(
-    (profile as Profile & { identity_verified?: boolean }).identity_verified
-  );
+  const passport = buildLivePassportViewModel(profile, {
+    emailVerified: Boolean(user.email_confirmed_at),
+    totalXp: xpRow?.total_xp ?? 0
+  });
 
   const needsUsername = !profile.username;
 

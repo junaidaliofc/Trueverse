@@ -6,17 +6,24 @@ import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 type AuthMode = "signup" | "login";
 
+function siteUrl() {
+  return (
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
+    (typeof window !== "undefined" ? window.location.origin : "http://localhost:3000")
+  );
+}
+
 export function AuthForm({ mode }: { mode: AuthMode }) {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
+  const [name, setName] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
   function client() {
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-      throw new Error("Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and ANON_KEY.");
+      throw new Error("Supabase is not configured.");
     }
     return createSupabaseBrowserClient();
   }
@@ -28,26 +35,41 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
 
     try {
       const supabase = client();
-      const redirectTo = `${window.location.origin}/auth/callback`;
-      const result =
-        mode === "signup"
-          ? await supabase.auth.signUp({
-              email,
-              password,
-              options: {
-                emailRedirectTo: redirectTo,
-                data: { full_name: fullName }
-              }
-            })
-          : await supabase.auth.signInWithPassword({ email, password });
+      const emailRedirectTo = `${siteUrl()}/auth/callback`;
 
-      if (result.error) {
-        setMessage(result.error.message);
+      if (mode === "signup") {
+        const result = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo,
+            data: {
+              name,
+              full_name: name
+            }
+          }
+        });
+
+        if (result.error) {
+          setMessage(result.error.message);
+          return;
+        }
+
+        // Email confirmation required — never open a fake OTP screen.
+        if (!result.data.session) {
+          router.push(`/auth/check-email?email=${encodeURIComponent(email)}`);
+          return;
+        }
+
+        router.refresh();
+        router.push("/dashboard");
         return;
       }
 
-      if (mode === "signup" && !result.data.session) {
-        router.push(`/auth/verify?email=${encodeURIComponent(email)}&type=signup`);
+      const result = await supabase.auth.signInWithPassword({ email, password });
+
+      if (result.error) {
+        setMessage(result.error.message);
         return;
       }
 
@@ -55,33 +77,6 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
       router.push("/dashboard");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Unable to authenticate.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function sendOtp() {
-    setLoading(true);
-    setMessage("");
-
-    try {
-      const supabase = client();
-      const { error } = await supabase.auth.signInWithOtp({
-        email,
-        options: {
-          shouldCreateUser: mode === "signup",
-          emailRedirectTo: `${window.location.origin}/auth/callback`
-        }
-      });
-
-      if (error) {
-        setMessage(error.message);
-        return;
-      }
-
-      router.push(`/auth/verify?email=${encodeURIComponent(email)}&type=email`);
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Unable to send code.");
     } finally {
       setLoading(false);
     }
@@ -102,10 +97,11 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
         <label className="block text-sm font-semibold text-slate-700">
           Name
           <input
-            value={fullName}
-            onChange={(event) => setFullName(event.target.value)}
+            value={name}
+            onChange={(event) => setName(event.target.value)}
             className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-teal-500"
             required
+            autoComplete="name"
           />
         </label>
       ) : null}
@@ -118,6 +114,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
           onChange={(event) => setEmail(event.target.value)}
           className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-teal-500"
           required
+          autoComplete="email"
         />
       </label>
 
@@ -130,6 +127,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
           className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-teal-500"
           required
           minLength={8}
+          autoComplete={mode === "signup" ? "new-password" : "current-password"}
         />
       </label>
 
@@ -140,15 +138,6 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
         className="w-full rounded-2xl bg-teal-600 px-4 py-3 font-bold text-white shadow-sm hover:bg-teal-700 disabled:opacity-60"
       >
         {loading ? "Please wait..." : mode === "signup" ? "Sign up" : "Log in"}
-      </button>
-
-      <button
-        type="button"
-        disabled={!email || loading}
-        onClick={sendOtp}
-        className="w-full rounded-2xl border border-slate-300 px-4 py-3 font-bold text-slate-700 hover:border-teal-500 disabled:opacity-60"
-      >
-        Send one-time password
       </button>
     </form>
   );

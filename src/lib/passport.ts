@@ -5,6 +5,7 @@
 
 import type { Profile } from "@/lib/types";
 import {
+  scoreToTrustLevel,
   toPassportDna,
   type PassportDna,
   type PassportPrivacy,
@@ -13,6 +14,7 @@ import {
   type TrustLevel,
   type VerificationItem
 } from "@/lib/design";
+import { xpToLevel } from "@/lib/xp-engine";
 import type { BadgeDef, TimelineEvent } from "@/lib/dummy-data";
 
 export type PassportMode = "owner" | "public";
@@ -157,6 +159,94 @@ function emptyDna(): PassportDna {
     integrity: 0,
     community: 0,
     leadership: 0
+  };
+}
+
+/**
+ * Passport for an authenticated / live DB profile.
+ * Never invents Aria demo DNA, badges, timeline, or verification.
+ */
+export function buildLivePassportViewModel(
+  profile: Profile & {
+    trust_index?: number | null;
+    identity_verified?: boolean | null;
+    trust_acts?: number | null;
+    appreciations_count?: number | null;
+    profile_completion_pct?: number | null;
+    unique_contributors?: number | null;
+    references_count?: number | null;
+    missions_completed?: number | null;
+  },
+  options?: {
+    emailVerified?: boolean;
+    totalXp?: number;
+  }
+): PassportViewModel {
+  const trustIndex =
+    typeof profile.trust_index === "number"
+      ? Math.max(0, Math.min(100, profile.trust_index))
+      : typeof profile.trust_score === "number" && profile.trust_score > 100
+        ? Math.max(0, Math.min(100, Math.round(profile.trust_score / 10)))
+        : Math.max(0, Math.min(100, profile.trust_score ?? 15));
+
+  const username = passportUsername(profile);
+  const totalXp = options?.totalXp ?? 0;
+  const emailVerified = Boolean(options?.emailVerified);
+  const identityVerified = Boolean(profile.identity_verified);
+
+  const verifications: VerificationItem[] = [
+    {
+      kind: "email",
+      label: "Email",
+      status: emailVerified ? "verified" : "unverified",
+      completed_at: emailVerified ? profile.created_at : null,
+      detail: emailVerified ? "Verified" : undefined
+    },
+    { kind: "phone", label: "Phone", status: "unverified", completed_at: null },
+    {
+      kind: "identity",
+      label: "Identity",
+      status: identityVerified ? "verified" : "unverified",
+      completed_at: identityVerified ? profile.updated_at : null,
+      detail: identityVerified ? "Identity verified" : undefined
+    },
+    { kind: "professional", label: "Professional", status: "unverified", completed_at: null },
+    { kind: "community", label: "Community", status: "unverified", completed_at: null }
+  ];
+
+  return {
+    profile,
+    username,
+    displayName: profile.full_name || "Trueverse Member",
+    trueverseId: profile.trueverse_id,
+    trustIndex,
+    trustLevel: scoreToTrustLevel(trustIndex),
+    identityVerified,
+    xpLevel: xpToLevel(totalXp).level,
+    totalXp,
+    profileCompletion:
+      profile.profile_completion_pct ?? (profile.full_name && profile.bio ? 40 : 20),
+    dna: emptyDna(),
+    verifications,
+    badges: [],
+    timeline: [],
+    stats: {
+      trustActs: profile.trust_acts ?? 0,
+      uniqueContributors: profile.unique_contributors ?? 0,
+      references: profile.references_count ?? 0,
+      yearsActive: yearsActiveFrom(profile.created_at),
+      appreciationsReceived: profile.appreciations_count ?? 0,
+      missionsCompleted: profile.missions_completed ?? 0
+    },
+    privacy: {
+      showDna: false,
+      showVerifications: true,
+      showBadges: true,
+      showTimeline: true,
+      showStatistics: true
+    },
+    sharePath: passportSharePath(profile),
+    bio: profile.bio
   };
 }
 

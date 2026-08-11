@@ -14,13 +14,13 @@ export async function GET() {
     return jsonError("Authentication required.", 401);
   }
 
-  const { data, error } = await supabase.from("profiles").select("*").eq("id", user.id).single();
-
-  if (error) {
-    return jsonError(error.message, 500);
+  try {
+    const { ensureProfile } = await import("@/lib/auth");
+    const profile = await ensureProfile(supabase, user);
+    return NextResponse.json({ profile });
+  } catch (error) {
+    return jsonError(error instanceof Error ? error.message : "Unable to load profile.", 500);
   }
-
-  return NextResponse.json({ profile: data });
 }
 
 export async function PATCH(request: NextRequest) {

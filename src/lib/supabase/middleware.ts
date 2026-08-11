@@ -20,9 +20,18 @@ export async function updateSession(request: NextRequest) {
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const path = request.nextUrl.pathname;
+  const isProtected = PROTECTED_PREFIXES.some(
+    (prefix) => path === prefix || path.startsWith(`${prefix}/`)
+  );
 
-  // Allow local/demo rendering when Supabase env is not configured.
   if (!url || !anon) {
+    if (isProtected) {
+      const login = new URL("/auth/login", request.url);
+      login.searchParams.set("error", "Authentication is not configured.");
+      login.searchParams.set("next", path);
+      return NextResponse.redirect(login);
+    }
     return response;
   }
 
@@ -44,11 +53,6 @@ export async function updateSession(request: NextRequest) {
   const {
     data: { user }
   } = await supabase.auth.getUser();
-
-  const path = request.nextUrl.pathname;
-  const isProtected = PROTECTED_PREFIXES.some(
-    (prefix) => path === prefix || path.startsWith(`${prefix}/`)
-  );
 
   if (isProtected && !user) {
     const login = new URL("/auth/login", request.url);

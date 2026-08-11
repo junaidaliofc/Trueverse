@@ -3,8 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Bell, Home, UserRound, Users } from "lucide-react";
-import { currentUser } from "@/lib/dummy-data";
-import { UserAvatar } from "@/components/ui/user-avatar";
+import { SessionAvatar } from "@/components/auth/session-avatar";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -19,7 +18,9 @@ const appNav = [
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isMarketing =
-    pathname === "/" || pathname.startsWith("/auth") || pathname === "/design-system";
+    pathname === "/" ||
+    pathname.startsWith("/auth") ||
+    pathname === "/design-system";
 
   return (
     <div className="min-h-dvh">
@@ -74,9 +75,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           {!isMarketing ? (
             <div className="flex items-center gap-1.5">
               <ThemeToggle />
-              <Link href="/profile" className="rounded-2xl p-1 transition hover:bg-muted">
-                <UserAvatar name={currentUser.full_name} src={currentUser.photo_url} size="sm" />
-              </Link>
+              <SessionAvatar />
             </div>
           ) : null}
         </div>

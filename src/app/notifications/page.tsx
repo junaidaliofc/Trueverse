@@ -1,8 +1,9 @@
-"use client";
-
-import { notifications } from "@/lib/dummy-data";
+import { requireUser } from "@/lib/auth";
 import { NotificationCenter } from "@/components/notifications/notification-center";
 
-export default function NotificationsPage() {
-  return <NotificationCenter items={notifications} />;
+export const dynamic = "force-dynamic";
+
+export default async function NotificationsPage() {
+  await requireUser();
+  return <NotificationCenter items={[]} />;
 }
