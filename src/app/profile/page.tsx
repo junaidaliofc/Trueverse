@@ -1,72 +1,60 @@
-"use client";
-
 import Link from "next/link";
-import {
-  achievements,
-  currentUser,
-  currentUserReputation,
-  profileTimeline,
-  userXp,
-  xpUnlockCatalog
-} from "@/lib/dummy-data";
-import { PRODUCT_DISCLAIMER } from "@/lib/design";
-import { ProfileCard } from "@/components/profile/profile-card";
-import { TrustReputationCard } from "@/components/trust/trust-reputation-card";
-import { ReputationDnaCard } from "@/components/trust/reputation-dna";
-import { XPJourney } from "@/components/xp/xp-journey";
-import { ActivityTimeline } from "@/components/activity/timeline";
-import { AchievementGrid } from "@/components/achievements/achievement-grid";
-import { MotionItem, MotionPage } from "@/components/motion/primitives";
+import { requireProfile } from "@/lib/auth";
+import { buildLivePassportViewModel } from "@/lib/passport";
+import { TrueversePassport } from "@/components/passport/trueverse-passport";
+import { ProfileForm } from "@/components/profile-form";
+import { LogoutButton } from "@/components/auth/logout-button";
 import { Button } from "@/components/ui/button";
 
-/**
- * Phase 2 Profile — living activity timeline replaces static history blocks.
- */
-export default function ProfilePage() {
+export const dynamic = "force-dynamic";
+
+export default async function ProfilePage() {
+  const { supabase, user, profile } = await requireProfile();
+
+  const { data: xpRow } = await supabase
+    .from("user_xp")
+    .select("total_xp")
+    .eq("profile_id", profile.id)
+    .maybeSingle<{ total_xp: number }>();
+
+  const passport = buildLivePassportViewModel(profile, {
+    emailVerified: Boolean(user.email_confirmed_at),
+    totalXp: xpRow?.total_xp ?? 0
+  });
+
+  const needsUsername = !profile.username;
+
   return (
-    <MotionPage className="mx-auto max-w-lg space-y-6 sm:max-w-3xl">
-      <MotionItem className="flex flex-wrap items-end justify-between gap-4">
+    <div className="space-y-8">
+      <div className="mx-auto flex max-w-lg flex-wrap items-center justify-between gap-3 sm:max-w-3xl">
         <div>
-          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">Profile</p>
-          <h1 className="mt-2 font-display text-3xl font-bold tracking-tight">Your identity</h1>
-          <p className="mt-2 max-w-md text-sm text-muted-foreground">
-            Share verified signals anywhere. XP decorations stay separate from trust.
+          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary">
+            Beta · Passport
           </p>
+          <p className="mt-1 text-sm text-muted-foreground">Your private digital identity.</p>
         </div>
-        <div className="flex gap-2">
-          <Button asChild size="sm">
-            <Link href={`/u/${currentUser.trueverse_id}`}>Public</Link>
+        <div className="flex flex-wrap gap-2">
+          <Button asChild size="sm" variant="outline">
+            <Link href="/interactions/create">New Trust Act</Link>
           </Button>
           <Button asChild size="sm" variant="outline">
-            <Link href={`/u/${currentUser.trueverse_id}/share`}>Share</Link>
+            <Link href={passport.sharePath}>Public view</Link>
           </Button>
+          <LogoutButton />
         </div>
-      </MotionItem>
-
-      <MotionItem>
-        <ProfileCard profile={currentUser} xp={userXp.total_xp} streak={currentUser.streak} />
-      </MotionItem>
-
-      <TrustReputationCard
-        stats={{
-          trustIndex: currentUserReputation.trustIndex,
-          identityVerified: currentUserReputation.identityVerified,
-          trustActs: currentUserReputation.trustActs,
-          appreciations: currentUserReputation.appreciations,
-          communityRank: currentUserReputation.communityRank
-        }}
-      />
-
-      <div className="grid gap-5 lg:grid-cols-2">
-        <ReputationDnaCard dna={currentUserReputation.dna} />
-        <XPJourney totalXp={userXp.total_xp} unlocks={xpUnlockCatalog} />
       </div>
 
-      <ActivityTimeline events={profileTimeline} title="Activity timeline" />
+      {needsUsername ? (
+        <div className="mx-auto max-w-lg rounded-[1.5rem] bg-warning-soft px-4 py-3 text-sm text-warning sm:max-w-3xl">
+          Choose a unique username below so people can find you at /u/yourname.
+        </div>
+      ) : null}
 
-      <AchievementGrid achievements={achievements} />
+      <div className="mx-auto max-w-lg sm:max-w-3xl">
+        <ProfileForm profile={profile} />
+      </div>
 
-      <p className="pb-4 text-center text-xs leading-5 text-muted-foreground">{PRODUCT_DISCLAIMER}</p>
-    </MotionPage>
+      <TrueversePassport passport={passport} mode="owner" />
+    </div>
   );
 }

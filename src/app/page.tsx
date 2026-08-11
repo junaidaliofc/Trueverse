@@ -3,13 +3,12 @@
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import { PRODUCT_DISCLAIMER } from "@/lib/design";
+import { PUBLIC_PROFILE_DISCLAIMER } from "@/lib/design";
 import { Button } from "@/components/ui/button";
 import { fadeUp, stagger } from "@/components/motion/primitives";
 
 /**
- * Phase 1 landing — brand-first, above-the-fold minimal.
- * No trust statistics in the first viewport.
+ * Landing — brand-first beta entry.
  */
 export default function LandingPage() {
   const reduceMotion = useReducedMotion();
@@ -34,7 +33,14 @@ export default function LandingPage() {
         >
           <motion.p
             variants={fadeUp}
-            className="font-display text-[clamp(3.5rem,14vw,7.5rem)] font-bold leading-[0.92] tracking-[-0.05em] text-foreground"
+            className="text-[11px] font-bold uppercase tracking-[0.28em] text-primary"
+          >
+            Public beta
+          </motion.p>
+
+          <motion.p
+            variants={fadeUp}
+            className="mt-4 font-display text-[clamp(3.5rem,14vw,7.5rem)] font-bold leading-[0.92] tracking-[-0.05em] text-foreground"
           >
             Trueverse
           </motion.p>
@@ -65,15 +71,15 @@ export default function LandingPage() {
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="min-h-12 sm:min-w-44">
-              <Link href="/u/tv_sarahkim">View Demo Profile</Link>
+              <Link href="/u/sarahkim">View Demo Profile</Link>
             </Button>
           </motion.div>
 
           <motion.p
             variants={fadeUp}
-            className="mx-auto mt-10 max-w-sm text-[11px] leading-5 text-muted-foreground/80"
+            className="mx-auto mt-10 max-w-md text-[11px] leading-5 text-muted-foreground/80"
           >
-            {PRODUCT_DISCLAIMER}
+            {PUBLIC_PROFILE_DISCLAIMER}
           </motion.p>
         </motion.div>
       </section>

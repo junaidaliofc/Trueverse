@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { jsonError, validationError } from "@/lib/api";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { negativeReportSchema } from "@/lib/validators";
+import { rateLimit } from "@/lib/rate-limit";
 
 export async function POST(request: NextRequest) {
   const supabase = await createSupabaseServerClient();
@@ -11,6 +12,11 @@ export async function POST(request: NextRequest) {
 
   if (!user) {
     return jsonError("Authentication required.", 401);
+  }
+
+  const limited = rateLimit(`report:${user.id}`, 5, 60_000);
+  if (!limited.ok) {
+    return jsonError("Too many reports. Try again shortly.", 429);
   }
 
   try {

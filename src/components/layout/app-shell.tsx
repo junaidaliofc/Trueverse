@@ -2,30 +2,25 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, Home, MessageCircle, UserRound, Users } from "lucide-react";
-import { currentUser } from "@/lib/dummy-data";
-import { UserAvatar } from "@/components/ui/user-avatar";
+import { Bell, Home, UserRound, Users } from "lucide-react";
+import { SessionAvatar } from "@/components/auth/session-avatar";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-const appNav: Array<{
-  href: string;
-  label: string;
-  icon: typeof Home;
-  soon?: boolean;
-}> = [
+const appNav = [
   { href: "/dashboard", label: "Home", icon: Home },
-  { href: "/profile", label: "Profile", icon: UserRound },
+  { href: "/profile", label: "Passport", icon: UserRound },
   { href: "/community", label: "Community", icon: Users },
-  { href: "/notifications", label: "Notifications", icon: Bell },
-  { href: "/messages", label: "Messages", icon: MessageCircle, soon: true }
-];
+  { href: "/notifications", label: "Alerts", icon: Bell }
+] as const;
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isMarketing =
-    pathname === "/" || pathname.startsWith("/auth") || pathname === "/design-system";
+    pathname === "/" ||
+    pathname.startsWith("/auth") ||
+    pathname === "/design-system";
 
   return (
     <div className="min-h-dvh">
@@ -39,25 +34,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               T
             </span>
             <span className={cn(isMarketing ? "inline" : "hidden sm:inline")}>Trueverse</span>
+            <span className="rounded-full bg-brand-soft px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-brand">
+              Beta
+            </span>
           </Link>
 
           {!isMarketing ? (
             <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary">
               {appNav.map((item) => {
                 const active =
-                  !item.soon &&
-                  (pathname === item.href || pathname.startsWith(`${item.href}/`));
-                if (item.soon) {
-                  return (
-                    <span
-                      key={item.href}
-                      className="rounded-2xl px-3.5 py-2 text-sm font-semibold text-muted-foreground/50"
-                      title="Coming soon"
-                    >
-                      {item.label}
-                    </span>
-                  );
-                }
+                  pathname === item.href || pathname.startsWith(`${item.href}/`);
                 return (
                   <Link
                     key={item.href}
@@ -89,9 +75,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           {!isMarketing ? (
             <div className="flex items-center gap-1.5">
               <ThemeToggle />
-              <Link href="/profile" className="rounded-2xl p-1 transition hover:bg-muted">
-                <UserAvatar name={currentUser.full_name} src={currentUser.photo_url} size="sm" />
-              </Link>
+              <SessionAvatar />
             </div>
           ) : null}
         </div>
@@ -113,26 +97,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           className="fixed inset-x-0 bottom-0 z-40 border-t border-border/70 bg-background/90 backdrop-blur-xl lg:hidden"
           aria-label="Mobile"
         >
-          <ul className="mx-auto grid max-w-lg grid-cols-5 px-1 safe-bottom">
+          <ul className="mx-auto grid max-w-lg grid-cols-4 px-1 safe-bottom">
             {appNav.map((item) => {
               const Icon = item.icon;
               const active =
-                !item.soon &&
-                (pathname === item.href || pathname.startsWith(`${item.href}/`));
-
-              if (item.soon) {
-                return (
-                  <li key={item.href}>
-                    <Link
-                      href={item.href}
-                      className="flex flex-col items-center gap-1 px-1 py-2.5 text-[10px] font-semibold text-muted-foreground/45"
-                    >
-                      <Icon className="size-5" />
-                      {item.label}
-                    </Link>
-                  </li>
-                );
-              }
+                pathname === item.href || pathname.startsWith(`${item.href}/`);
 
               return (
                 <li key={item.href}>
