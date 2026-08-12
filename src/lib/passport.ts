@@ -259,21 +259,20 @@ export function buildLivePassportViewModel(
       body: "Joined Trueverse and started building portable reputation signals.",
       created_at: profile.created_at,
       meta: "Joined"
-    },
-    ...(emailVerified
-      ? [
-          {
-            id: `email-${profile.id}`,
-            kind: "verification" as const,
-            title: "Email verified",
-            body: "Email confirmation completed through Trueverse Auth.",
-            created_at: profile.created_at,
-            meta: "Verified"
-          }
-        ]
-      : []),
-    ...actTimeline
-  ].sort(
+    }
+  ];
+  if (emailVerified) {
+    baseTimeline.push({
+      id: `email-${profile.id}`,
+      kind: "verification",
+      title: "Email verified",
+      body: "Email confirmation completed through Trueverse Auth.",
+      created_at: profile.created_at,
+      meta: "Verified"
+    });
+  }
+  baseTimeline.push(...actTimeline);
+  baseTimeline.sort(
     (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   );
 
