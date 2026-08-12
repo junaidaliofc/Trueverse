@@ -94,13 +94,19 @@ export default async function PublicPassportPage({
     passport.sharePath = `/u/${passport.username}`;
     passport.trueverseId = demo.trueverse_id;
     passport.bio = demo.bio;
+    // Demo must not present fake identity verification as live-backed.
+    passport.identityVerified = false;
     passport.verifications = passport.verifications
       .filter((item) => item.kind !== "organization")
-      .map((item) =>
-        item.kind === "email" || item.kind === "phone"
-          ? { ...item, detail: item.status === "verified" ? "Verified" : undefined }
-          : item
-      );
+      .map((item) => {
+        if (item.kind === "identity" || item.kind === "phone" || item.kind === "professional" || item.kind === "community") {
+          return { ...item, status: "unverified" as const, completed_at: null, detail: undefined };
+        }
+        if (item.kind === "email") {
+          return { ...item, detail: item.status === "verified" ? "Verified" : undefined };
+        }
+        return item;
+      });
 
     return (
       <div className="space-y-4">
