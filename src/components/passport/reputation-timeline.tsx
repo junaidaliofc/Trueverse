@@ -85,9 +85,12 @@ export function PassportReputationTimeline({
       {events.length === 0 ? (
         <div className="glass rounded-[1.75rem] px-6 py-12 text-center">
           <Sparkles className="mx-auto size-6 text-brand" />
-          <p className="mt-3 font-display text-lg font-bold">No public moments yet</p>
+          <p className="mt-3 font-display text-lg font-bold text-foreground">
+            No reputation events yet
+          </p>
           <p className="mt-2 text-sm text-muted-foreground">
-            Verified activity will appear here as the Passport grows.
+            Your timeline will fill with account milestones, accepted Trust Acts,
+            verification updates, and community contributions as you build trust.
           </p>
         </div>
       ) : (

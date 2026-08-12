@@ -24,7 +24,7 @@ export function SessionAvatar() {
   }, []);
 
   return (
-    <Link href="/profile" className="rounded-2xl p-1 transition hover:bg-muted">
+    <Link href="/passport" className="rounded-2xl p-1 transition hover:bg-muted">
       <UserAvatar name={name} src={photo} size="sm" />
     </Link>
   );

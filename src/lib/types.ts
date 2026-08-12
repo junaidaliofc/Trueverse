@@ -13,6 +13,10 @@ export type Profile = {
   streak: number;
   trueverse_id: string;
   username?: string | null;
+  city?: string | null;
+  headline?: string | null;
+  interests?: string[] | null;
+  social_links?: Record<string, string> | null;
   role: UserRole;
   is_disabled: boolean;
   last_positive_at: string | null;

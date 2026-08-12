@@ -162,6 +162,17 @@ function emptyDna(): PassportDna {
   };
 }
 
+export type LiveTrustActRow = {
+  id: string;
+  title: string;
+  description: string;
+  status: string;
+  author_id: string;
+  recipient_id: string;
+  created_at: string;
+  accepted_at?: string | null;
+};
+
 /**
  * Passport for an authenticated / live DB profile.
  * Never invents Aria demo DNA, badges, timeline, or verification.
@@ -180,6 +191,9 @@ export function buildLivePassportViewModel(
   options?: {
     emailVerified?: boolean;
     totalXp?: number;
+    badges?: BadgeDef[];
+    timeline?: PassportReputationEvent[];
+    trustActs?: LiveTrustActRow[];
   }
 ): PassportViewModel {
   const trustIndex =
@@ -192,7 +206,21 @@ export function buildLivePassportViewModel(
   const username = passportUsername(profile);
   const totalXp = options?.totalXp ?? 0;
   const emailVerified = Boolean(options?.emailVerified);
+  // Only show identity verified when a real DB flag exists — never invent it.
   const identityVerified = Boolean(profile.identity_verified);
+
+  const completionChecks = [
+    Boolean(profile.full_name),
+    Boolean(profile.username),
+    Boolean(profile.photo_url),
+    Boolean(profile.bio),
+    Boolean(profile.city),
+    Boolean(profile.headline),
+    Boolean((profile.interests ?? []).length)
+  ];
+  const profileCompletion =
+    profile.profile_completion_pct ??
+    Math.round((completionChecks.filter(Boolean).length / completionChecks.length) * 100);
 
   const verifications: VerificationItem[] = [
     {
@@ -202,17 +230,54 @@ export function buildLivePassportViewModel(
       completed_at: emailVerified ? profile.created_at : null,
       detail: emailVerified ? "Verified" : undefined
     },
-    { kind: "phone", label: "Phone", status: "unverified", completed_at: null },
     {
       kind: "identity",
       label: "Identity",
       status: identityVerified ? "verified" : "unverified",
       completed_at: identityVerified ? profile.updated_at : null,
       detail: identityVerified ? "Identity verified" : undefined
-    },
-    { kind: "professional", label: "Professional", status: "unverified", completed_at: null },
-    { kind: "community", label: "Community", status: "unverified", completed_at: null }
+    }
   ];
+
+  const acceptedActs = (options?.trustActs ?? []).filter(
+    (act) => act.status === "accepted"
+  );
+  const actTimeline: PassportReputationEvent[] = acceptedActs.slice(0, 12).map((act) => ({
+    id: `act-${act.id}`,
+    kind: "trust_act" as const,
+    title: act.title || "Trust Act accepted",
+    body: act.description || "A positive Trust Act was accepted.",
+    created_at: act.accepted_at || act.created_at,
+    meta: "Accepted"
+  }));
+
+  const baseTimeline: PassportReputationEvent[] = [
+    {
+      id: `created-${profile.id}`,
+      kind: "verification",
+      title: "Account created",
+      body: "Joined Trueverse and started building portable reputation signals.",
+      created_at: profile.created_at,
+      meta: "Joined"
+    },
+    ...(emailVerified
+      ? [
+          {
+            id: `email-${profile.id}`,
+            kind: "verification" as const,
+            title: "Email verified",
+            body: "Email confirmation completed through Trueverse Auth.",
+            created_at: profile.created_at,
+            meta: "Verified"
+          }
+        ]
+      : []),
+    ...actTimeline
+  ].sort(
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  );
+
+  const timeline: PassportReputationEvent[] = options?.timeline ?? baseTimeline;
 
   return {
     profile,
@@ -224,14 +289,13 @@ export function buildLivePassportViewModel(
     identityVerified,
     xpLevel: xpToLevel(totalXp).level,
     totalXp,
-    profileCompletion:
-      profile.profile_completion_pct ?? (profile.full_name && profile.bio ? 40 : 20),
+    profileCompletion,
     dna: emptyDna(),
     verifications,
-    badges: [],
-    timeline: [],
+    badges: options?.badges ?? [],
+    timeline,
     stats: {
-      trustActs: profile.trust_acts ?? 0,
+      trustActs: profile.trust_acts ?? acceptedActs.length,
       uniqueContributors: profile.unique_contributors ?? 0,
       references: profile.references_count ?? 0,
       yearsActive: yearsActiveFrom(profile.created_at),

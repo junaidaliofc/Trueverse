@@ -448,7 +448,7 @@ export const dailyMissions: Mission[] = [
     progress: 0,
     target: 1,
     completed: false,
-    href: "/profile"
+    href: "/passport"
   }
 ];
 
@@ -788,7 +788,7 @@ export const missions: Mission[] = [
     progress: 1,
     target: 1,
     completed: true,
-    href: "/profile"
+    href: "/passport"
   },
   {
     id: "m-trust-act",

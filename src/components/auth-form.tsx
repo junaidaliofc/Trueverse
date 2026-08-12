@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 type AuthMode = "signup" | "login";
 
@@ -55,7 +58,6 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
           return;
         }
 
-        // Email confirmation required — never open a fake OTP screen.
         if (!result.data.session) {
           router.push(`/auth/check-email?email=${encodeURIComponent(email)}`);
           return;
@@ -83,62 +85,64 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="glass-card mx-auto max-w-md space-y-5 rounded-3xl p-6">
+    <form onSubmit={onSubmit} className="glass mx-auto max-w-md space-y-5 rounded-3xl p-6">
       <div>
-        <p className="text-sm font-semibold uppercase tracking-wide text-teal-700">
+        <p className="text-sm font-semibold uppercase tracking-wide text-primary">
           {mode === "signup" ? "Create account" : "Welcome back"}
         </p>
-        <h1 className="mt-2 text-3xl font-black text-slate-950">
+        <h1 className="mt-2 font-display text-3xl font-bold tracking-tight text-foreground">
           {mode === "signup" ? "Join Trueverse" : "Log in to Trueverse"}
         </h1>
       </div>
 
       {mode === "signup" ? (
-        <label className="block text-sm font-semibold text-slate-700">
-          Name
-          <input
+        <div className="space-y-2">
+          <Label htmlFor="name">Name</Label>
+          <Input
+            id="name"
             value={name}
             onChange={(event) => setName(event.target.value)}
-            className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-teal-500"
             required
             autoComplete="name"
+            className="h-11 rounded-2xl"
           />
-        </label>
+        </div>
       ) : null}
 
-      <label className="block text-sm font-semibold text-slate-700">
-        Email
-        <input
+      <div className="space-y-2">
+        <Label htmlFor="email">Email</Label>
+        <Input
+          id="email"
           type="email"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
-          className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-teal-500"
           required
           autoComplete="email"
+          className="h-11 rounded-2xl"
         />
-      </label>
+      </div>
 
-      <label className="block text-sm font-semibold text-slate-700">
-        Password
-        <input
+      <div className="space-y-2">
+        <Label htmlFor="password">Password</Label>
+        <Input
+          id="password"
           type="password"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
-          className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-teal-500"
           required
           minLength={8}
           autoComplete={mode === "signup" ? "new-password" : "current-password"}
+          className="h-11 rounded-2xl"
         />
-      </label>
+      </div>
 
-      {message ? <p className="rounded-2xl bg-amber-50 p-3 text-sm text-amber-800">{message}</p> : null}
+      {message ? (
+        <p className="rounded-2xl bg-warning-soft p-3 text-sm text-warning">{message}</p>
+      ) : null}
 
-      <button
-        disabled={loading}
-        className="w-full rounded-2xl bg-teal-600 px-4 py-3 font-bold text-white shadow-sm hover:bg-teal-700 disabled:opacity-60"
-      >
+      <Button type="submit" disabled={loading} className="w-full">
         {loading ? "Please wait..." : mode === "signup" ? "Sign up" : "Log in"}
-      </button>
+      </Button>
     </form>
   );
 }

@@ -9,7 +9,12 @@ export const profileUpdateSchema = z.object({
     .regex(/^[a-z0-9_]{3,24}$/, "Username must be 3–24 characters: letters, numbers, underscore.")
     .optional(),
   bio: z.string().trim().max(280).default(""),
-  photo_url: z.string().trim().url().optional().or(z.literal(""))
+  photo_url: z.string().trim().url().optional().or(z.literal("")),
+  city: z.string().trim().max(80).optional().or(z.literal("")),
+  headline: z.string().trim().max(120).optional().or(z.literal("")),
+  interests: z.string().trim().max(240).optional().or(z.literal("")),
+  website: z.string().trim().url().optional().or(z.literal("")),
+  linkedin: z.string().trim().url().optional().or(z.literal(""))
 });
 
 const publicHandle = z

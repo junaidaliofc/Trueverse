@@ -2,17 +2,18 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, Home, UserRound, Users } from "lucide-react";
+import { Bell, Home, MessageCircle, UserRound, Users } from "lucide-react";
 import { SessionAvatar } from "@/components/auth/session-avatar";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const appNav = [
-  { href: "/dashboard", label: "Home", icon: Home },
-  { href: "/profile", label: "Passport", icon: UserRound },
-  { href: "/community", label: "Community", icon: Users },
-  { href: "/notifications", label: "Alerts", icon: Bell }
+  { href: "/dashboard", label: "Home", icon: Home, soon: false },
+  { href: "/passport", label: "Passport", icon: UserRound, soon: false },
+  { href: "/community", label: "Community", icon: Users, soon: false },
+  { href: "/messages", label: "Messages", icon: MessageCircle, soon: true },
+  { href: "/notifications", label: "Alerts", icon: Bell, soon: false }
 ] as const;
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -49,13 +50,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     key={item.href}
                     href={item.href}
                     className={cn(
-                      "rounded-2xl px-3.5 py-2 text-sm font-semibold transition-colors",
+                      "inline-flex items-center gap-1.5 rounded-2xl px-3.5 py-2 text-sm font-semibold transition-colors",
                       active
                         ? "bg-brand-soft text-brand"
                         : "text-muted-foreground hover:bg-muted hover:text-foreground"
                     )}
                   >
                     {item.label}
+                    {item.soon ? (
+                      <span className="rounded-full bg-muted px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-muted-foreground">
+                        Soon
+                      </span>
+                    ) : null}
                   </Link>
                 );
               })}
@@ -97,7 +103,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           className="fixed inset-x-0 bottom-0 z-40 border-t border-border/70 bg-background/90 backdrop-blur-xl lg:hidden"
           aria-label="Mobile"
         >
-          <ul className="mx-auto grid max-w-lg grid-cols-4 px-1 safe-bottom">
+          <ul className="mx-auto grid max-w-lg grid-cols-5 px-0.5 safe-bottom">
             {appNav.map((item) => {
               const Icon = item.icon;
               const active =
@@ -108,12 +114,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   <Link
                     href={item.href}
                     className={cn(
-                      "flex flex-col items-center gap-1 px-1 py-2.5 text-[10px] font-semibold transition-colors",
+                      "relative flex min-h-12 flex-col items-center justify-center gap-0.5 px-0.5 py-2 text-[10px] font-semibold transition-colors",
                       active ? "text-primary" : "text-muted-foreground"
                     )}
                   >
                     <Icon className="size-5" strokeWidth={active ? 2.5 : 2} />
-                    {item.label}
+                    <span className="leading-none">{item.label}</span>
+                    {item.soon ? (
+                      <span className="absolute right-1 top-1 rounded-full bg-muted px-1 text-[8px] font-bold uppercase text-muted-foreground">
+                        Soon
+                      </span>
+                    ) : null}
                   </Link>
                 </li>
               );
