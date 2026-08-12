@@ -29,7 +29,7 @@ export default async function SharePassportPage({
   let trueverseId = "";
   let photoUrl: string | null = null;
   let sharePath = "";
-  let trustLevel: ReturnType<typeof buildLivePassportViewModel>["trustLevel"] = "emerging";
+  let trustLevel: ReturnType<typeof buildLivePassportViewModel>["trustLevel"] = "new";
 
   if (DEMO_SLUGS.has(key)) {
     const profile = findProfileByPublicSlug(profiles, key);
