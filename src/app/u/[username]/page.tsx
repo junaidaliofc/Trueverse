@@ -107,13 +107,15 @@ export default async function PublicPassportPage({
         }
         return item;
       });
+    const demoEmailVerified =
+      passport.verifications.find((item) => item.kind === "email")?.status === "verified";
 
     return (
       <div className="space-y-4">
         <TrueversePassport
           passport={passport}
           mode="public"
-          emailVerified={false}
+          emailVerified={demoEmailVerified}
           initialFollowing={followingIds.includes(demo.id)}
         />
         <p className="mx-auto max-w-lg pb-8 text-center text-xs leading-5 text-muted-foreground sm:max-w-3xl">
