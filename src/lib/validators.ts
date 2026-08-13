@@ -69,3 +69,21 @@ export const activityCommentSchema = z.object({
   activity_id: z.string().trim().min(1).max(64),
   body: z.string().trim().min(1).max(500)
 });
+
+export const communityPostSchema = z.object({
+  post_type: z.enum(["trust_act", "update", "help", "event"]),
+  title: z.string().trim().max(120).optional().or(z.literal("")),
+  body: z.string().trim().min(1).max(4000),
+  image_url: z.string().trim().url().optional().or(z.literal("")),
+  trust_act_id: z.string().uuid().optional()
+});
+
+export const communityCommentSchema = z.object({
+  body: z.string().trim().min(1).max(800)
+});
+
+export const communityReactionSchema = z.object({
+  reaction_type: z.enum(["like", "appreciate"])
+});
+
+export const communityFeedTabSchema = z.enum(["for_you", "following", "latest", "nearby"]);

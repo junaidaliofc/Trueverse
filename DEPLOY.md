@@ -29,6 +29,7 @@ Or apply in order:
 5. `005_passport.sql`
 6. `006_auth_profile_name.sql`
 7. `007_passport_profile_fields.sql`
+8. `008_community_feed.sql`
 
 Optional: `supabase/seed.sql`
 

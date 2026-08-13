@@ -105,3 +105,50 @@ export type AdminReport = NegativeReport & {
   reporter?: Pick<Profile, "full_name" | "trueverse_id" | "trust_score"> | null;
   reported_user?: Pick<Profile, "full_name" | "trueverse_id" | "trust_score"> | null;
 };
+
+export type CommunityPostType = "trust_act" | "update" | "help" | "event";
+export type CommunityModerationStatus = "visible" | "pending_review" | "removed";
+export type CommunityReactionType = "like" | "appreciate";
+
+export type CommunityPost = {
+  id: string;
+  author_id: string;
+  post_type: CommunityPostType;
+  title: string | null;
+  body: string;
+  image_url: string | null;
+  trust_act_id: string | null;
+  is_hidden: boolean;
+  moderation_status: CommunityModerationStatus;
+  created_at: string;
+  updated_at: string;
+};
+
+export type CommunityComment = {
+  id: string;
+  post_id: string;
+  author_id: string;
+  body: string;
+  is_hidden: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type CommunityAuthor = Pick<
+  Profile,
+  "id" | "full_name" | "photo_url" | "trust_score" | "trueverse_id" | "username"
+>;
+
+export type CommunityPostView = CommunityPost & {
+  author: CommunityAuthor | null;
+  like_count: number;
+  appreciate_count: number;
+  comment_count: number;
+  liked_by_me: boolean;
+  appreciated_by_me: boolean;
+  bookmarked_by_me: boolean;
+};
+
+export type CommunityCommentView = CommunityComment & {
+  author: CommunityAuthor | null;
+};

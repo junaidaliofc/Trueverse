@@ -204,6 +204,16 @@ export default function DesignSystemPage() {
           <Skeleton className="h-24 w-full rounded-3xl" />
         </Surface>
       </section>
+
+      <section className="space-y-4" id="community-kit">
+        <SectionTitle title="Community feed kit" />
+        <p className="text-sm text-muted-foreground">
+          Design kit only — authenticated Community uses live Supabase data, never these samples.
+        </p>
+        <CommunityComposer authorName="Sample Member" authorPhoto={null} />
+        <CommunityFeedTabs value="for_you" onChange={() => undefined} />
+        <CommunityFeedList posts={[]} viewerId={null} />
+      </section>
     </div>
   );
 }
