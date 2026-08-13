@@ -21,6 +21,7 @@ import { ReputationDnaCard } from "@/components/trust/reputation-dna";
 import { XPProgress, StreakPill } from "@/components/xp/xp-progress";
 import { currentUserReputation, userXp } from "@/lib/dummy-data";
 import { TRUST_LEVELS, TRUST_LEVEL_META } from "@/lib/design";
+import { CommunityFeedPreviewSamples } from "@/components/community/feed-preview-samples";
 
 /**
  * Phase 0 living style guide.
@@ -210,9 +211,7 @@ export default function DesignSystemPage() {
         <p className="text-sm text-muted-foreground">
           Design kit only — authenticated Community uses live Supabase data, never these samples.
         </p>
-        <CommunityComposer authorName="Sample Member" authorPhoto={null} />
-        <CommunityFeedTabs value="for_you" onChange={() => undefined} />
-        <CommunityFeedList posts={[]} viewerId={null} />
+        <CommunityFeedPreviewSamples />
       </section>
     </div>
   );
