@@ -62,6 +62,8 @@ function post(options: {
     image_url: options.image
       ? "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=60"
       : null,
+    category: options.type === "help" ? "Mutual aid" : "Neighborhood",
+    location: options.tabs.includes("nearby") ? "Westside" : null,
     trust_act_id: options.type === "trust_act" ? "mock-trust-act" : null,
     is_hidden: false,
     moderation_status: "visible",
@@ -240,6 +242,8 @@ export function mockPostsForTab(tab: MockFeedTab): CommunityPostView[] {
     title: item.title,
     body: item.body,
     image_url: item.image_url,
+    category: item.category,
+    location: item.location,
     trust_act_id: item.trust_act_id,
     is_hidden: item.is_hidden,
     moderation_status: item.moderation_status,

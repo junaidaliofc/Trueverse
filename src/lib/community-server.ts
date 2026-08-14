@@ -89,20 +89,34 @@ export async function fetchCommunityFeed(
     supabase.from("community_comments").select("post_id").eq("is_hidden", false).in("post_id", postIds)
   ]);
 
-  return {
-    posts: assemblePostViews({
-      posts,
-      authorsById,
-      reactions: (reactionsRes.data ?? []) as Array<{
-        post_id: string;
-        profile_id: string;
-        reaction_type: "like" | "appreciate";
-      }>,
-      bookmarks: (bookmarksRes.data ?? []) as Array<{ post_id: string }>,
-      commentCounts: (commentsRes.data ?? []) as Array<{ post_id: string }>,
-      viewerId: options.viewerId
-    })
-  };
+  let views = assemblePostViews({
+    posts,
+    authorsById,
+    reactions: (reactionsRes.data ?? []) as Array<{
+      post_id: string;
+      profile_id: string;
+      reaction_type: "like" | "appreciate";
+    }>,
+    bookmarks: (bookmarksRes.data ?? []) as Array<{ post_id: string }>,
+    commentCounts: (commentsRes.data ?? []) as Array<{ post_id: string }>,
+    viewerId: options.viewerId
+  });
+
+  if (options.tab === "trending") {
+    views = [...views].sort((a, b) => {
+      const score =
+        b.appreciate_count + b.comment_count * 2 - (a.appreciate_count + a.comment_count * 2);
+      if (score !== 0) return score;
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
+  }
+
+  if (options.tab === "nearby") {
+    const located = views.filter((post) => Boolean(post.location?.trim()));
+    if (located.length) views = located;
+  }
+
+  return { posts: views };
 }
 
 export async function fetchCommunityPostById(

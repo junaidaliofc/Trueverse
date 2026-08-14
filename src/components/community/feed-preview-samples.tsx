@@ -17,6 +17,8 @@ const SAMPLE_POST: CommunityPostView = {
   title: "Neighborhood cleanup this Saturday",
   body: "Meeting at the community garden at 9am. Bring gloves if you have them — all skill levels welcome.",
   image_url: null,
+  category: "Neighborhood",
+  location: "Westside garden",
   trust_act_id: null,
   is_hidden: false,
   moderation_status: "visible",

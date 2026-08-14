@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { mockPostsForTab } from "@/lib/community-mock";
+import { requireProfile } from "@/lib/auth";
+import { fetchCommunityPostById } from "@/lib/community-server";
 import { CommunityFeedCard } from "@/components/community/feed-card";
 import { PUBLIC_PROFILE_DISCLAIMER } from "@/lib/design";
 import { Button } from "@/components/ui/button";
@@ -26,12 +27,8 @@ export default async function CommunityPostPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const all = mockPostsForTab("for_you").concat(
-    mockPostsForTab("following"),
-    mockPostsForTab("nearby"),
-    mockPostsForTab("trending")
-  );
-  const post = all.find((item) => item.id === id);
+  const { supabase, profile } = await requireProfile();
+  const post = await fetchCommunityPostById(supabase, id, profile.id);
   if (!post) notFound();
 
   return (
@@ -50,7 +47,18 @@ export default async function CommunityPostPage({
         </Button>
       </div>
 
-      <CommunityFeedCard post={post} mock />
+      <CommunityFeedCard
+        post={post}
+        viewerId={profile.id}
+        viewer={{
+          id: profile.id,
+          full_name: profile.full_name,
+          photo_url: profile.photo_url,
+          trust_score: profile.trust_score,
+          trueverse_id: profile.trueverse_id,
+          username: profile.username
+        }}
+      />
 
       <p className="pb-8 text-center text-xs leading-5 text-muted-foreground">
         {PUBLIC_PROFILE_DISCLAIMER}

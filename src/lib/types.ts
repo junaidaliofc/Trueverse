@@ -117,6 +117,8 @@ export type CommunityPost = {
   title: string | null;
   body: string;
   image_url: string | null;
+  category: string | null;
+  location: string | null;
   trust_act_id: string | null;
   is_hidden: boolean;
   moderation_status: CommunityModerationStatus;

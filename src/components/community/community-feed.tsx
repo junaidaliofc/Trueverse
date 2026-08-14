@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import type { Profile } from "@/lib/types";
+import { useCallback, useState } from "react";
+import type { CommunityPostView, Profile } from "@/lib/types";
 import type { TrustLevel } from "@/lib/design";
-import { mockPostsForTab, type MockFeedTab } from "@/lib/community-mock";
+import type { CommunityFeedTab } from "@/lib/community";
 import { CommunityComposer } from "@/components/community/composer";
 import { CommunityFeedTabs } from "@/components/community/feed-tabs";
 import { CommunityFeedList } from "@/components/community/feed-list";
@@ -15,16 +15,48 @@ export function CommunityFeed({
   trustLevel,
   xpLevel,
   streak,
-  suggested
+  suggested,
+  initialPosts,
+  initialTab = "for_you"
 }: {
   profile: Profile;
   trustLevel: TrustLevel;
   xpLevel: number;
   streak: number;
   suggested: Profile[];
+  initialPosts: CommunityPostView[];
+  initialTab?: CommunityFeedTab;
 }) {
-  const [tab, setTab] = useState<MockFeedTab>("for_you");
-  const posts = mockPostsForTab(tab);
+  const [tab, setTab] = useState<CommunityFeedTab>(initialTab);
+  const [posts, setPosts] = useState(initialPosts);
+  const [loading, setLoading] = useState(false);
+
+  const load = useCallback(async (nextTab: CommunityFeedTab, silent = false) => {
+    if (!silent) setLoading(true);
+    try {
+      const response = await fetch(`/api/community/posts?tab=${nextTab}`);
+      const payload = await response.json().catch(() => ({}));
+      setPosts(payload.posts ?? []);
+    } catch {
+      setPosts([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  function changeTab(next: CommunityFeedTab) {
+    setTab(next);
+    void load(next);
+  }
+
+  const viewer = {
+    id: profile.id,
+    full_name: profile.full_name,
+    photo_url: profile.photo_url,
+    trust_score: profile.trust_score,
+    trueverse_id: profile.trueverse_id,
+    username: profile.username
+  };
 
   return (
     <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[220px_minmax(0,1fr)_240px] xl:grid-cols-[240px_minmax(0,1fr)_260px]">
@@ -48,19 +80,20 @@ export function CommunityFeed({
             Feed
           </h1>
           <p className="text-sm leading-6 text-muted-foreground">
-            A living neighborhood of reputation — not likes. Sample posts illustrate
-            the feed until live publishing is connected.
+            Create a post, appreciate neighbors, and keep the conversation going.
+            Engagement never changes Trust Score.
           </p>
         </header>
 
         <CommunityComposer
           authorName={profile.full_name || "Member"}
           authorPhoto={profile.photo_url}
+          onCreated={() => void load(tab, true)}
         />
 
-        <CommunityFeedTabs value={tab} onChange={(next) => setTab(next as MockFeedTab)} />
+        <CommunityFeedTabs value={tab} onChange={changeTab} />
 
-        <CommunityFeedList posts={posts} viewerId={profile.id} mock />
+        <CommunityFeedList posts={posts} viewerId={profile.id} viewer={viewer} loading={loading} />
       </div>
 
       <div className="hidden lg:block">

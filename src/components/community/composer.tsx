@@ -1,34 +1,26 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import {
-  Award,
-  CalendarDays,
-  HandHeart,
-  HelpCircle,
-  Megaphone,
-  X
-} from "lucide-react";
+import { Award, HelpCircle, ImagePlus, MapPin, Megaphone, X } from "lucide-react";
 import type { CommunityPostType } from "@/lib/types";
-import { POST_TYPE_META } from "@/lib/community";
+import {
+  COMMUNITY_CATEGORIES,
+  COMPOSER_POST_TYPES,
+  POST_BODY_MAX,
+  POST_TYPE_META
+} from "@/lib/community";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { UserAvatar } from "@/components/ui/user-avatar";
+import { AutoGrowTextarea } from "@/components/ui/auto-textarea";
 import { cn } from "@/lib/utils";
 
-const ACTIONS: Array<{
-  type: CommunityPostType;
-  icon: typeof HandHeart;
-}> = [
-  { type: "trust_act", icon: HandHeart },
-  { type: "update", icon: Megaphone },
-  { type: "help", icon: HelpCircle },
-  { type: "event", icon: CalendarDays },
-  { type: "achievement", icon: Award }
-];
+const ICONS: Record<(typeof COMPOSER_POST_TYPES)[number], typeof Megaphone> = {
+  update: Megaphone,
+  achievement: Award,
+  help: HelpCircle
+};
 
 export function CommunityComposer({
   authorName,
@@ -39,27 +31,31 @@ export function CommunityComposer({
   authorPhoto?: string | null;
   onCreated?: () => void;
 }) {
-  const reduceMotion = useReducedMotion();
-  const [selected, setSelected] = useState<CommunityPostType | null>(null);
-  const [title, setTitle] = useState("");
+  const [selected, setSelected] = useState<CommunityPostType>("update");
   const [body, setBody] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [category, setCategory] = useState<(typeof COMMUNITY_CATEGORIES)[number]>(
+    "Neighborhood"
+  );
+  const [location, setLocation] = useState("");
+  const [showImage, setShowImage] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [pending, startTransition] = useTransition();
 
-  const meta = selected ? POST_TYPE_META[selected] : null;
+  const meta = POST_TYPE_META[selected];
+  const remaining = POST_BODY_MAX - body.length;
 
   function reset() {
-    setSelected(null);
-    setTitle("");
     setBody("");
     setImageUrl("");
+    setLocation("");
+    setCategory("Neighborhood");
+    setShowImage(false);
     setError("");
   }
 
   function submit() {
-    if (!selected) return;
     startTransition(async () => {
       setError("");
       setMessage("");
@@ -68,9 +64,10 @@ export function CommunityComposer({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           post_type: selected,
-          title,
           body,
-          image_url: imageUrl
+          image_url: imageUrl,
+          category,
+          location
         })
       });
       const payload = await response.json().catch(() => ({}));
@@ -88,13 +85,14 @@ export function CommunityComposer({
     <section className="glass rounded-[1.6rem] p-4 sm:rounded-[1.75rem] sm:p-5">
       <div className="flex items-start gap-3">
         <UserAvatar name={authorName} src={authorPhoto} size="md" />
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 space-y-3">
           <p className="text-sm font-medium text-muted-foreground">
-            What&apos;s happening in your community?
+            Create a post
           </p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {ACTIONS.map(({ type, icon: Icon }) => {
+          <div className="flex flex-wrap gap-2">
+            {COMPOSER_POST_TYPES.map((type) => {
               const active = selected === type;
+              const Icon = ICONS[type];
               return (
                 <Button
                   key={type}
@@ -102,7 +100,7 @@ export function CommunityComposer({
                   size="sm"
                   variant={active ? "default" : "secondary"}
                   className="min-h-10 rounded-full"
-                  onClick={() => setSelected(active ? null : type)}
+                  onClick={() => setSelected(type)}
                 >
                   <Icon className="size-4" />
                   {POST_TYPE_META[type].composerLabel}
@@ -113,60 +111,70 @@ export function CommunityComposer({
         </div>
       </div>
 
-      <AnimatePresence initial={false}>
-        {selected && meta ? (
-          <motion.div
-            key={selected}
-            initial={reduceMotion ? false : { height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={reduceMotion ? undefined : { height: 0, opacity: 0 }}
-            transition={{ duration: 0.28 }}
-            className="overflow-hidden"
+      <div className="mt-4 space-y-3 border-t border-border/60 pt-4">
+        <div className="space-y-2">
+          <Label htmlFor="composer-body">{meta.composerLabel}</Label>
+          <AutoGrowTextarea
+            id="composer-body"
+            value={body}
+            onChange={(e) => setBody(e.target.value.slice(0, POST_BODY_MAX))}
+            placeholder={meta.placeholder}
+            className="rounded-2xl"
+            maxLength={POST_BODY_MAX}
+          />
+          <p
+            className={cn(
+              "text-right text-xs tabular-nums",
+              remaining < 80 ? "text-warning" : "text-muted-foreground"
+            )}
           >
-            <div className="mt-4 space-y-3 border-t border-border/60 pt-4">
-              <div className="flex items-center justify-between gap-2">
-                <p className="text-sm font-semibold text-foreground">
-                  {meta.composerLabel}
-                </p>
-                <Button
+            {body.length}/{POST_BODY_MAX}
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <p className="text-sm font-medium text-foreground">Category</p>
+          <div className="flex flex-wrap gap-1.5">
+            {COMMUNITY_CATEGORIES.map((item) => {
+              const active = category === item;
+              return (
+                <button
+                  key={item}
                   type="button"
-                  size="icon-sm"
-                  variant="ghost"
-                  aria-label="Close composer"
-                  onClick={reset}
+                  onClick={() => setCategory(item)}
+                  className={cn(
+                    "min-h-9 rounded-full px-3 text-xs font-semibold transition-colors",
+                    active
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-muted-foreground hover:text-foreground"
+                  )}
                 >
-                  <X className="size-4" />
-                </Button>
-              </div>
+                  {item}
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
-              {(selected === "event" || selected === "help" || selected === "trust_act") && (
-                <div className="space-y-2">
-                  <Label htmlFor="composer-title">Title (optional)</Label>
-                  <Input
-                    id="composer-title"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Short headline"
-                    className="h-11 rounded-2xl"
-                    maxLength={120}
-                  />
-                </div>
-              )}
-
-              <div className="space-y-2">
-                <Label htmlFor="composer-body">Post</Label>
-                <Textarea
-                  id="composer-body"
-                  value={body}
-                  onChange={(e) => setBody(e.target.value)}
-                  placeholder={meta.placeholder}
-                  className="min-h-28 rounded-2xl"
-                  maxLength={4000}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="composer-image">Image URL (optional)</Label>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="composer-location">Location (optional)</Label>
+            <div className="relative">
+              <MapPin className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                id="composer-location"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder="Neighborhood or city"
+                className="h-11 rounded-2xl pl-9"
+                maxLength={80}
+              />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="composer-image">Image (optional)</Label>
+            {showImage ? (
+              <div className="flex gap-2">
                 <Input
                   id="composer-image"
                   value={imageUrl}
@@ -174,36 +182,50 @@ export function CommunityComposer({
                   placeholder="https://"
                   className="h-11 rounded-2xl"
                 />
-              </div>
-
-              {selected === "trust_act" ? (
-                <p className="text-xs leading-5 text-muted-foreground">
-                  This is a community recognition post. To change someone&apos;s
-                  Trust Score, use a verified Trust Act acceptance flow — likes
-                  here never change trust.
-                </p>
-              ) : null}
-
-              {error ? <p className="text-sm text-destructive">{error}</p> : null}
-              {message ? <p className="text-sm text-success">{message}</p> : null}
-
-              <div className="flex flex-wrap gap-2">
                 <Button
                   type="button"
-                  disabled={pending || body.trim().length < 1}
-                  onClick={submit}
-                  className={cn("min-h-11")}
+                  size="icon"
+                  variant="ghost"
+                  aria-label="Remove image field"
+                  onClick={() => {
+                    setShowImage(false);
+                    setImageUrl("");
+                  }}
                 >
-                  {pending ? "Publishing…" : "Publish"}
-                </Button>
-                <Button type="button" variant="outline" onClick={reset} className="min-h-11">
-                  Cancel
+                  <X className="size-4" />
                 </Button>
               </div>
-            </div>
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
+            ) : (
+              <Button
+                type="button"
+                variant="secondary"
+                className="h-11 w-full justify-start"
+                onClick={() => setShowImage(true)}
+              >
+                <ImagePlus className="size-4" />
+                Add image URL
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {error ? <p className="text-sm text-destructive">{error}</p> : null}
+        {message ? <p className="text-sm text-success">{message}</p> : null}
+
+        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+          <Button type="button" variant="outline" onClick={reset} className="min-h-11">
+            Clear
+          </Button>
+          <Button
+            type="button"
+            disabled={pending || body.trim().length < 1}
+            onClick={submit}
+            className="min-h-11"
+          >
+            {pending ? "Publishing…" : "Publish"}
+          </Button>
+        </div>
+      </div>
     </section>
   );
 }

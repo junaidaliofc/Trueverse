@@ -15,6 +15,22 @@ import { scoreToTrustLevel } from "@/lib/design";
 
 export type CommunityFeedTab = "for_you" | "following" | "nearby" | "trending" | "latest";
 
+export const COMMUNITY_CATEGORIES = [
+  "Neighborhood",
+  "Volunteer",
+  "Mutual aid",
+  "Skills",
+  "Safety",
+  "Other"
+] as const;
+
+export type CommunityCategory = (typeof COMMUNITY_CATEGORIES)[number];
+
+export const COMPOSER_POST_TYPES: CommunityPostType[] = ["update", "achievement", "help"];
+
+export const POST_BODY_MAX = 4000;
+export const COMMENT_BODY_MAX = 800;
+
 /** Feed architecture supports sponsored slots without rewriting the list. */
 export type OrganicFeedEntry = {
   kind: "organic";

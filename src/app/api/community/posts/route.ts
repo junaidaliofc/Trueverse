@@ -57,6 +57,8 @@ export async function POST(request: NextRequest) {
         title: payload.title || null,
         body: payload.body,
         image_url: payload.image_url || null,
+        category: payload.category || null,
+        location: payload.location || null,
         trust_act_id: payload.trust_act_id || null
       })
       .select("*")
@@ -66,6 +68,18 @@ export async function POST(request: NextRequest) {
       if (/does not exist|relation/i.test(error.message)) {
         return jsonError(
           "Community feed is not ready. Apply migration 008_community_feed.sql in Supabase.",
+          503
+        );
+      }
+      if (/invalid input value for enum/i.test(error.message)) {
+        return jsonError(
+          "Community post types need an update. Apply migration 009_community_interactions.sql in Supabase.",
+          503
+        );
+      }
+      if (/column .* does not exist/i.test(error.message)) {
+        return jsonError(
+          "Community posts need category/location columns. Apply migration 009_community_interactions.sql in Supabase.",
           503
         );
       }
