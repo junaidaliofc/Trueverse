@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import { Button } from "@/components/ui/button";
 import { MessengerShell } from "@/components/messages/messenger-shell";
 import { ConversationListSkeleton, ChatThreadSkeleton } from "@/components/messages/messenger-skeletons";
@@ -16,11 +16,20 @@ import {
 } from "@/lib/messages-mock";
 import { sortConversations, type ChatMessage, type ConversationView } from "@/lib/messages";
 
+function useIsClient() {
+  return useSyncExternalStore(
+    () => () => undefined,
+    () => true,
+    () => false
+  );
+}
+
 export function Sprint6Preview() {
   const [conversations, setConversations] = useState<ConversationView[]>(seedMockConversations);
   const [threadMap, setThreadMap] = useState(seedMockMessages);
   const [selectedId, setSelectedId] = useState<string | null>("conv-jordan");
   const [typing, setTyping] = useState(false);
+  const isClient = useIsClient();
   const samplePost = useMemo(() => mockPostsForTab("for_you")[0], []);
   const messages = selectedId ? (threadMap[selectedId] ?? []) : [];
 
@@ -146,18 +155,24 @@ export function Sprint6Preview() {
 
       <section id="messenger" className="space-y-3">
         <h2 className="font-display text-xl font-semibold text-foreground">Inbox</h2>
-        <MessengerShell
-          localSearch
-          viewerId={MOCK_MESSENGER_VIEWER_ID}
-          conversations={conversations}
-          messages={messages}
-          selectedId={selectedId}
-          onSelect={onSelect}
-          onSend={onSend}
-          onStartConversation={onStartConversation}
-          typingVisible={typing}
-          className="h-[min(640px,78dvh)]"
-        />
+        {isClient ? (
+          <MessengerShell
+            localSearch
+            viewerId={MOCK_MESSENGER_VIEWER_ID}
+            conversations={conversations}
+            messages={messages}
+            selectedId={selectedId}
+            onSelect={onSelect}
+            onSend={onSend}
+            onStartConversation={onStartConversation}
+            typingVisible={typing}
+            className="h-[min(640px,78dvh)]"
+          />
+        ) : (
+          <div className="glass-elevated h-[min(640px,78dvh)] overflow-hidden rounded-[1.75rem]">
+            <ConversationListSkeleton />
+          </div>
+        )}
       </section>
 
       <section id="empty" className="space-y-3">

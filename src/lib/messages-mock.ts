@@ -113,7 +113,7 @@ export function seedMockConversations(): ConversationView[] {
       peer: jordan,
       last_message: "I can cover the Saturday shift if that still helps.",
       last_message_at: minutesAgo(18),
-      unread_count: 2,
+      unread_count: 0,
       peer_last_read_at: hoursAgo(5)
     },
     {
@@ -121,7 +121,7 @@ export function seedMockConversations(): ConversationView[] {
       peer: priya,
       last_message: "Thank you — the pantry drop-off went smoothly.",
       last_message_at: hoursAgo(6),
-      unread_count: 0,
+      unread_count: 2,
       peer_last_read_at: minutesAgo(40)
     },
     {

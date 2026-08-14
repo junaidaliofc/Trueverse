@@ -34,7 +34,7 @@ export function MessageComposer({
   }
 
   return (
-    <div className="relative border-t border-border/60 bg-background/70 p-3 backdrop-blur-xl">
+    <div className="relative shrink-0 border-t border-border/60 bg-background/70 p-3 backdrop-blur-xl">
       {hint ? (
         <p className="mb-2 px-1 text-xs text-muted-foreground" role="status">
           {hint}

@@ -49,7 +49,7 @@ export function ChatWindow({
 
   return (
     <section className="flex h-full min-h-0 flex-col" aria-label="Chat">
-      <header className="flex items-center gap-3 border-b border-border/60 px-3 py-3 sm:px-4">
+      <header className="flex shrink-0 items-center gap-3 border-b border-border/60 px-3 py-3 sm:px-4">
         <Button
           type="button"
           size="icon-sm"
@@ -97,7 +97,7 @@ export function ChatWindow({
                     "whitespace-pre-wrap rounded-[1.25rem] px-3.5 py-2.5 text-sm leading-6",
                     mine
                       ? "rounded-br-md bg-primary text-primary-foreground"
-                      : "rounded-bl-md bg-muted text-foreground"
+                      : "rounded-bl-md bg-foreground/12 text-foreground ring-1 ring-white/10"
                   )}
                 >
                   {message.body}
