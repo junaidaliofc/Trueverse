@@ -12,7 +12,7 @@ const appNav = [
   { href: "/dashboard", label: "Home", icon: Home, soon: false },
   { href: "/passport", label: "Passport", icon: UserRound, soon: false },
   { href: "/community", label: "Community", icon: Users, soon: false },
-  { href: "/messages", label: "Messages", icon: MessageCircle, soon: true },
+          { href: "/messages", label: "Messages", icon: MessageCircle, soon: false },
   { href: "/notifications", label: "Alerts", icon: Bell, soon: false }
 ] as const;
 
@@ -93,7 +93,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           "mx-auto px-4 sm:px-6",
           isMarketing
             ? "max-w-6xl pb-10 pt-0"
-            : "max-w-lg pb-28 pt-5 sm:max-w-6xl sm:pb-12 sm:pt-8"
+            : pathname.startsWith("/messages")
+              ? "max-w-6xl px-0 pb-[4.35rem] pt-0 sm:px-4 sm:pb-6 sm:pt-4"
+              : "max-w-lg pb-28 pt-5 sm:max-w-6xl sm:pb-12 sm:pt-8"
         )}
       >
         {children}

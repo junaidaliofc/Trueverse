@@ -11,6 +11,7 @@ import { PassportReputationTimeline } from "@/components/passport/reputation-tim
 import { PassportStatistics } from "@/components/passport/passport-stats";
 import { PassportSharePanel } from "@/components/passport/passport-share-panel";
 import { FollowButton } from "@/components/social/follow-button";
+import { MessageButton } from "@/components/messages/message-button";
 import { cn } from "@/lib/utils";
 
 export function TrueversePassport({
@@ -46,10 +47,13 @@ export function TrueversePassport({
               Verified reputation signals — not a safety guarantee.
             </p>
           </div>
-          <FollowButton
-            trueverseId={passport.trueverseId}
-            initialFollowing={initialFollowing}
-          />
+          <div className="flex flex-wrap items-center gap-2">
+            <MessageButton trueverseId={passport.trueverseId} />
+            <FollowButton
+              trueverseId={passport.trueverseId}
+              initialFollowing={initialFollowing}
+            />
+          </div>
         </MotionItem>
       ) : null}
 

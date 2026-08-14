@@ -10,6 +10,7 @@ import { TrustLevelBadge } from "@/components/trust/trust-level-badge";
 import { Button } from "@/components/ui/button";
 import { CommentsPanel } from "@/components/community/comments-panel";
 import { SharePostButton } from "@/components/community/share-button";
+import { MessageButton } from "@/components/messages/message-button";
 import { formatRelativeTime, cn } from "@/lib/utils";
 
 export function CommunityFeedCard({
@@ -165,6 +166,14 @@ export function CommunityFeedCard({
               <span className="tabular-nums">{appreciateCount}</span>
             </Button>
             <SharePostButton postId={post.id} title={post.title} />
+            {post.author && post.author.id !== viewerId ? (
+              <MessageButton
+                trueverseId={post.author.trueverse_id}
+                label="Message Author"
+                mock={mock}
+                className="min-h-11"
+              />
+            ) : null}
           </div>
 
           <CommentsPanel

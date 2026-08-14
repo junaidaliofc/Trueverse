@@ -1,14 +1,13 @@
 /**
  * Future product surfaces — architecture only.
- * Do not implement messaging, marketplace, groups, events product,
- * business profiles, or the AI assistant in this sprint.
+ * Messaging shipped in Sprint 6. Remaining items stay planned.
  */
 export const FUTURE_SURFACES = [
   {
     id: "messaging",
     path: "/messages",
     label: "Messaging",
-    status: "planned" as const
+    status: "shipped" as const
   },
   {
     id: "marketplace",

@@ -8,23 +8,28 @@ import { cn } from "@/lib/utils";
 export function AutoGrowTextarea({
   value,
   className,
+  minHeight = 96,
   ...props
-}: ComponentProps<typeof Textarea> & { value: string }) {
+}: ComponentProps<typeof Textarea> & { value: string; minHeight?: number }) {
   const ref = useRef<HTMLTextAreaElement>(null);
 
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
     el.style.height = "auto";
-    el.style.height = `${Math.max(el.scrollHeight, 96)}px`;
-  }, [value]);
+    el.style.height = `${Math.max(el.scrollHeight, minHeight)}px`;
+  }, [value, minHeight]);
 
   return (
     <Textarea
       {...props}
       ref={ref}
       value={value}
-      className={cn("min-h-24 resize-none overflow-hidden", className)}
+      className={cn(
+        "resize-none overflow-hidden",
+        minHeight >= 96 ? "min-h-24" : "min-h-11",
+        className
+      )}
     />
   );
 }

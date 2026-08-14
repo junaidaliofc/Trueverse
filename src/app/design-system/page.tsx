@@ -59,6 +59,9 @@ export default function DesignSystemPage() {
           <Button asChild variant="outline">
             <Link href="/design-system/sprint5">Community interactions</Link>
           </Button>
+          <Button asChild variant="outline">
+            <Link href="/design-system/sprint6">Messages</Link>
+          </Button>
         </div>
       </motion.header>
 

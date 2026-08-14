@@ -95,3 +95,18 @@ export const communityFeedTabSchema = z.enum([
   "trending",
   "latest"
 ]);
+
+export const conversationIdSchema = z.string().uuid();
+
+export const messageBodySchema = z.object({
+  body: z.string().trim().min(1, "Write a message.").max(2000)
+});
+
+export const startConversationSchema = z
+  .object({
+    peer_id: z.string().uuid().optional(),
+    trueverse_id: publicHandle.optional()
+  })
+  .refine((value) => Boolean(value.peer_id || value.trueverse_id), {
+    message: "Choose a member to message."
+  });
