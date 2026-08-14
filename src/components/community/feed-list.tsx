@@ -25,19 +25,19 @@ export function CommunityFeedList({
         {Array.from({ length: 4 }).map((_, i) => (
           <div key={i} className="glass-elevated space-y-4 rounded-[1.75rem] p-5">
             <div className="flex gap-3">
-              <Skeleton className="size-11 rounded-2xl" />
+              <Skeleton className="size-11 rounded-2xl bg-foreground/15" />
               <div className="flex-1 space-y-2">
-                <Skeleton className="h-4 w-1/3" />
-                <Skeleton className="h-3 w-1/4" />
+                <Skeleton className="h-4 w-1/3 bg-foreground/15" />
+                <Skeleton className="h-3 w-1/4 bg-foreground/10" />
               </div>
             </div>
-            <Skeleton className="h-4 w-24 rounded-full" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-5/6" />
-            <Skeleton className="h-28 w-full rounded-2xl" />
+            <Skeleton className="h-4 w-24 rounded-full bg-foreground/12" />
+            <Skeleton className="h-4 w-full bg-foreground/12" />
+            <Skeleton className="h-4 w-5/6 bg-foreground/10" />
+            <Skeleton className="h-28 w-full rounded-2xl bg-foreground/10" />
             <div className="flex gap-2">
-              <Skeleton className="h-11 w-32 rounded-2xl" />
-              <Skeleton className="h-11 w-24 rounded-2xl" />
+              <Skeleton className="h-11 w-32 rounded-2xl bg-foreground/12" />
+              <Skeleton className="h-11 w-24 rounded-2xl bg-foreground/10" />
             </div>
           </div>
         ))}
