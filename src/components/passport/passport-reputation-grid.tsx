@@ -1,6 +1,5 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
 import {
   AlertTriangle,
   Clock3,
@@ -33,7 +32,6 @@ export function PassportReputationGrid({
   snapshot: ReputationSnapshot;
   className?: string;
 }) {
-  const reduceMotion = useReducedMotion();
   const isEmpty = snapshot.dimensions.every((dimension) => dimension.value <= 0);
 
   if (isEmpty) {
@@ -65,15 +63,12 @@ export function PassportReputationGrid({
       </div>
 
       <ul className="grid gap-3 sm:grid-cols-2">
-        {snapshot.dimensions.map((dimension, index) => {
+        {snapshot.dimensions.map((dimension) => {
           const meta = REPUTATION_CARD_META[dimension.id];
           const Icon = ICONS[meta.icon];
           return (
-            <motion.li
+            <li
               key={dimension.id}
-              initial={reduceMotion ? false : { opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05, duration: 0.4 }}
               className="glass-elevated rounded-[1.5rem] p-4 transition-transform duration-300 hover:-translate-y-0.5"
             >
               <div className="flex items-start justify-between gap-3">
@@ -91,7 +86,7 @@ export function PassportReputationGrid({
               <p className="mt-3 text-xs leading-5 text-muted-foreground">
                 {dimension.explanation}
               </p>
-            </motion.li>
+            </li>
           );
         })}
       </ul>

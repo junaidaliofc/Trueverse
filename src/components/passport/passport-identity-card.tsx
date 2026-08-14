@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
 import { BadgeCheck, QrCode, Share2, ShieldAlert } from "lucide-react";
 import type { Profile } from "@/lib/types";
 import { TRUST_LEVEL_META, type TrustLevel } from "@/lib/design";
@@ -27,7 +26,6 @@ export function PassportIdentityCard({
   shareHref: string;
   className?: string;
 }) {
-  const reduceMotion = useReducedMotion();
   const meta = TRUST_LEVEL_META[trustLevel];
   const title = PASSPORT_TRUST_TITLES[trustLevel];
   const handle = username || profile.username || profile.trueverse_id.replace(/^tv_/, "");
@@ -36,11 +34,11 @@ export function PassportIdentityCard({
   const mrzId = profile.trueverse_id.replace(/[^a-z0-9_]/gi, "").toUpperCase();
 
   return (
-    <motion.section
-      className={cn("relative overflow-hidden rounded-[2rem] text-white shadow-[0_24px_80px_-32px_rgba(13,148,136,0.55)]", className)}
-      initial={reduceMotion ? false : { opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+    <section
+      className={cn(
+        "relative overflow-hidden rounded-[2rem] text-white shadow-[0_24px_80px_-32px_rgba(13,148,136,0.55)]",
+        className
+      )}
     >
       <div
         aria-hidden
@@ -89,11 +87,7 @@ export function PassportIdentityCard({
         </div>
 
         <div className="mt-8 flex flex-col items-center text-center">
-          <motion.div
-            initial={reduceMotion ? false : { scale: 0.92, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="relative rounded-[1.75rem] bg-white/10 p-1.5 ring-1 ring-white/20"
-          >
+          <div className="relative rounded-[1.75rem] bg-white/10 p-1.5 ring-1 ring-white/20">
             <span
               aria-hidden
               className="absolute -left-3 top-6 hidden h-8 w-6 rounded-sm bg-gradient-to-br from-amber-200/80 to-teal-200/40 ring-1 ring-white/30 sm:block"
@@ -104,7 +98,7 @@ export function PassportIdentityCard({
               size="xl"
               className="!size-28 rounded-[1.5rem] text-3xl after:rounded-[1.5rem] sm:!size-32"
             />
-          </motion.div>
+          </div>
 
           <h2 className="mt-5 font-display text-3xl font-bold tracking-tight text-white sm:text-4xl">
             {displayName}
@@ -148,6 +142,6 @@ export function PassportIdentityCard({
       <p className="relative overflow-hidden border-t border-white/10 bg-black/20 px-5 py-3 font-mono text-[10px] tracking-[0.22em] text-teal-100/70 sm:px-8">
         TV&lt;&lt;{mrzName}&lt;&lt;{mrzId}
       </p>
-    </motion.section>
+    </section>
   );
 }

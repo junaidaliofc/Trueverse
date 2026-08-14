@@ -1,7 +1,6 @@
 "use client";
 
 import { ProfileForm } from "@/components/profile-form";
-import { MotionItem, MotionPage } from "@/components/motion/primitives";
 import { PUBLIC_PROFILE_DISCLAIMER } from "@/lib/design";
 import {
   PASSPORT_MOCK_BADGES,
@@ -49,57 +48,39 @@ export function PassportOwnerV2({
   });
 
   return (
-    <MotionPage className="mx-auto max-w-lg space-y-8 sm:max-w-3xl">
-      <MotionItem>
-        <PassportIdentityCard
-          profile={passport.profile}
-          username={passport.username}
-          trustLevel={passport.trustLevel}
-          emailVerified={emailVerified}
-          identityVerified={passport.identityVerified}
-          shareHref={shareHref}
-        />
-      </MotionItem>
+    <div className="mx-auto max-w-lg space-y-8 sm:max-w-3xl">
+      <PassportIdentityCard
+        profile={passport.profile}
+        username={passport.username}
+        trustLevel={passport.trustLevel}
+        emailVerified={emailVerified}
+        identityVerified={passport.identityVerified}
+        shareHref={shareHref}
+      />
 
-      {showGettingStarted ? (
-        <MotionItem>
-          <PassportGettingStarted steps={emptySteps} />
-        </MotionItem>
-      ) : null}
+      {showGettingStarted ? <PassportGettingStarted steps={emptySteps} /> : null}
 
-      <MotionItem>
-        <PassportReputationGrid snapshot={PASSPORT_MOCK_SCORES} />
-      </MotionItem>
+      <PassportReputationGrid snapshot={PASSPORT_MOCK_SCORES} />
 
-      <MotionItem>
-        <PassportTodayProgress gains={PASSPORT_TODAY_GAINS} />
-      </MotionItem>
+      <PassportTodayProgress gains={PASSPORT_TODAY_GAINS} />
 
-      <MotionItem>
-        <PassportBadgeBoard badges={badges} />
-      </MotionItem>
+      <PassportBadgeBoard badges={badges} />
 
-      <MotionItem>
-        <PassportStoryTimeline events={PASSPORT_MOCK_TIMELINE} />
-      </MotionItem>
+      <PassportStoryTimeline events={PASSPORT_MOCK_TIMELINE} />
 
-      <MotionItem>
-        <PassportSharePanel
-          sharePath={passport.sharePath}
-          displayName={passport.displayName}
-          trueverseId={passport.trueverseId}
-        />
-      </MotionItem>
+      <PassportSharePanel
+        sharePath={passport.sharePath}
+        displayName={passport.displayName}
+        trueverseId={passport.trueverseId}
+      />
 
-      <MotionItem>
-        <div id="profile">
-          <ProfileForm profile={passport.profile} />
-        </div>
-      </MotionItem>
+      <div id="profile">
+        <ProfileForm profile={passport.profile} />
+      </div>
 
       <p className="pb-6 text-center text-xs leading-5 text-muted-foreground">
         {PUBLIC_PROFILE_DISCLAIMER}
       </p>
-    </MotionPage>
+    </div>
   );
 }

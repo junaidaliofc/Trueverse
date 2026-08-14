@@ -1,6 +1,5 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
 import {
   Flag,
   HandHeart,
@@ -30,8 +29,6 @@ export function PassportStoryTimeline({
   events: PassportTimelineCard[];
   className?: string;
 }) {
-  const reduceMotion = useReducedMotion();
-
   if (events.length === 0) {
     return <PassportGettingStarted steps={PASSPORT_EMPTY_STEPS} className={className} />;
   }
@@ -52,14 +49,11 @@ export function PassportStoryTimeline({
 
       <ol className="relative space-y-3 pl-2">
         <div aria-hidden className="absolute bottom-3 left-[1.35rem] top-3 w-px bg-border" />
-        {events.map((event, index) => {
+        {events.map((event) => {
           const Icon = EVENT_ICONS[event.id as keyof typeof EVENT_ICONS] ?? Flag;
           return (
-            <motion.li
+            <li
               key={event.id}
-              initial={reduceMotion ? false : { opacity: 0, x: -8 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.05, duration: 0.35 }}
               className="relative pl-12"
             >
               <span className="absolute left-0.5 top-5 flex size-6 items-center justify-center rounded-full bg-primary text-primary-foreground ring-4 ring-background">
@@ -74,7 +68,7 @@ export function PassportStoryTimeline({
                 </div>
                 <p className="mt-1.5 text-sm leading-6 text-muted-foreground">{event.body}</p>
               </article>
-            </motion.li>
+            </li>
           );
         })}
       </ol>
