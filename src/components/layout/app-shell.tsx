@@ -9,6 +9,7 @@ import { SessionAvatar } from "@/components/auth/session-avatar";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { NotificationBadge } from "@/components/notifications/notification-badge";
+import { FeedbackFab } from "@/components/feedback/feedback-fab";
 import { cn } from "@/lib/utils";
 
 const GlobalSearchOverlay = dynamic(
@@ -32,6 +33,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const isMarketing =
     pathname === "/" ||
     pathname.startsWith("/auth") ||
+    pathname === "/trust" ||
+    pathname === "/launch" ||
     pathname === "/design-system" ||
     pathname.startsWith("/design-system/");
 
@@ -165,6 +168,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       ) : null}
 
         {searchOpen ? <GlobalSearchOverlay onClose={closeSearch} /> : null}
+        {!isMarketing ? <FeedbackFab /> : null}
     </div>
   );
 }

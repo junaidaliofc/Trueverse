@@ -13,6 +13,7 @@ export const profileUpdateSchema = z.object({
   city: z.string().trim().max(80).optional().or(z.literal("")),
   headline: z.string().trim().max(120).optional().or(z.literal("")),
   interests: z.string().trim().max(240).optional().or(z.literal("")),
+  skills: z.string().trim().max(240).optional().or(z.literal("")),
   website: z.string().trim().url().optional().or(z.literal("")),
   linkedin: z.string().trim().url().optional().or(z.literal(""))
 });
@@ -49,6 +50,37 @@ export const responseSchema = z.object({
 export const reportReviewSchema = z.object({
   status: z.enum(["approved", "rejected", "disputed"]),
   admin_notes: z.string().trim().max(1000).optional()
+});
+
+export const positiveReviewSchema = z.object({
+  status: z.enum(["approved", "rejected"]),
+  admin_notes: z.string().trim().max(1000).optional()
+});
+
+export const appealCreateSchema = z.object({
+  target_table: z.enum(["positive_interactions", "negative_reports", "community_reports"]),
+  target_id: z.string().uuid(),
+  reason: z.string().trim().min(12).max(1600)
+});
+
+export const appealReviewSchema = z.object({
+  status: z.enum(["under_review", "accepted", "rejected"]),
+  resolution_notes: z.string().trim().max(1000).optional()
+});
+
+export const communityReportReviewSchema = z.object({
+  status: z.enum(["approved", "rejected", "under_review"]),
+  admin_notes: z.string().trim().max(1000).optional()
+});
+
+export const flagAccountSchema = z.object({
+  reason: z.string().trim().min(8).max(1000),
+  disable: z.boolean().optional()
+});
+
+export const betaFeedbackSchema = z.object({
+  category: z.enum(["bug", "suggestion", "feature", "confusing_ui"]),
+  body: z.string().trim().min(8).max(2000)
 });
 
 export const otpVerificationSchema = z.object({

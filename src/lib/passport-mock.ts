@@ -4,6 +4,7 @@
 
 import type { TrustLevel } from "@/lib/design";
 import type { ReputationDimension, ReputationSnapshot } from "@/lib/reputation";
+import { TRUST_OS_BADGES } from "@/lib/trust-os";
 
 export type PassportBadgeCard = {
   id: string;
@@ -90,44 +91,14 @@ export const PASSPORT_MOCK_SCORES: ReputationSnapshot = {
   ]
 };
 
-export const PASSPORT_MOCK_BADGES: PassportBadgeCard[] = [
-  {
-    id: "early-member",
-    label: "Early Member",
-    description: "Joined Trueverse during the public beta.",
-    earned: true
-  },
-  {
-    id: "volunteer",
-    label: "Volunteer",
-    description: "Showed up for a community help moment.",
-    earned: true
-  },
-  {
-    id: "trusted-neighbor",
-    label: "Trusted Neighbor",
-    description: "Received an accepted Trust Act from someone nearby.",
-    earned: true
-  },
-  {
-    id: "helpful",
-    label: "Helpful",
-    description: "Recognized for a clear, kind contribution.",
-    earned: true
-  },
-  {
-    id: "community-builder",
-    label: "Community Builder",
-    description: "Welcomed others and kept the feed constructive.",
-    earned: false
-  },
-  {
-    id: "verified-identity",
-    label: "Verified Identity",
-    description: "Optional government ID verification — coming soon.",
-    earned: false
-  }
-];
+const EARNED_SHOWCASE = new Set(["early-member", "volunteer", "community-leader"]);
+
+export const PASSPORT_MOCK_BADGES: PassportBadgeCard[] = TRUST_OS_BADGES.map((badge) => ({
+  id: badge.id,
+  label: badge.label,
+  description: `${badge.description} Badges never raise Trust Score.`,
+  earned: EARNED_SHOWCASE.has(badge.id)
+}));
 
 export const PASSPORT_MOCK_TIMELINE: PassportTimelineCard[] = [
   {

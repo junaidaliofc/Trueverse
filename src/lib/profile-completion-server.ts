@@ -15,7 +15,7 @@ export async function fetchProfileCompletion(
   profile: LiveProfile,
   emailVerified: boolean
 ): Promise<ProfileCompletion> {
-  const [trustActs, posts, appreciations, followCount] = await Promise.all([
+  const [trustActs, posts, followCount] = await Promise.all([
     countOrZero(
       supabase
         .from("positive_interactions")
@@ -31,30 +31,24 @@ export async function fetchProfileCompletion(
     ),
     countOrZero(
       supabase
-        .from("community_reactions")
-        .select("id", { count: "exact", head: true })
-        .eq("profile_id", profile.id)
-        .eq("reaction_type", "appreciate")
-    ),
-    countOrZero(
-      supabase
         .from("follows")
         .select("following_id", { count: "exact", head: true })
         .eq("follower_id", profile.id)
     )
   ]);
 
-  const hasPost = posts > 0;
+  const skills =
+    (Array.isArray(profile.skills) && profile.skills.length > 0) ||
+    (Array.isArray(profile.interests) && profile.interests.length > 0);
 
   return buildProfileCompletion({
-    photo: Boolean(profile.photo_url),
-    name: Boolean(profile.full_name?.trim()),
-    bio: Boolean(profile.bio?.trim()),
     email: emailVerified,
+    photo: Boolean(profile.photo_url),
+    bio: Boolean(profile.bio?.trim()),
+    location: Boolean(profile.city?.trim()),
+    skills,
+    communities: posts > 0 || followCount > 0,
     trustAct: trustActs > 0,
-    communityPost: hasPost,
-    appreciation: appreciations > 0,
-    joinCommunity: hasPost || followCount > 0,
-    followFive: followCount >= 5
+    identity: Boolean(profile.identity_verified)
   });
 }

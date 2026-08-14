@@ -1,19 +1,20 @@
 export type CompletionTaskId =
-  | "photo"
-  | "name"
-  | "bio"
   | "email"
+  | "photo"
+  | "bio"
+  | "location"
+  | "skills"
+  | "communities"
   | "trust_act"
-  | "community_post"
-  | "appreciation"
-  | "join_community"
-  | "follow_five";
+  | "identity";
 
 export type CompletionTask = {
   id: CompletionTaskId;
   label: string;
   href: string;
   done: boolean;
+  optional?: boolean;
+  future?: boolean;
 };
 
 export type ProfileCompletion = {
@@ -23,34 +24,56 @@ export type ProfileCompletion = {
 };
 
 export function buildProfileCompletion(flags: {
-  photo: boolean;
-  name: boolean;
-  bio: boolean;
   email: boolean;
+  photo: boolean;
+  bio: boolean;
+  location?: boolean;
+  skills?: boolean;
+  communities?: boolean;
   trustAct: boolean;
-  communityPost: boolean;
-  appreciation: boolean;
-  joinCommunity: boolean;
-  followFive: boolean;
+  identity?: boolean;
+  /** @deprecated Sprint 7 aliases mapped by callers */
+  name?: boolean;
+  communityPost?: boolean;
+  appreciation?: boolean;
+  joinCommunity?: boolean;
+  followFive?: boolean;
 }): ProfileCompletion {
   const tasks: CompletionTask[] = [
-    { id: "photo", label: "Profile photo", href: "/profile", done: flags.photo },
-    { id: "name", label: "Full name", href: "/profile", done: flags.name },
-    { id: "bio", label: "Bio", href: "/profile", done: flags.bio },
-    { id: "email", label: "Email verified", href: "/auth/verify", done: flags.email },
-    { id: "trust_act", label: "First Trust Act", href: "/interactions/create", done: flags.trustAct },
+    { id: "email", label: "Verified Email", href: "/auth/verify", done: flags.email },
+    { id: "photo", label: "Profile Photo", href: "/profile", done: flags.photo },
+    { id: "bio", label: "Biography", href: "/profile", done: flags.bio },
     {
-      id: "community_post",
-      label: "First Community Post",
-      href: "/community",
-      done: flags.communityPost
+      id: "location",
+      label: "Location",
+      href: "/profile",
+      done: Boolean(flags.location),
+      optional: true
     },
-    { id: "appreciation", label: "First Appreciation", href: "/community", done: flags.appreciation },
-    { id: "join_community", label: "Join Community", href: "/community/discover", done: flags.joinCommunity },
-    { id: "follow_five", label: "Follow 5 Members", href: "/community", done: flags.followFive }
+    { id: "skills", label: "Skills", href: "/profile", done: Boolean(flags.skills) },
+    {
+      id: "communities",
+      label: "Communities Joined",
+      href: "/community/discover",
+      done: Boolean(flags.communities ?? flags.joinCommunity)
+    },
+    {
+      id: "trust_act",
+      label: "First Positive Trust Act",
+      href: "/interactions/create",
+      done: flags.trustAct
+    },
+    {
+      id: "identity",
+      label: "Identity Verification",
+      href: "/trust",
+      done: Boolean(flags.identity),
+      future: true
+    }
   ];
-  const done = tasks.filter((task) => task.done).length;
-  const percent = Math.round((done / tasks.length) * 100);
+  const required = tasks.filter((task) => !task.optional && !task.future);
+  const done = required.filter((task) => task.done).length;
+  const percent = Math.round((done / required.length) * 100);
   return { percent, tasks, complete: percent === 100 };
 }
 
@@ -98,7 +121,7 @@ export function shouldShowOnboarding(completion: ProfileCompletion, createdAt: s
   const ageMs = Date.now() - new Date(createdAt).getTime();
   const sevenDays = 7 * 24 * 60 * 60 * 1000;
   const missingCore = completion.tasks
-    .filter((task) => ["photo", "name", "bio", "email"].includes(task.id))
+    .filter((task) => ["photo", "bio", "email"].includes(task.id))
     .some((task) => !task.done);
   return missingCore || (ageMs < sevenDays && completion.percent < 55);
 }

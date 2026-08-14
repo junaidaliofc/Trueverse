@@ -70,6 +70,13 @@ export async function PATCH(request: NextRequest) {
               .filter(Boolean)
               .slice(0, 12)
           : [],
+        skills: payload.skills
+          ? payload.skills
+              .split(",")
+              .map((item) => item.trim())
+              .filter(Boolean)
+              .slice(0, 12)
+          : [],
         social_links: {
           ...(payload.website ? { website: payload.website } : {}),
           ...(payload.linkedin ? { linkedin: payload.linkedin } : {})

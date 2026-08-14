@@ -3,12 +3,14 @@
 import {
   Award,
   BadgeCheck,
+  Building2,
+  Crown,
   HandHeart,
-  HeartHandshake,
+  Landmark,
   Lock,
-  ShieldCheck,
+  Shield,
   Sparkles,
-  Users
+  Store
 } from "lucide-react";
 import type { PassportBadgeCard } from "@/lib/passport-mock";
 import { PASSPORT_EMPTY_STEPS } from "@/lib/passport-mock";
@@ -16,12 +18,14 @@ import { PassportGettingStarted } from "@/components/passport/passport-getting-s
 import { cn } from "@/lib/utils";
 
 const BADGE_ICONS = {
-  "early-member": Sparkles,
+  "verified-identity": BadgeCheck,
+  "verified-business": Store,
+  "community-leader": Crown,
   volunteer: HandHeart,
-  "trusted-neighbor": ShieldCheck,
-  helpful: HeartHandshake,
-  "community-builder": Users,
-  "verified-identity": BadgeCheck
+  moderator: Shield,
+  organization: Landmark,
+  founder: Building2,
+  "early-member": Sparkles
 } as const;
 
 export function PassportBadgeBoard({

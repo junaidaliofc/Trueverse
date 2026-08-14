@@ -12,7 +12,8 @@ const PROTECTED_PREFIXES = [
   "/badges",
   "/community",
   "/activity",
-  "/admin"
+  "/admin",
+  "/appeals"
 ];
 
 export async function updateSession(request: NextRequest) {

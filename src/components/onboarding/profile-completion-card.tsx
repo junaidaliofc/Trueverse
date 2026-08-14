@@ -52,7 +52,19 @@ export function ProfileCompletionCard({ completion }: { completion: ProfileCompl
                 ) : (
                   <span className="size-4 shrink-0 rounded-full ring-2 ring-border" />
                 )}
-                <span className={cn("font-medium", task.done && "line-through")}>{task.label}</span>
+                <span className={cn("font-medium", task.done && "line-through")}>
+                  {task.label}
+                  {task.optional ? (
+                    <span className="ml-2 text-[10px] font-bold uppercase tracking-wide text-foreground/60">
+                      Optional
+                    </span>
+                  ) : null}
+                  {task.future ? (
+                    <span className="ml-2 text-[10px] font-bold uppercase tracking-wide text-foreground/60">
+                      Future
+                    </span>
+                  ) : null}
+                </span>
               </Link>
             </li>
           ))}
@@ -61,7 +73,7 @@ export function ProfileCompletionCard({ completion }: { completion: ProfileCompl
 
       {!completion.complete ? (
         <Button asChild className="mt-4 w-full sm:w-auto">
-          <Link href={completion.tasks.find((task) => !task.done)?.href ?? "/profile"}>
+          <Link href={completion.tasks.find((task) => !task.done && !task.future)?.href ?? "/profile"}>
             Continue
           </Link>
         </Button>

@@ -54,6 +54,14 @@ export default async function PassportPage() {
           <p className="mt-1 text-sm text-muted-foreground">
             Your portable Trueverse identity — earned in public, proud to share.
           </p>
+          <p className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-sm font-semibold">
+            <Link href="/trust" className="text-primary hover:underline">
+              Trust principles
+            </Link>
+            <Link href="/appeals" className="text-primary hover:underline">
+              Appeals
+            </Link>
+          </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button asChild size="sm" variant="outline">

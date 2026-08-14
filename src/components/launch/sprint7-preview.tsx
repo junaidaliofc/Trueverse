@@ -20,26 +20,22 @@ import { SEARCH_EMPTY_COPY } from "@/lib/search";
 
 const partialCompletion = buildProfileCompletion({
   photo: true,
-  name: true,
   bio: false,
   email: true,
   trustAct: true,
-  communityPost: false,
-  appreciation: true,
-  joinCommunity: true,
-  followFive: false
+  location: true,
+  skills: false,
+  communities: true
 });
 
 const completeCompletion = buildProfileCompletion({
   photo: true,
-  name: true,
   bio: true,
   email: true,
   trustAct: true,
-  communityPost: true,
-  appreciation: true,
-  joinCommunity: true,
-  followFive: true
+  location: true,
+  skills: true,
+  communities: true
 });
 
 export function Sprint7Preview() {

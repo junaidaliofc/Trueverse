@@ -1,4 +1,5 @@
 import type { AdminReport, HelpRequest, PositiveInteraction, Profile } from "@/lib/types";
+import { TRUST_OS_BADGES } from "@/lib/trust-os";
 import {
   scoreToTrustLevel,
   toPassportDna,
@@ -918,18 +919,15 @@ export type BadgeDef = {
   earned_at?: string;
 };
 
-export const badges: BadgeDef[] = [
-  { id: "b-neighbor", name: "Helpful Neighbor", description: "Helped neighbors in your area.", earned: true, earned_at: "2026-05-01" },
-  { id: "b-seller", name: "Reliable Seller", description: "Completed verified marketplace interactions.", earned: false },
-  { id: "b-blood", name: "Blood Donor", description: "Verified blood donation.", earned: true, earned_at: "2026-04-12" },
-  { id: "b-leader", name: "Community Leader", description: "Organized community missions.", earned: false },
-  { id: "b-volunteer", name: "Volunteer", description: "Logged verified volunteer hours.", earned: true, earned_at: "2026-03-20" },
-  { id: "b-mentor", name: "Mentor", description: "Supported learners or newcomers.", earned: false },
-  { id: "b-pro", name: "Verified Professional", description: "Identity and professional verification.", earned: false },
-  { id: "b-driver", name: "Safe Driver", description: "Verified safe ride contributions.", earned: true, earned_at: "2026-06-10" },
-  { id: "b-early", name: "Early Member", description: "Joined Trueverse in the early cohort.", earned: true, earned_at: "2026-01-12" },
-  { id: "b-top", name: "Top Contributor", description: "Top 10% community contribution this month.", earned: false }
-];
+const EARNED_TRUST_OS = new Set(["volunteer", "community-leader", "early-member"]);
+
+export const badges: BadgeDef[] = TRUST_OS_BADGES.map((badge) => ({
+  id: badge.id,
+  name: badge.label,
+  description: `${badge.description} Badges never raise Trust Score.`,
+  earned: EARNED_TRUST_OS.has(badge.id),
+  earned_at: EARNED_TRUST_OS.has(badge.id) ? "2026-05-01" : undefined
+}));
 
 export type Achievement = {
   id: string;

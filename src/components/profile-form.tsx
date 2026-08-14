@@ -20,6 +20,7 @@ export function ProfileForm({ profile }: { profile: Profile }) {
   const [city, setCity] = useState(profile.city ?? "");
   const [headline, setHeadline] = useState(profile.headline ?? "");
   const [interests, setInterests] = useState((profile.interests ?? []).join(", "));
+  const [skills, setSkills] = useState((profile.skills ?? []).join(", "));
   const [website, setWebsite] = useState(links.website ?? "");
   const [linkedin, setLinkedin] = useState(links.linkedin ?? "");
   const [message, setMessage] = useState("");
@@ -43,6 +44,7 @@ export function ProfileForm({ profile }: { profile: Profile }) {
         city,
         headline,
         interests,
+        skills,
         website,
         linkedin
       })
@@ -146,6 +148,18 @@ export function ProfileForm({ profile }: { profile: Profile }) {
             placeholder="mutual aid, volunteering"
             className="h-11 rounded-2xl"
           />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="skills">Skills</Label>
+          <Input
+            id="skills"
+            value={skills}
+            onChange={(event) => setSkills(event.target.value)}
+            placeholder="first aid, logistics, translation"
+            className="h-11 rounded-2xl"
+          />
+          <p className="text-xs text-muted-foreground">Display only. Skills never change Trust Score.</p>
         </div>
 
         <div className="space-y-2 sm:col-span-2">
