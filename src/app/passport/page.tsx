@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { requireProfile } from "@/lib/auth";
 import { buildLivePassportViewModel } from "@/lib/passport";
-import { TrueversePassport } from "@/components/passport/trueverse-passport";
-import { ProfileForm } from "@/components/profile-form";
+import { PassportOwnerV2 } from "@/components/passport/passport-owner-v2";
 import { LogoutButton } from "@/components/auth/logout-button";
 import { Button } from "@/components/ui/button";
 
@@ -47,13 +46,13 @@ export default async function PassportPage() {
       <div className="mx-auto flex max-w-lg flex-wrap items-center justify-between gap-3 sm:max-w-3xl">
         <div className="min-w-0">
           <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary">
-            Your identity
+            Digital reputation
           </p>
           <h1 className="mt-1 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
             Passport
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Your portable Trueverse identity and reputation.
+            Your portable Trueverse identity — earned in public, proud to share.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -73,11 +72,7 @@ export default async function PassportPage() {
         </div>
       ) : null}
 
-      <TrueversePassport passport={passport} mode="owner" emailVerified={emailVerified} />
-
-      <div className="mx-auto max-w-lg sm:max-w-3xl">
-        <ProfileForm profile={profile} />
-      </div>
+      <PassportOwnerV2 passport={passport} emailVerified={emailVerified} />
     </div>
   );
 }
