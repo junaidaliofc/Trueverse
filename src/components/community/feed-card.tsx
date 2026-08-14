@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { Handshake, MapPin } from "lucide-react";
 import type { CommunityAuthor, CommunityCommentView, CommunityPostView } from "@/lib/types";
@@ -11,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { CommentsPanel } from "@/components/community/comments-panel";
 import { SharePostButton } from "@/components/community/share-button";
 import { MessageButton } from "@/components/messages/message-button";
+import { TrueverseIdLink } from "@/components/identity/member-links";
 import { formatRelativeTime, cn } from "@/lib/utils";
 
 export function CommunityFeedCard({
@@ -89,9 +91,12 @@ export function CommunityFeedCard({
       data-feed-kind="organic"
     >
       <div className="flex items-start gap-3">
-        <Link href={mock ? "#" : `/u/${handle}`} className="shrink-0">
-          <UserAvatar name={name} src={post.author?.photo_url} size="md" />
-        </Link>
+        <UserAvatar
+          name={name}
+          src={post.author?.photo_url}
+          size="md"
+          href={mock ? undefined : `/u/${handle}`}
+        />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <Link
@@ -105,7 +110,13 @@ export function CommunityFeedCard({
               {formatRelativeTime(post.created_at)}
             </span>
           </div>
-          <p className="mt-0.5 text-sm text-muted-foreground">@{handle}</p>
+          <p className="mt-0.5">
+            {mock ? (
+              <span className="font-mono text-sm text-muted-foreground">@{handle}</span>
+            ) : (
+              <TrueverseIdLink id={post.author?.trueverse_id || handle} className="text-sm" />
+            )}
+          </p>
 
           <div className="mt-3 flex flex-wrap items-center gap-1.5">
             <span
@@ -142,11 +153,13 @@ export function CommunityFeedCard({
           </p>
 
           {post.image_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               src={post.image_url}
               alt=""
+              width={1200}
+              height={720}
               className="mt-3 max-h-72 w-full rounded-2xl object-cover"
+              sizes="(max-width: 768px) 100vw, 640px"
             />
           ) : null}
 

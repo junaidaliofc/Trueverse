@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import { Pencil, Trash2 } from "lucide-react";
 import type { CommunityAuthor, CommunityCommentView } from "@/lib/types";
 import { COMMENT_BODY_MAX, authorHandle } from "@/lib/community";
 import { UserAvatar } from "@/components/ui/user-avatar";
+import { TrueverseIdLink } from "@/components/identity/member-links";
 import { Button } from "@/components/ui/button";
 import { AutoGrowTextarea } from "@/components/ui/auto-textarea";
 import { Label } from "@/components/ui/label";
@@ -159,11 +161,29 @@ export function CommentsPanel({
                 key={comment.id}
                 className="flex items-start gap-3 rounded-2xl bg-muted/35 px-3 py-3"
               >
-                <UserAvatar name={name} src={comment.author?.photo_url} size="sm" />
+                <UserAvatar
+                  name={name}
+                  src={comment.author?.photo_url}
+                  size="sm"
+                  href={local ? undefined : `/u/${handle}`}
+                />
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <p className="text-sm font-semibold text-foreground">{name}</p>
-                    <p className="text-xs text-muted-foreground">@{handle}</p>
+                    {local ? (
+                      <p className="text-sm font-semibold text-foreground">{name}</p>
+                    ) : (
+                      <Link
+                        href={`/u/${handle}`}
+                        className="text-sm font-semibold text-foreground hover:text-primary"
+                      >
+                        {name}
+                      </Link>
+                    )}
+                    {local ? (
+                      <p className="text-xs text-muted-foreground">@{handle}</p>
+                    ) : (
+                      <TrueverseIdLink id={comment.author?.trueverse_id || handle} />
+                    )}
                     <p className="text-xs text-muted-foreground">
                       {formatRelativeTime(comment.created_at)}
                     </p>

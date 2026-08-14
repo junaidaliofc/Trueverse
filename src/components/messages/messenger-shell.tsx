@@ -1,11 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { UserAvatar } from "@/components/ui/user-avatar";
+import { TrueverseIdLink } from "@/components/identity/member-links";
 import { TrustLevelBadge } from "@/components/trust/trust-level-badge";
 import { ConversationCard } from "@/components/messages/conversation-card";
 import { ChatWindow } from "@/components/messages/chat-window";
@@ -137,14 +139,20 @@ export function MessengerShell({
                     {peopleResults.map((person) => (
                       <li key={person.id}>
                         <div className="flex items-center gap-3 rounded-2xl p-2.5">
-                          <UserAvatar name={person.full_name} src={person.photo_url} size="md" />
+                          <UserAvatar
+                            name={person.full_name}
+                            src={person.photo_url}
+                            size="md"
+                            href={`/u/${person.trueverse_id.replace(/^tv_/, "")}`}
+                          />
                           <div className="min-w-0 flex-1">
-                            <p className="truncate text-sm font-semibold text-foreground">
+                            <Link
+                              href={`/u/${person.trueverse_id.replace(/^tv_/, "")}`}
+                              className="truncate text-sm font-semibold text-foreground hover:text-primary"
+                            >
                               {person.full_name}
-                            </p>
-                            <p className="truncate font-mono text-[11px] text-muted-foreground">
-                              {person.trueverse_id}
-                            </p>
+                            </Link>
+                            <TrueverseIdLink id={person.trueverse_id} />
                             <div className="mt-1">
                               <TrustLevelBadge level={peerTrustLevel(person)} showLabel={false} />
                             </div>

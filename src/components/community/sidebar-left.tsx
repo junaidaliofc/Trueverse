@@ -30,11 +30,12 @@ export function CommunitySidebarLeft({
             name={profile.full_name || "Member"}
             src={profile.photo_url}
             size="md"
+            href="/passport"
           />
           <div className="min-w-0">
-            <p className="truncate font-semibold text-foreground">
+            <Link href="/passport" className="truncate font-semibold text-foreground hover:text-primary">
               {profile.full_name || "Trueverse Member"}
-            </p>
+            </Link>
             <p className="truncate text-xs text-muted-foreground">@{handle}</p>
           </div>
         </div>
@@ -68,6 +69,11 @@ export function CommunitySidebarLeft({
           Shortcuts
         </p>
         <ul className="mt-3 space-y-2 text-sm">
+          <li>
+            <Link href="/community/discover" className="font-semibold text-foreground hover:text-primary">
+              Discover communities
+            </Link>
+          </li>
           <li>
             <Link href="/community/saved" className="font-semibold text-foreground hover:text-primary">
               Saved posts

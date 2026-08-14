@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import Link from "next/link";
 import type { CommunityPostView, Profile } from "@/lib/types";
 import type { TrustLevel } from "@/lib/design";
 import type { CommunityFeedTab } from "@/lib/community";
@@ -81,7 +82,10 @@ export function CommunityFeed({
           </h1>
           <p className="text-sm leading-6 text-muted-foreground">
             Create a post, appreciate neighbors, and keep the conversation going.
-            Engagement never changes Trust Score.
+            Engagement never changes Trust Score.{" "}
+            <Link href="/community/discover" className="font-semibold text-primary hover:underline">
+              Discover communities
+            </Link>
           </p>
         </header>
 

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Profile } from "@/lib/types";
 import { UserAvatar } from "@/components/ui/user-avatar";
+import { TrueverseIdLink } from "@/components/identity/member-links";
 import { passportUsername } from "@/lib/passport";
 
 export function CommunitySidebarRight({
@@ -48,6 +49,7 @@ export function CommunitySidebarRight({
                     name={person.full_name}
                     src={person.photo_url}
                     size="sm"
+                    href={`/u/${handle}`}
                   />
                   <div className="min-w-0 flex-1">
                     <Link
@@ -56,7 +58,7 @@ export function CommunitySidebarRight({
                     >
                       {person.full_name || "Member"}
                     </Link>
-                    <p className="truncate text-xs text-muted-foreground">@{handle}</p>
+                    <TrueverseIdLink id={person.trueverse_id} />
                   </div>
                 </li>
               );
@@ -84,7 +86,6 @@ export function CommunitySidebarRight({
           Coming up
         </p>
         <ul className="mt-3 space-y-2 text-sm text-foreground">
-          <li>Messaging</li>
           <li>Marketplace</li>
           <li>Groups</li>
           <li>Events</li>

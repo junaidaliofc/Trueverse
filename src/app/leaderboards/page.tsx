@@ -6,6 +6,7 @@ import { leaderboards } from "@/lib/dummy-data";
 import { MotionItem, MotionPage } from "@/components/motion/primitives";
 import { Surface } from "@/components/ui/surface";
 import { FollowButton } from "@/components/social/follow-button";
+import { TrueverseIdLink } from "@/components/identity/member-links";
 import { cn } from "@/lib/utils";
 
 const tabs = [
@@ -73,7 +74,7 @@ export default function LeaderboardsPage() {
                   <Link href={`/u/${String(row.id).replace(/^tv_/, "")}`} className="font-semibold hover:underline">
                     {row.name}
                   </Link>
-                  <p className="font-mono text-xs text-muted-foreground">{row.id}</p>
+                  <TrueverseIdLink id={String(row.id)} className="text-xs" />
                 </div>
                 <div className="text-right">
                   <p className="font-display text-lg font-bold text-xp">{row.score}</p>

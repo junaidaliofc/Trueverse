@@ -110,3 +110,7 @@ export const startConversationSchema = z
   .refine((value) => Boolean(value.peer_id || value.trueverse_id), {
     message: "Choose a member to message."
   });
+
+export const notificationIdSchema = z.object({
+  id: z.string().uuid()
+});

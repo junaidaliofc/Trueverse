@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 const sizeClass = {
   sm: "!size-8 text-xs",
@@ -14,12 +15,14 @@ export function UserAvatar({
   name,
   src,
   size = "default",
-  className
+  className,
+  href
 }: {
   name: string;
   src?: string | null;
   size?: keyof typeof sizeClass;
   className?: string;
+  href?: string | null;
 }) {
   const initials = (name || "T")
     .split(" ")
@@ -28,7 +31,7 @@ export function UserAvatar({
     .slice(0, 2)
     .toUpperCase();
 
-  return (
+  const avatar = (
     <Avatar
       className={cn(sizeClass[size], "rounded-2xl after:rounded-2xl", className)}
       size={size === "sm" ? "sm" : size === "lg" || size === "xl" ? "lg" : "default"}
@@ -38,5 +41,12 @@ export function UserAvatar({
         {initials}
       </AvatarFallback>
     </Avatar>
+  );
+
+  if (!href) return avatar;
+  return (
+    <Link href={href} className="shrink-0 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+      {avatar}
+    </Link>
   );
 }

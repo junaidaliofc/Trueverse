@@ -1,28 +1,51 @@
 "use client";
 
+import { useCallback, useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, Home, MessageCircle, UserRound, Users } from "lucide-react";
+import { Bell, Home, MessageCircle, Search, UserRound, Users } from "lucide-react";
 import { SessionAvatar } from "@/components/auth/session-avatar";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Button } from "@/components/ui/button";
+import { NotificationBadge } from "@/components/notifications/notification-badge";
 import { cn } from "@/lib/utils";
 
+const GlobalSearchOverlay = dynamic(
+  () =>
+    import("@/components/search/global-search-overlay").then((mod) => mod.GlobalSearchOverlay),
+  { ssr: false }
+);
+
 const appNav = [
-  { href: "/dashboard", label: "Home", icon: Home, soon: false },
-  { href: "/passport", label: "Passport", icon: UserRound, soon: false },
-  { href: "/community", label: "Community", icon: Users, soon: false },
-          { href: "/messages", label: "Messages", icon: MessageCircle, soon: false },
-  { href: "/notifications", label: "Alerts", icon: Bell, soon: false }
+  { href: "/dashboard", label: "Home", icon: Home },
+  { href: "/passport", label: "Passport", icon: UserRound },
+  { href: "/community", label: "Community", icon: Users },
+  { href: "/messages", label: "Messages", icon: MessageCircle },
+  { href: "/notifications", label: "Notifications", icon: Bell }
 ] as const;
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const [searchOpen, setSearchOpen] = useState(false);
+  const closeSearch = useCallback(() => setSearchOpen(false), []);
   const isMarketing =
     pathname === "/" ||
     pathname.startsWith("/auth") ||
     pathname === "/design-system" ||
     pathname.startsWith("/design-system/");
+
+  useEffect(() => {
+    if (isMarketing) return;
+    function onKey(event: KeyboardEvent) {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setSearchOpen(true);
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isMarketing]);
 
   return (
     <div className="min-h-dvh">
@@ -51,17 +74,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     key={item.href}
                     href={item.href}
                     className={cn(
-                      "inline-flex items-center gap-1.5 rounded-2xl px-3.5 py-2 text-sm font-semibold transition-colors",
+                      "relative inline-flex items-center gap-1.5 rounded-2xl px-3.5 py-2 text-sm font-semibold transition-colors",
                       active
                         ? "bg-brand-soft text-brand"
                         : "text-muted-foreground hover:bg-muted hover:text-foreground"
                     )}
                   >
                     {item.label}
-                    {item.soon ? (
-                      <span className="rounded-full bg-muted px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-muted-foreground">
-                        Soon
-                      </span>
+                    {item.href === "/notifications" ? (
+                      <NotificationBadge compact className="static ml-0.5 min-w-4" />
                     ) : null}
                   </Link>
                 );
@@ -80,7 +101,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           )}
 
           {!isMarketing ? (
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1">
+              <Button
+                type="button"
+                size="icon-sm"
+                variant="ghost"
+                aria-label="Search"
+                onClick={() => setSearchOpen(true)}
+              >
+                <Search className="size-4" />
+              </Button>
               <ThemeToggle />
               <SessionAvatar />
             </div>
@@ -122,12 +152,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     )}
                   >
                     <Icon className="size-5" strokeWidth={active ? 2.5 : 2} />
-                    <span className="leading-none">{item.label}</span>
-                    {item.soon ? (
-                      <span className="absolute right-1 top-1 rounded-full bg-muted px-1 text-[8px] font-bold uppercase text-muted-foreground">
-                        Soon
-                      </span>
-                    ) : null}
+                    <span className="max-w-full truncate leading-none">{item.label}</span>
+                    {item.href === "/notifications" ? <NotificationBadge compact /> : null}
                   </Link>
                 </li>
               );
@@ -135,6 +161,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </ul>
         </nav>
       ) : null}
+
+        {searchOpen ? <GlobalSearchOverlay onClose={closeSearch} /> : null}
     </div>
   );
 }

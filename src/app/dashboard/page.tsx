@@ -8,18 +8,36 @@ import { ReputationDashboard } from "@/components/reputation/reputation-dashboar
 import { MotionItem, MotionPage } from "@/components/motion/primitives";
 import { buildReputationSnapshot } from "@/lib/reputation";
 import { dailyMissions } from "@/lib/dummy-data";
+import { fetchProfileCompletion } from "@/lib/profile-completion-server";
+import { suggestPeople } from "@/lib/suggested-people";
+import { ProfileCompletionCard } from "@/components/onboarding/profile-completion-card";
+import { OnboardingHost } from "@/components/onboarding/onboarding-host";
+import { PeopleYouMayKnow } from "@/components/social/people-you-may-know";
 import type { XpUnlock } from "@/lib/xp-engine";
+import type { Profile } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const { supabase, user, profile } = await requireProfile();
 
-  const { data: xpRow } = await supabase
-    .from("user_xp")
-    .select("total_xp, daily_streak")
-    .eq("profile_id", profile.id)
-    .maybeSingle<{ total_xp: number; daily_streak: number }>();
+  const [{ data: xpRow }, suggestedRes, completion] = await Promise.all([
+    supabase
+      .from("user_xp")
+      .select("total_xp, daily_streak")
+      .eq("profile_id", profile.id)
+      .maybeSingle<{ total_xp: number; daily_streak: number }>(),
+    supabase
+      .from("profiles")
+      .select(
+        "id, full_name, photo_url, bio, trust_score, streak, trueverse_id, username, city, headline, interests, social_links, role, is_disabled, last_positive_at, created_at, updated_at"
+      )
+      .eq("is_disabled", false)
+      .neq("id", profile.id)
+      .order("created_at", { ascending: false })
+      .limit(8),
+    fetchProfileCompletion(supabase, profile, Boolean(user.email_confirmed_at))
+  ]);
 
   const totalXp = xpRow?.total_xp ?? 0;
   const trustIndex = profileTrustIndex(profile);
@@ -29,6 +47,7 @@ export default async function HomePage() {
     emailVerified: Boolean(user.email_confirmed_at),
     totalXp
   });
+  const suggestions = suggestPeople((suggestedRes.data ?? []) as Profile[], profile);
 
   const unlocks: XpUnlock[] = [
     {
@@ -54,6 +73,8 @@ export default async function HomePage() {
 
   return (
     <MotionPage className="mx-auto max-w-lg space-y-5 sm:max-w-3xl sm:space-y-6">
+      <OnboardingHost completion={completion} createdAt={profile.created_at} />
+
       <MotionItem className="pt-1">
         <p className="text-sm font-medium text-muted-foreground">{getGreeting()}</p>
         <h1 className="mt-1 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
@@ -63,6 +84,8 @@ export default async function HomePage() {
           Reputation first. Trust level {scoreToTrustLevel(trustIndex)} stays independent of XP.
         </p>
       </MotionItem>
+
+      <ProfileCompletionCard completion={completion} />
 
       <StreakHero
         streak={{
@@ -74,6 +97,8 @@ export default async function HomePage() {
       />
 
       <ReputationDashboard snapshot={snapshot} />
+
+      <PeopleYouMayKnow people={suggestions} />
 
       <DailyMissionsCard
         missions={missions.map((mission) => ({
