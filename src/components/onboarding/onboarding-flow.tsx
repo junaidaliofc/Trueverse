@@ -13,10 +13,12 @@ const ICONS = [Camera, Mail, UserRound, Handshake, Users];
 
 export function OnboardingFlow({
   open,
-  onDismiss
+  onDismiss,
+  local = false
 }: {
   open: boolean;
   onDismiss: () => void;
+  local?: boolean;
 }) {
   const router = useRouter();
   const [step, setStep] = useState(0);
@@ -73,7 +75,7 @@ export function OnboardingFlow({
           <Button
             type="button"
             onClick={() => {
-              router.push(current.href);
+              if (!local) router.push(current.href);
               if (step >= ONBOARDING_STEPS.length - 1) finish();
               else setStep((value) => value + 1);
             }}

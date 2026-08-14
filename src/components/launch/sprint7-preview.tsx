@@ -109,7 +109,7 @@ export function Sprint7Preview() {
       {searchOpen ? (
         <GlobalSearchOverlay local onClose={() => setSearchOpen(false)} />
       ) : null}
-      <OnboardingFlow open={onboardingOpen} onDismiss={() => setOnboardingOpen(false)} />
+      <OnboardingFlow local open={onboardingOpen} onDismiss={() => setOnboardingOpen(false)} />
     </div>
   );
 }
