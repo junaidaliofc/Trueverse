@@ -1,7 +1,8 @@
 "use client";
 
 import { dailyMissions, missions } from "@/lib/dummy-data";
-import { DailyMissions, MissionCard } from "@/components/missions/daily-missions";
+import { DailyMissionsCard } from "@/components/missions/daily-missions-card";
+import { MissionCard } from "@/components/missions/daily-missions";
 import { MotionItem, MotionPage } from "@/components/motion/primitives";
 
 export default function MissionsPage() {
@@ -12,12 +13,22 @@ export default function MissionsPage() {
       <MotionItem>
         <h1 className="font-display text-3xl font-bold tracking-tight">Missions</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Three daily missions keep the habit alive. Rewards are XP and badges — never trust.
+          Five daily missions keep the habit alive. Rewards are XP and badges — never trust.
         </p>
       </MotionItem>
 
       <MotionItem>
-        <DailyMissions missions={dailyMissions} showContinue />
+        <DailyMissionsCard
+          missions={dailyMissions.map((mission) => ({
+            id: mission.id,
+            title: mission.title,
+            description: mission.description,
+            href: mission.href ?? "/community",
+            completed: mission.completed,
+            progress: mission.progress,
+            target: mission.target
+          }))}
+        />
       </MotionItem>
 
       <MotionItem>

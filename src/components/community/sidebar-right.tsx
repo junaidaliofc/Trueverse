@@ -84,10 +84,16 @@ export function CommunitySidebarRight({
           Coming up
         </p>
         <ul className="mt-3 space-y-2 text-sm text-foreground">
-          <li>Nearby feed (opt-in location)</li>
           <li>Messaging</li>
-          <li>Labeled sponsored posts</li>
+          <li>Marketplace</li>
+          <li>Groups</li>
+          <li>Events</li>
+          <li>Business Profiles</li>
+          <li>AI Assistant</li>
         </ul>
+        <p className="mt-3 text-xs leading-5 text-muted-foreground">
+          Architecture reserved — not shipping in this sprint.
+        </p>
       </section>
     </aside>
   );

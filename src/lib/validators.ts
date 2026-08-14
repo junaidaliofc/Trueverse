@@ -71,7 +71,7 @@ export const activityCommentSchema = z.object({
 });
 
 export const communityPostSchema = z.object({
-  post_type: z.enum(["trust_act", "update", "help", "event"]),
+  post_type: z.enum(["trust_act", "update", "help", "event", "achievement"]),
   title: z.string().trim().max(120).optional().or(z.literal("")),
   body: z.string().trim().min(1).max(4000),
   image_url: z.string().trim().url().optional().or(z.literal("")),
@@ -86,4 +86,10 @@ export const communityReactionSchema = z.object({
   reaction_type: z.enum(["like", "appreciate"])
 });
 
-export const communityFeedTabSchema = z.enum(["for_you", "following", "latest", "nearby"]);
+export const communityFeedTabSchema = z.enum([
+  "for_you",
+  "following",
+  "nearby",
+  "trending",
+  "latest"
+]);

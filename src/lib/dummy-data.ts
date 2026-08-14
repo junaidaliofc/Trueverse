@@ -415,7 +415,7 @@ export const userStreaks: StreakState = {
   lastActiveDate: "2026-06-25"
 };
 
-/** Exactly 3 daily missions — the habit loop. */
+/** Daily missions — habit loop. Rewards are XP only. */
 export const dailyMissions: Mission[] = [
   {
     id: "daily-appreciate",
@@ -423,9 +423,9 @@ export const dailyMissions: Mission[] = [
     description: "Send an appreciation on a community activity.",
     cadence: "daily",
     xp_reward: 25,
-    progress: 0,
+    progress: 1,
     target: 1,
-    completed: false,
+    completed: true,
     href: "/community"
   },
   {
@@ -440,15 +440,37 @@ export const dailyMissions: Mission[] = [
     href: "/interactions/create"
   },
   {
-    id: "daily-photo",
-    title: "Upload profile photo",
-    description: "Add a clear photo so people recognize you.",
+    id: "daily-event",
+    title: "Attend an event",
+    description: "Show up to a community event or host one.",
+    cadence: "daily",
+    xp_reward: 35,
+    progress: 0,
+    target: 1,
+    completed: false,
+    href: "/community"
+  },
+  {
+    id: "daily-profile",
+    title: "Complete profile",
+    description: "Add a photo, headline, and city on your Passport.",
     cadence: "daily",
     xp_reward: 30,
     progress: 0,
     target: 1,
     completed: false,
     href: "/passport"
+  },
+  {
+    id: "daily-welcome",
+    title: "Welcome a newcomer",
+    description: "Leave a kind note on a new member’s first post.",
+    cadence: "daily",
+    xp_reward: 20,
+    progress: 0,
+    target: 1,
+    completed: false,
+    href: "/community"
   }
 ];
 

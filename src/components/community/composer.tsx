@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
+  Award,
   CalendarDays,
   HandHeart,
   HelpCircle,
@@ -25,7 +26,8 @@ const ACTIONS: Array<{
   { type: "trust_act", icon: HandHeart },
   { type: "update", icon: Megaphone },
   { type: "help", icon: HelpCircle },
-  { type: "event", icon: CalendarDays }
+  { type: "event", icon: CalendarDays },
+  { type: "achievement", icon: Award }
 ];
 
 export function CommunityComposer({

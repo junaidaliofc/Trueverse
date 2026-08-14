@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { requireProfile, profileTrustIndex } from "@/lib/auth";
 import { scoreToTrustLevel } from "@/lib/design";
 import { xpToLevel } from "@/lib/xp-engine";
-import { fetchCommunityFeed } from "@/lib/community-server";
 import { CommunityFeed } from "@/components/community/community-feed";
 import type { Profile } from "@/lib/types";
 
@@ -16,17 +15,12 @@ export const metadata: Metadata = {
 export default async function CommunityPage() {
   const { supabase, profile } = await requireProfile();
 
-  const [{ data: xpRow }, feed, suggestedRes] = await Promise.all([
+  const [{ data: xpRow }, suggestedRes] = await Promise.all([
     supabase
       .from("user_xp")
       .select("total_xp, daily_streak")
       .eq("profile_id", profile.id)
       .maybeSingle<{ total_xp: number; daily_streak: number }>(),
-    fetchCommunityFeed(supabase, {
-      tab: "for_you",
-      viewerId: profile.id,
-      limit: 40
-    }),
     supabase
       .from("profiles")
       .select(
@@ -41,9 +35,6 @@ export default async function CommunityPage() {
   const totalXp = xpRow?.total_xp ?? 0;
   const streak = xpRow?.daily_streak ?? profile.streak ?? 0;
   const trustLevel = scoreToTrustLevel(profileTrustIndex(profile));
-  const migrationRequired = Boolean(
-    feed.error && /does not exist|relation/i.test(feed.error)
-  );
 
   return (
     <CommunityFeed
@@ -51,9 +42,7 @@ export default async function CommunityPage() {
       trustLevel={trustLevel}
       xpLevel={xpToLevel(totalXp).level}
       streak={streak}
-      initialPosts={feed.posts}
       suggested={(suggestedRes.data ?? []) as Profile[]}
-      migrationRequired={migrationRequired}
     />
   );
 }

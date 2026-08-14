@@ -13,7 +13,7 @@ import type {
 } from "@/lib/types";
 import { scoreToTrustLevel } from "@/lib/design";
 
-export type CommunityFeedTab = "for_you" | "following" | "latest" | "nearby";
+export type CommunityFeedTab = "for_you" | "following" | "nearby" | "trending" | "latest";
 
 /** Feed architecture supports sponsored slots without rewriting the list. */
 export type OrganicFeedEntry = {
@@ -25,8 +25,10 @@ export type OrganicFeedEntry = {
 export type SponsoredFeedEntry = {
   kind: "sponsored";
   id: string;
-  /** Reserved for Sprint 3+ ads. Never shown until labeled sponsored content ships. */
-  enabled: false;
+  enabled: boolean;
+  advertiser?: string;
+  title?: string;
+  body?: string;
 };
 
 export type FeedEntry = OrganicFeedEntry | SponsoredFeedEntry;
@@ -58,6 +60,12 @@ export const POST_TYPE_META: Record<
     composerLabel: "Event",
     placeholder: "Share an upcoming community event…",
     tone: "bg-xp-soft text-xp"
+  },
+  achievement: {
+    label: "Achievement",
+    composerLabel: "Achievement",
+    placeholder: "Share a badge or milestone you actually unlocked…",
+    tone: "bg-success-soft text-success"
   }
 };
 
@@ -143,14 +151,16 @@ export function assemblePostViews(options: {
 }
 
 /**
- * Insert reserved sponsored slots every `every` organic posts.
- * Slots stay disabled until advertising ships (must be labeled).
+ * Insert labeled sponsored slots every `every` organic posts.
  */
 export function buildFeedEntries(
   posts: CommunityPostView[],
-  options?: { every?: number }
+  options?: {
+    every?: number;
+    sponsored?: { advertiser: string; title: string; body: string };
+  }
 ): FeedEntry[] {
-  const every = options?.every ?? 4;
+  const every = options?.every ?? 10;
   const entries: FeedEntry[] = [];
   let organic = 0;
 
@@ -161,7 +171,12 @@ export function buildFeedEntries(
       entries.push({
         kind: "sponsored",
         id: `sponsored-slot-${organic / every}`,
-        enabled: false
+        enabled: true,
+        advertiser: options?.sponsored?.advertiser ?? "Trueverse",
+        title: options?.sponsored?.title ?? "Sponsored",
+        body:
+          options?.sponsored?.body ??
+          "Placeholder sponsored placement. Clearly labeled and separate from reputation."
       });
     }
   }

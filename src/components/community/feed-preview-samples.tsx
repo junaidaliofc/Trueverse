@@ -79,8 +79,8 @@ export function CommunityFeedPreviewSamples() {
           />
         </div>
         <div className="min-w-0 space-y-4">
-          <CommunityFeedCard post={SAMPLE_POST} viewerId={null} />
-          <CommunityFeedList posts={[]} viewerId={null} />
+        <CommunityFeedCard post={SAMPLE_POST} mock />
+        <CommunityFeedList posts={[SAMPLE_POST]} mock />
         </div>
         <div className="hidden lg:block">
           <CommunitySidebarRight

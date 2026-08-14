@@ -20,7 +20,7 @@ export function DailyMissions({
   showContinue?: boolean;
 }) {
   const reduceMotion = useReducedMotion();
-  const daily = missions.filter((mission) => mission.cadence === "daily").slice(0, 3);
+  const daily = missions.filter((mission) => mission.cadence === "daily").slice(0, 5);
   const next = daily.find((mission) => !mission.completed) ?? daily[0];
   const completedCount = daily.filter((mission) => mission.completed).length;
 

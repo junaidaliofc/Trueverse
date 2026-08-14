@@ -106,7 +106,7 @@ export type AdminReport = NegativeReport & {
   reported_user?: Pick<Profile, "full_name" | "trueverse_id" | "trust_score"> | null;
 };
 
-export type CommunityPostType = "trust_act" | "update" | "help" | "event";
+export type CommunityPostType = "trust_act" | "update" | "help" | "event" | "achievement";
 export type CommunityModerationStatus = "visible" | "pending_review" | "removed";
 export type CommunityReactionType = "like" | "appreciate";
 
