@@ -26,7 +26,7 @@ export const COMMUNITY_CATEGORIES = [
 
 export type CommunityCategory = (typeof COMMUNITY_CATEGORIES)[number];
 
-export const COMPOSER_POST_TYPES: CommunityPostType[] = ["update", "achievement", "help"];
+export const COMPOSER_POST_TYPES = ["update", "achievement", "help"] as const;
 
 export const POST_BODY_MAX = 4000;
 export const COMMENT_BODY_MAX = 800;

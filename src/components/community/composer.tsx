@@ -2,7 +2,6 @@
 
 import { useState, useTransition } from "react";
 import { Award, HelpCircle, ImagePlus, MapPin, Megaphone, X } from "lucide-react";
-import type { CommunityPostType } from "@/lib/types";
 import {
   COMMUNITY_CATEGORIES,
   COMPOSER_POST_TYPES,
@@ -31,7 +30,7 @@ export function CommunityComposer({
   authorPhoto?: string | null;
   onCreated?: () => void;
 }) {
-  const [selected, setSelected] = useState<CommunityPostType>("update");
+  const [selected, setSelected] = useState<(typeof COMPOSER_POST_TYPES)[number]>("update");
   const [body, setBody] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [category, setCategory] = useState<(typeof COMMUNITY_CATEGORIES)[number]>(
