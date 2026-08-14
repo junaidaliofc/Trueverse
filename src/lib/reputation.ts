@@ -4,8 +4,27 @@
  * reputation engine ships. XP never increases trust.
  */
 
-import type { LiveProfile } from "@/lib/auth";
-import { profileTrustIndex } from "@/lib/auth";
+import type { Profile } from "@/lib/types";
+
+type ReputationProfile = Profile & {
+  trust_index?: number | null;
+  identity_verified?: boolean | null;
+  trust_acts?: number | null;
+  appreciations_count?: number | null;
+};
+
+function profileTrustIndex(profile: ReputationProfile) {
+  if (typeof profile.trust_index === "number") {
+    return Math.max(0, Math.min(100, profile.trust_index));
+  }
+  if (typeof profile.trust_score === "number" && profile.trust_score > 100) {
+    return Math.max(0, Math.min(100, Math.round(profile.trust_score / 10)));
+  }
+  if (typeof profile.trust_score === "number") {
+    return Math.max(0, Math.min(100, profile.trust_score));
+  }
+  return 15;
+}
 
 export type ReputationDimensionId =
   | "identity"
@@ -37,7 +56,7 @@ function clampScore(value: number) {
  * Not a live reputation engine — values stay conservative and empty-safe.
  */
 export function buildReputationSnapshot(
-  profile: LiveProfile,
+  profile: ReputationProfile,
   options?: { emailVerified?: boolean; totalXp?: number }
 ): ReputationSnapshot {
   const trust = profileTrustIndex(profile);

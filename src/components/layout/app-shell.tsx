@@ -21,7 +21,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const isMarketing =
     pathname === "/" ||
     pathname.startsWith("/auth") ||
-    pathname === "/design-system";
+    pathname === "/design-system" ||
+    pathname.startsWith("/design-system/");
 
   return (
     <div className="min-h-dvh">
