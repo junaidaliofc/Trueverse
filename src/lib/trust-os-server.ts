@@ -155,7 +155,14 @@ export async function fetchAdminTrustOs(supabase: SupabaseClient): Promise<{
       reporter_name: nameMap.get(row.reporter_id) ?? "Member",
       created_at: row.created_at
     })),
-    appeals: appealRows.map(({ appellant_id: _id, ...row }) => row),
+    appeals: appealRows.map((row) => ({
+      id: row.id,
+      reason: row.reason,
+      status: row.status,
+      target_table: row.target_table,
+      created_at: row.created_at,
+      resolution_notes: row.resolution_notes
+    })),
     flagged: (flaggedRes.data ?? []) as FlaggedAccountRow[],
     audit: auditRows.map((row) => ({
       ...row,
