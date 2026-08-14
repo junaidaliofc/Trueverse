@@ -65,8 +65,9 @@ export default async function HomePage() {
       const complete = Boolean(profile.full_name && profile.photo_url && profile.bio);
       return { ...mission, completed: complete, progress: complete ? 1 : 0 };
     }
-    if (mission.id === "daily-appreciate") {
-      return { ...mission, completed: true, progress: 1 };
+    if (mission.id === "daily-streak") {
+      const complete = streakDays > 0;
+      return { ...mission, completed: complete, progress: complete ? 1 : 0 };
     }
     return { ...mission, completed: false, progress: 0 };
   });
@@ -76,11 +77,11 @@ export default async function HomePage() {
       <OnboardingHost completion={completion} createdAt={profile.created_at} />
 
       <MotionItem className="pt-1">
-        <p className="text-sm font-medium text-muted-foreground">{getGreeting()}</p>
+        <p className="text-sm font-medium text-foreground/80">{getGreeting()}</p>
         <h1 className="mt-1 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
           {firstName}
         </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
+        <p className="mt-2 text-sm text-foreground/80">
           Reputation first. Trust level {scoreToTrustLevel(trustIndex)} stays independent of XP.
         </p>
       </MotionItem>
@@ -116,7 +117,7 @@ export default async function HomePage() {
 
       <MotionItem className="glass-elevated rounded-[1.75rem] px-6 py-10 text-center">
         <p className="font-display text-lg font-bold text-foreground">No achievements yet</p>
-        <p className="mt-2 text-sm text-muted-foreground">
+        <p className="mt-2 text-sm text-foreground/80">
           Complete missions and Trust Acts to unlock cosmetics. XP never changes trust.
         </p>
       </MotionItem>

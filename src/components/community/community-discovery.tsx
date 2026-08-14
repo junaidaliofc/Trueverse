@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { MapPin, Users } from "lucide-react";
 import {
+  ALL_DISCOVER_TOPICS,
   DISCOVER_TOPICS,
   communitiesForTopic,
   type DiscoverTopic
@@ -16,20 +17,20 @@ export function CommunityDiscovery({
   initialTopic?: string;
 }) {
   const start =
-    DISCOVER_TOPICS.find((topic) => topic.toLowerCase() === initialTopic?.toLowerCase()) ??
-    "Trending";
+    ALL_DISCOVER_TOPICS.find((item) => item.toLowerCase() === initialTopic?.toLowerCase()) ??
+    "Suggested";
   const [topic, setTopic] = useState<DiscoverTopic>(start);
   const communities = useMemo(() => communitiesForTopic(topic), [topic]);
 
   return (
     <div className="space-y-6">
       <header>
-        <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">Discover</p>
+        <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">Featured</p>
         <h1 className="mt-1 font-display text-3xl font-bold tracking-tight text-foreground">
           Communities
         </h1>
-        <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">
-          Find a calm group. Member counts are placeholders until live groups ship.
+        <p className="mt-2 max-w-xl text-sm leading-6 text-foreground/80">
+          Suggested groups to join. Near You is a placeholder until location ships.
         </p>
       </header>
 
@@ -43,7 +44,7 @@ export function CommunityDiscovery({
               "rounded-full px-3.5 py-1.5 text-xs font-bold tracking-wide",
               topic === item
                 ? "bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground hover:text-foreground"
+                : "bg-muted text-foreground/80 hover:text-foreground"
             )}
           >
             {item}
@@ -54,7 +55,7 @@ export function CommunityDiscovery({
       {communities.length === 0 ? (
         <div className="glass-elevated rounded-[1.75rem] px-5 py-12 text-center">
           <p className="font-display text-lg font-bold">No communities in this topic yet</p>
-          <p className="mt-2 text-sm text-muted-foreground">Try Trending or Neighborhood.</p>
+          <p className="mt-2 text-sm text-foreground/80">Try Trending or Suggested.</p>
         </div>
       ) : (
         <ul className="grid gap-3 sm:grid-cols-2">
@@ -66,8 +67,8 @@ export function CommunityDiscovery({
               <h2 className="mt-1 font-display text-xl font-bold text-foreground">
                 {community.name}
               </h2>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">{community.blurb}</p>
-              <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+              <p className="mt-2 text-sm leading-6 text-foreground/80">{community.blurb}</p>
+              <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-foreground/75">
                 <span className="inline-flex items-center gap-1">
                   <Users className="size-3.5" />
                   {community.members} members

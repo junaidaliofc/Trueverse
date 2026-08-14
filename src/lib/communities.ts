@@ -1,7 +1,8 @@
 export type DiscoverTopic =
+  | "Suggested"
   | "Trending"
   | "Newest"
-  | "Nearby"
+  | "Near You"
   | "Technology"
   | "Neighborhood"
   | "Volunteering"
@@ -9,10 +10,12 @@ export type DiscoverTopic =
   | "Business"
   | "Book Clubs";
 
-export const DISCOVER_TOPICS: DiscoverTopic[] = [
-  "Trending",
-  "Newest",
-  "Nearby",
+export const FEATURED_TOPICS = ["Suggested", "Trending", "Newest", "Near You"] as const;
+
+export const DISCOVER_TOPICS: DiscoverTopic[] = [...FEATURED_TOPICS];
+
+export const ALL_DISCOVER_TOPICS: DiscoverTopic[] = [
+  ...FEATURED_TOPICS,
   "Technology",
   "Neighborhood",
   "Volunteering",
@@ -90,10 +93,31 @@ export const DISCOVER_COMMUNITIES: DiscoverCommunity[] = [
   {
     id: "nearby-block",
     name: "Nearby Block Watch",
-    topic: "Nearby",
+    topic: "Near You",
     members: 52,
     blurb: "Placeholder for location-aware groups.",
-    place: "Nearby · coming soon"
+    place: "Near you · coming soon"
+  }
+];
+
+export const PLACEHOLDER_BUSINESSES = [
+  {
+    id: "biz-bakery",
+    name: "Westside Bakery",
+    place: "Westside",
+    blurb: "Neighborhood bakery · coming soon"
+  },
+  {
+    id: "biz-clinic",
+    name: "Riverside Clinic",
+    place: "Riverside",
+    blurb: "Local care · coming soon"
+  },
+  {
+    id: "biz-main",
+    name: "Main Street Hardware",
+    place: "Downtown",
+    blurb: "Trusted shop · coming soon"
   }
 ];
 
@@ -116,9 +140,24 @@ export function communitiesForTopic(topic: DiscoverTopic | "all") {
   if (topic === "all" || topic === "Trending") {
     return [...DISCOVER_COMMUNITIES].sort((a, b) => b.members - a.members);
   }
+  if (topic === "Suggested") {
+    return [
+      DISCOVER_COMMUNITIES[0],
+      DISCOVER_COMMUNITIES[2],
+      DISCOVER_COMMUNITIES[1],
+      DISCOVER_COMMUNITIES[5],
+      DISCOVER_COMMUNITIES[6],
+      DISCOVER_COMMUNITIES[7]
+    ].filter(Boolean);
+  }
   if (topic === "Newest") {
     return DISCOVER_COMMUNITIES.filter((item) => item.topic === "Newest").concat(
       DISCOVER_COMMUNITIES.slice(0, 3)
+    );
+  }
+  if (topic === "Near You") {
+    return DISCOVER_COMMUNITIES.filter(
+      (item) => item.topic === "Near You" || item.topic === "Neighborhood"
     );
   }
   return DISCOVER_COMMUNITIES.filter((item) => item.topic === topic);

@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { groupSearchHits, type SearchHit } from "@/lib/search";
-import { DISCOVER_COMMUNITIES, PLACEHOLDER_EVENTS } from "@/lib/communities";
+import { DISCOVER_COMMUNITIES, PLACEHOLDER_BUSINESSES, PLACEHOLDER_EVENTS } from "@/lib/communities";
 import { passportUsername } from "@/lib/passport";
 
 type SearchProfile = {
@@ -105,6 +105,19 @@ export async function searchPlatform(
     href: "/community/discover"
   }));
 
-  const hits = [...memberHits, ...postHits, ...communityHits, ...eventHits].slice(0, 28);
+  const businessHits: SearchHit[] = PLACEHOLDER_BUSINESSES.filter((item) =>
+    `${item.name} ${item.place} ${item.blurb}`.toLowerCase().includes(term.toLowerCase())
+  ).map((item) => ({
+    id: `business-${item.id}`,
+    kind: "business" as const,
+    title: item.name,
+    subtitle: `${item.place} · coming soon`,
+    href: "/community/discover?topic=Business"
+  }));
+
+  const hits = [...memberHits, ...postHits, ...communityHits, ...eventHits, ...businessHits].slice(
+    0,
+    28
+  );
   return { hits, groups: groupSearchHits(hits) };
 }

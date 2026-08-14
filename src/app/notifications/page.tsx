@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Notifications",
-  description: "Trueverse notifications — social, trust, community, and system."
+  description: "Trueverse notifications — social, trust, and messages."
 };
 
 export default async function NotificationsPage() {

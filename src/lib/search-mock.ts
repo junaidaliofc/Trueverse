@@ -1,6 +1,6 @@
 import { profiles } from "@/lib/dummy-data";
 import { mockPostsForTab } from "@/lib/community-mock";
-import { DISCOVER_COMMUNITIES, PLACEHOLDER_EVENTS } from "@/lib/communities";
+import { DISCOVER_COMMUNITIES, PLACEHOLDER_BUSINESSES, PLACEHOLDER_EVENTS } from "@/lib/communities";
 import {
   groupSearchHits,
   matchesQuery,
@@ -45,7 +45,19 @@ export function searchMockCatalog(query: string): SearchHit[] {
     })
   );
 
-  return [...people, ...posts, ...communities, ...events].slice(0, 24);
+  const businesses = PLACEHOLDER_BUSINESSES.filter((item) =>
+    matchesQuery(`${item.name} ${item.place} ${item.blurb}`, q)
+  ).map(
+    (item): SearchHit => ({
+      id: `business-${item.id}`,
+      kind: "business",
+      title: item.name,
+      subtitle: `${item.place} · coming soon`,
+      href: "/community/discover?topic=Business"
+    })
+  );
+
+  return [...people, ...posts, ...communities, ...events, ...businesses].slice(0, 28);
 }
 
 export function groupedMockSearch(query: string) {

@@ -23,10 +23,13 @@ function asEventKey(value: string | null): NotificationEventKey {
   switch (value) {
     case "appreciation":
     case "follow":
+    case "reply":
     case "comment":
+    case "message":
+    case "trust_accepted":
+    case "weekly_summary":
     case "mention":
     case "community_event":
-    case "weekly_summary":
     case "verification_approved":
     case "trust":
       return value;
@@ -36,10 +39,9 @@ function asEventKey(value: string | null): NotificationEventKey {
 }
 
 function asCategory(value: string | null): NotificationCategory {
-  if (value === "social" || value === "trust" || value === "community" || value === "system") {
-    return value;
-  }
-  return "system";
+  if (value === "messages") return "messages";
+  if (value === "trust" || value === "system") return "trust";
+  return "social";
 }
 
 export async function fetchNotifications(

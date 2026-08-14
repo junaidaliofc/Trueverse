@@ -36,7 +36,7 @@ export function DailyMissionsCard({
           <h2 className="mt-1 font-display text-2xl font-bold tracking-tight text-foreground">
             Today
           </h2>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-1 text-sm text-foreground/80">
             {completedCount}/{missions.length} complete · XP only, never trust
           </p>
         </div>
@@ -70,7 +70,7 @@ export function DailyMissionsCard({
                 >
                   {mission.title}
                 </p>
-                <p className="mt-0.5 text-xs leading-5 text-muted-foreground">
+                <p className="mt-0.5 text-xs leading-5 text-foreground/75">
                   {mission.description}
                 </p>
               </div>

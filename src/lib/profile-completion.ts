@@ -56,34 +56,40 @@ export function buildProfileCompletion(flags: {
 
 export const ONBOARDING_STEPS = [
   {
-    id: "photo",
-    title: "Upload profile photo",
-    body: "A clear photo helps neighbors recognize you.",
-    href: "/profile"
+    id: "passport",
+    title: "Passport",
+    body: "Your Passport is the public story of who you are — name, photo, and verified identity. It is not a scoreboard.",
+    href: "/passport"
   },
   {
-    id: "email",
-    title: "Verify email",
-    body: "Confirm the address on your Passport.",
-    href: "/auth/verify"
+    id: "trust",
+    title: "Trust",
+    body: "Trust comes from real help, recorded as Trust Acts. Likes, streaks, and XP never raise Trust.",
+    href: "/interactions/create"
+  },
+  {
+    id: "communities",
+    title: "Communities",
+    body: "Find a calm group — neighborhood, volunteering, or a book club — and show up as yourself.",
+    href: "/community/discover"
+  },
+  {
+    id: "messaging",
+    title: "Messaging",
+    body: "Direct messages stay between people. They never change Trust Score.",
+    href: "/messages"
+  },
+  {
+    id: "privacy",
+    title: "Privacy",
+    body: "You choose what the neighborhood sees. Sensitive reports stay out of public Passport views.",
+    href: "/profile"
   },
   {
     id: "profile",
     title: "Complete profile",
-    body: "Add your name and a short bio.",
+    body: "Add a photo, your name, and a short bio so neighbors can recognize you.",
     href: "/profile"
-  },
-  {
-    id: "trust",
-    title: "Record first Trust Act",
-    body: "Recognize someone who actually helped.",
-    href: "/interactions/create"
-  },
-  {
-    id: "community",
-    title: "Join community",
-    body: "Find a neighborhood group and say hello.",
-    href: "/community/discover"
   }
 ] as const;
 

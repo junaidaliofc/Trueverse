@@ -4,16 +4,10 @@
 alter table public.notifications
   add column if not exists category text not null default 'system';
 
-do $$
-begin
-  if not exists (
-    select 1 from pg_constraint where conname = 'notifications_category_check'
-  ) then
-    alter table public.notifications
-      add constraint notifications_category_check
-      check (category in ('social', 'trust', 'community', 'system'));
-  end if;
-end $$;
+alter table public.notifications drop constraint if exists notifications_category_check;
+alter table public.notifications
+  add constraint notifications_category_check
+  check (category in ('social', 'trust', 'community', 'system', 'messages'));
 
 alter table public.notifications
   add column if not exists event_key text;
@@ -45,10 +39,14 @@ create table if not exists public.notification_preferences (
   trust boolean not null default true,
   community boolean not null default true,
   system boolean not null default true,
+  messages boolean not null default true,
   email_digest boolean not null default true,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table public.notification_preferences
+  add column if not exists messages boolean not null default true;
 
 drop trigger if exists notification_preferences_touch_updated_at on public.notification_preferences;
 create trigger notification_preferences_touch_updated_at
@@ -82,4 +80,4 @@ grant select, insert, update on table public.notification_preferences to authent
 comment on table public.notification_preferences is
   'Per-member notification category switches. Owner access only.';
 comment on column public.notifications.category is
-  'Inbox filter: social, trust, community, or system. Never mutates trust.';
+  'Inbox filter: social, trust, or messages. Legacy community/system values map in the app. Never mutates trust.';

@@ -1,4 +1,4 @@
-export const NOTIFICATION_CATEGORIES = ["all", "social", "trust", "community", "system"] as const;
+export const NOTIFICATION_CATEGORIES = ["all", "social", "trust", "messages"] as const;
 
 export type NotificationCategory = Exclude<(typeof NOTIFICATION_CATEGORIES)[number], "all">;
 export type NotificationFilter = (typeof NOTIFICATION_CATEGORIES)[number];
@@ -6,10 +6,13 @@ export type NotificationFilter = (typeof NOTIFICATION_CATEGORIES)[number];
 export type NotificationEventKey =
   | "appreciation"
   | "follow"
+  | "reply"
   | "comment"
+  | "message"
+  | "trust_accepted"
+  | "weekly_summary"
   | "mention"
   | "community_event"
-  | "weekly_summary"
   | "verification_approved"
   | "trust"
   | "system";

@@ -12,7 +12,7 @@ export function PeopleYouMayKnow({ people }: { people: SuggestedPerson[] }) {
     return (
       <section className="glass-elevated rounded-[1.75rem] px-5 py-8 text-center">
         <p className="font-display text-lg font-bold text-foreground">People you may know</p>
-        <p className="mt-2 text-sm text-muted-foreground">
+        <p className="mt-2 text-sm text-foreground/80">
           Suggestions appear as the neighborhood grows.
         </p>
       </section>
@@ -25,8 +25,8 @@ export function PeopleYouMayKnow({ people }: { people: SuggestedPerson[] }) {
         <h2 className="font-display text-xl font-bold tracking-tight text-foreground">
           People you may know
         </h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Same community, similar interests, recently joined. Nearby is a placeholder.
+        <p className="mt-1 text-sm text-foreground/80">
+          Same community, shared interests, and mutual trust. Location is coming later.
         </p>
       </div>
       <ul className="grid gap-3 sm:grid-cols-2">
@@ -52,7 +52,7 @@ export function PeopleYouMayKnow({ people }: { people: SuggestedPerson[] }) {
                   </div>
                   <div className="mt-1.5 flex flex-wrap items-center gap-2">
                     <TrustLevelBadge level={scoreToTrustLevel(score)} showLabel={false} />
-                    <span className="text-[11px] font-medium text-muted-foreground">
+                    <span className="text-[11px] font-medium text-foreground/75">
                       {reasonLabel}
                     </span>
                   </div>

@@ -11,10 +11,11 @@ import { ProfileCompletionCard } from "@/components/onboarding/profile-completio
 import { OnboardingFlow } from "@/components/onboarding/onboarding-flow";
 import { PeopleYouMayKnow } from "@/components/social/people-you-may-know";
 import { CommunityDiscovery } from "@/components/community/community-discovery";
+import { DailyMissionsCard } from "@/components/missions/daily-missions-card";
 import { mockNotifications } from "@/lib/notifications-mock";
 import { buildProfileCompletion } from "@/lib/profile-completion";
 import { suggestPeople } from "@/lib/suggested-people";
-import { profiles } from "@/lib/dummy-data";
+import { dailyMissions, profiles } from "@/lib/dummy-data";
 import { SEARCH_EMPTY_COPY } from "@/lib/search";
 
 const partialCompletion = buildProfileCompletion({
@@ -55,9 +56,8 @@ export function Sprint7Preview() {
         <h1 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
           Search, notifications, launch
         </h1>
-        <p className="text-sm leading-6 text-muted-foreground">
-          Global search, a real notification inbox, profile completion, onboarding, and community
-          discovery — without redesigning existing product pages.
+        <p className="text-sm leading-6 text-foreground/80">
+          Instant search, smart notifications, daily missions, and a friendly onboarding walkthrough.
         </p>
         <div className="flex flex-wrap gap-2">
           <Button type="button" size="sm" onClick={() => setSearchOpen(true)}>
@@ -71,9 +71,9 @@ export function Sprint7Preview() {
 
       <section id="search" className="space-y-3">
         <h2 className="font-display text-xl font-semibold">Global search</h2>
-        <p className="text-sm text-muted-foreground">{SEARCH_EMPTY_COPY}</p>
-        <div className="glass-elevated rounded-[1.75rem] px-5 py-8 text-center text-sm text-muted-foreground">
-          Use Open search. Try “Sarah”, “westside”, or “book”.
+        <p className="text-sm text-foreground/80">{SEARCH_EMPTY_COPY}</p>
+        <div className="glass-elevated rounded-[1.75rem] px-5 py-8 text-center text-sm text-foreground/80">
+          Use Open search. Try “Sarah”, “westside”, “book”, or “bakery”. ⌘K in the app.
         </div>
       </section>
 
@@ -96,6 +96,21 @@ export function Sprint7Preview() {
           <h2 className="mb-3 font-display text-xl font-semibold">Celebrate</h2>
           <ProfileCompletionCard completion={completeCompletion} />
         </div>
+      </section>
+
+      <section id="missions" className="space-y-3">
+        <h2 className="font-display text-xl font-semibold">Daily missions</h2>
+        <DailyMissionsCard
+          missions={dailyMissions.map((mission) => ({
+            id: mission.id,
+            title: mission.title,
+            description: mission.description,
+            href: mission.href ?? "/community",
+            completed: mission.completed,
+            progress: mission.progress,
+            target: mission.target
+          }))}
+        />
       </section>
 
       <section id="people" className="space-y-3">

@@ -77,7 +77,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       "relative inline-flex items-center gap-1.5 rounded-2xl px-3.5 py-2 text-sm font-semibold transition-colors",
                       active
                         ? "bg-brand-soft text-brand"
-                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                        : "text-foreground/75 hover:bg-muted hover:text-foreground"
                     )}
                   >
                     {item.label}
@@ -106,7 +106,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 type="button"
                 size="icon-sm"
                 variant="ghost"
-                aria-label="Search"
+                aria-label="Search (Control K or Command K)"
+                aria-keyshortcuts="Control+K Meta+K"
+                title="Search ⌘K"
                 onClick={() => setSearchOpen(true)}
               >
                 <Search className="size-4" />
@@ -148,7 +150,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     href={item.href}
                     className={cn(
                       "relative flex min-h-12 flex-col items-center justify-center gap-0.5 px-0.5 py-2 text-[10px] font-semibold transition-colors",
-                      active ? "text-primary" : "text-muted-foreground"
+                      active ? "text-primary" : "text-foreground/70"
                     )}
                   >
                     <Icon className="size-5" strokeWidth={active ? 2.5 : 2} />

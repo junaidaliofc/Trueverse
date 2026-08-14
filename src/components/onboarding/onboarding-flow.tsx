@@ -3,13 +3,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Camera, Mail, UserRound, Handshake, Users } from "lucide-react";
+import { UserRound, Handshake, Users, MessageCircle, Shield, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LabeledProgress } from "@/components/ui/progress-field";
 import { ONBOARDING_STEPS } from "@/lib/profile-completion";
 import { cn } from "@/lib/utils";
 
-const ICONS = [Camera, Mail, UserRound, Handshake, Users];
+const ICONS = [UserRound, Handshake, Users, MessageCircle, Shield, Sparkles];
 
 export function OnboardingFlow({
   open,
@@ -26,6 +26,7 @@ export function OnboardingFlow({
 
   const current = ONBOARDING_STEPS[step];
   const Icon = ICONS[step] ?? UserRound;
+  const last = step >= ONBOARDING_STEPS.length - 1;
   const percent = Math.round(((step + 1) / ONBOARDING_STEPS.length) * 100);
 
   function finish() {
@@ -37,7 +38,7 @@ export function OnboardingFlow({
       <button
         type="button"
         className="absolute inset-0 bg-background/75 backdrop-blur-md"
-        aria-label="Dismiss onboarding"
+        aria-label="Skip onboarding"
         onClick={finish}
       />
       <div
@@ -53,13 +54,17 @@ export function OnboardingFlow({
           <Icon className="size-7" />
         </div>
         <h2 id="onboarding-title" className="mt-4 font-display text-2xl font-bold tracking-tight">
-          Step {step + 1}. {current.title}
+          {current.title}
         </h2>
-        <p className="mt-2 text-sm leading-6 text-muted-foreground">{current.body}</p>
+        <p className="mt-2 text-sm leading-6 text-foreground/80">{current.body}</p>
 
-        <LabeledProgress className="mt-5" value={percent} label={`Step ${step + 1} of ${ONBOARDING_STEPS.length}`} />
+        <LabeledProgress
+          className="mt-5"
+          value={percent}
+          label={`Step ${step + 1} of ${ONBOARDING_STEPS.length}`}
+        />
 
-        <div className="mt-4 flex gap-1.5">
+        <div className="mt-4 flex gap-1.5" aria-hidden>
           {ONBOARDING_STEPS.map((item, index) => (
             <span
               key={item.id}
@@ -76,23 +81,28 @@ export function OnboardingFlow({
             type="button"
             onClick={() => {
               if (!local) router.push(current.href);
-              if (step >= ONBOARDING_STEPS.length - 1) finish();
+              if (last) finish();
               else setStep((value) => value + 1);
             }}
           >
-            {step === ONBOARDING_STEPS.length - 1 ? "Join community" : "Continue"}
+            {last ? "Complete profile" : "Continue"}
           </Button>
-          {step < ONBOARDING_STEPS.length - 1 ? (
-            <Button type="button" variant="ghost" onClick={() => setStep((value) => value + 1)}>
-              Skip
-            </Button>
-          ) : (
-            <Button type="button" variant="ghost" onClick={finish}>
-              Finish later
-            </Button>
-          )}
+          <Button type="button" variant="ghost" onClick={last ? finish : () => setStep((value) => value + 1)}>
+            Skip
+          </Button>
         </div>
-        <Link href="/dashboard" className="mt-4 inline-block text-xs text-muted-foreground hover:text-foreground" onClick={finish}>
+        <button
+          type="button"
+          className="mt-4 text-xs font-medium text-foreground/75 hover:text-foreground"
+          onClick={finish}
+        >
+          Skip for now
+        </button>
+        <Link
+          href="/dashboard"
+          className="ml-3 mt-4 inline-block text-xs font-medium text-foreground/75 hover:text-foreground"
+          onClick={finish}
+        >
           Remind me later
         </Link>
       </div>

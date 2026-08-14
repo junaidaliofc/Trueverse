@@ -418,20 +418,31 @@ export const userStreaks: StreakState = {
 /** Daily missions — habit loop. Rewards are XP only. */
 export const dailyMissions: Mission[] = [
   {
+    id: "daily-profile",
+    title: "Complete profile",
+    description: "Add a photo, name, and bio on your Passport.",
+    cadence: "daily",
+    xp_reward: 30,
+    progress: 0,
+    target: 1,
+    completed: false,
+    href: "/profile"
+  },
+  {
     id: "daily-appreciate",
     title: "Appreciate someone",
-    description: "Send an appreciation on a community activity.",
+    description: "Thank a neighbor on a community post. Appreciation never changes Trust.",
     cadence: "daily",
     xp_reward: 25,
-    progress: 1,
+    progress: 0,
     target: 1,
-    completed: true,
+    completed: false,
     href: "/community"
   },
   {
     id: "daily-help",
-    title: "Help one person",
-    description: "Finish one Trust Act or offer verified help.",
+    title: "Help someone",
+    description: "Record a Trust Act for real help you gave or received.",
     cadence: "daily",
     xp_reward: 40,
     progress: 0,
@@ -440,37 +451,37 @@ export const dailyMissions: Mission[] = [
     href: "/interactions/create"
   },
   {
-    id: "daily-event",
-    title: "Attend an event",
-    description: "Show up to a community event or host one.",
-    cadence: "daily",
-    xp_reward: 35,
-    progress: 0,
-    target: 1,
-    completed: false,
-    href: "/community"
-  },
-  {
-    id: "daily-profile",
-    title: "Complete profile",
-    description: "Add a photo, headline, and city on your Passport.",
-    cadence: "daily",
-    xp_reward: 30,
-    progress: 0,
-    target: 1,
-    completed: false,
-    href: "/passport"
-  },
-  {
-    id: "daily-welcome",
-    title: "Welcome a newcomer",
-    description: "Leave a kind note on a new member’s first post.",
+    id: "daily-reply",
+    title: "Reply to a discussion",
+    description: "Leave a useful reply on a community thread.",
     cadence: "daily",
     xp_reward: 20,
     progress: 0,
     target: 1,
     completed: false,
     href: "/community"
+  },
+  {
+    id: "daily-join",
+    title: "Join a community",
+    description: "Find a group that matches how you show up.",
+    cadence: "daily",
+    xp_reward: 25,
+    progress: 0,
+    target: 1,
+    completed: false,
+    href: "/community/discover"
+  },
+  {
+    id: "daily-streak",
+    title: "Maintain streak",
+    description: "Check in today so your XP streak stays intact. Streaks never raise Trust.",
+    cadence: "daily",
+    xp_reward: 15,
+    progress: 0,
+    target: 1,
+    completed: false,
+    href: "/dashboard"
   }
 ];
 

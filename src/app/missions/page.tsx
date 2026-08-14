@@ -12,8 +12,8 @@ export default function MissionsPage() {
     <MotionPage className="mx-auto max-w-lg space-y-8">
       <MotionItem>
         <h1 className="font-display text-3xl font-bold tracking-tight">Missions</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Five daily missions keep the habit alive. Rewards are XP and badges — never trust.
+        <p className="mt-2 text-sm text-foreground/80">
+          Daily missions give you a reason to return. Rewards are XP and badges — never trust.
         </p>
       </MotionItem>
 

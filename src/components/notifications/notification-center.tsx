@@ -10,8 +10,7 @@ import {
   Sparkles,
   ShieldCheck,
   UserPlus,
-  Calendar,
-  AtSign,
+  Reply,
   Trash2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -40,10 +39,13 @@ function RelativeTimestamp({ iso }: { iso: string }) {
 const EVENT_ICON: Record<NotificationEventKey, typeof Bell> = {
   appreciation: Heart,
   follow: UserPlus,
+  reply: Reply,
   comment: MessageCircle,
-  mention: AtSign,
-  community_event: Calendar,
+  message: MessageCircle,
+  trust_accepted: ShieldCheck,
   weekly_summary: Sparkles,
+  mention: MessageCircle,
+  community_event: Sparkles,
   verification_approved: ShieldCheck,
   trust: ShieldCheck,
   system: Bell
@@ -112,7 +114,7 @@ export function NotificationCenter({
           <h1 className="mt-1 font-display text-3xl font-bold tracking-tight text-foreground">
             Notifications
           </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
+          <p className="mt-2 text-sm text-foreground/80">
             {unread > 0 ? `${unread} unread` : "You're all caught up."}
           </p>
         </div>
@@ -134,7 +136,7 @@ export function NotificationCenter({
               "rounded-full px-3.5 py-1.5 text-xs font-bold capitalize tracking-wide",
               filter === item
                 ? "bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground hover:text-foreground"
+                : "bg-muted text-foreground/80 hover:text-foreground"
             )}
           >
             {item}
@@ -149,7 +151,7 @@ export function NotificationCenter({
           </span>
           <p className="mt-5 font-display text-lg font-bold text-foreground">Nothing here yet</p>
           <p className="mt-2 text-sm text-muted-foreground">
-            Follows, comments, Trust Acts, and weekly summaries will land quietly here.
+            Follows, replies, Trust Acts, and messages will land quietly here.
           </p>
         </div>
       ) : (
@@ -188,8 +190,8 @@ export function NotificationCenter({
                     >
                       {item.title}
                     </Link>
-                    <p className="mt-1 text-sm leading-6 text-muted-foreground">{item.body}</p>
-                    <p className="mt-2 text-xs capitalize text-muted-foreground">
+                    <p className="mt-1 text-sm leading-6 text-foreground/80">{item.body}</p>
+                    <p className="mt-2 text-xs capitalize text-foreground/70">
                       {item.category} · <RelativeTimestamp iso={item.created_at} />
                     </p>
                     <div className="mt-3 flex flex-wrap gap-2">

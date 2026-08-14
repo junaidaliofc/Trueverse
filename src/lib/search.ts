@@ -1,7 +1,7 @@
 import { passportUsername } from "@/lib/passport";
 import type { CommunityPostView, Profile } from "@/lib/types";
 
-export type SearchKind = "member" | "passport" | "post" | "community" | "event";
+export type SearchKind = "member" | "passport" | "post" | "community" | "event" | "business";
 
 export type SearchHit = {
   id: string;
@@ -13,6 +13,17 @@ export type SearchHit = {
 };
 
 export const SEARCH_EMPTY_COPY = "Search members, communities or reputation.";
+
+export const POPULAR_SEARCHES = ["Sarah", "westside", "book", "trust", "bakery"] as const;
+
+export const SEARCH_KINDS: SearchKind[] = [
+  "member",
+  "passport",
+  "post",
+  "community",
+  "event",
+  "business"
+];
 
 export function matchesQuery(haystack: string, query: string) {
   return haystack.toLowerCase().includes(query.trim().toLowerCase().replace(/^@/, ""));
@@ -53,8 +64,7 @@ export function postToSearchHit(post: CommunityPostView): SearchHit {
 }
 
 export function groupSearchHits(hits: SearchHit[]) {
-  const order: SearchKind[] = ["member", "passport", "post", "community", "event"];
-  return order
-    .map((kind) => ({ kind, items: hits.filter((hit) => hit.kind === kind) }))
-    .filter((group) => group.items.length > 0);
+  return SEARCH_KINDS.map((kind) => ({ kind, items: hits.filter((hit) => hit.kind === kind) })).filter(
+    (group) => group.items.length > 0
+  );
 }
