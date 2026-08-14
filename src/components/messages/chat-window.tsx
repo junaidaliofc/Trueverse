@@ -84,7 +84,12 @@ export function ChatWindow({
       </header>
 
       <div className="min-h-0 flex-1 overflow-y-auto px-3 py-4 sm:px-5">
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 pb-4">
+          {messages.length === 0 ? (
+            <p className="py-16 text-center text-sm text-muted-foreground">
+              Start the conversation.
+            </p>
+          ) : null}
           {messages.map((message) => {
             const mine = message.sender_id === viewerId;
             return (

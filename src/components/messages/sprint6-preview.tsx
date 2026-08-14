@@ -125,6 +125,24 @@ export function Sprint6Preview() {
     );
   }
 
+  if (!isClient) {
+    return (
+      <div className="mx-auto max-w-6xl space-y-8 py-8">
+        <header className="max-w-2xl space-y-3">
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">
+            Sprint 6 preview
+          </p>
+          <h1 className="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+            Trueverse Messages
+          </h1>
+        </header>
+        <div className="glass-elevated h-[min(640px,78dvh)] overflow-hidden rounded-[1.75rem]">
+          <ConversationListSkeleton />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto max-w-6xl space-y-12 py-8">
       <header className="max-w-2xl space-y-3">
@@ -155,24 +173,18 @@ export function Sprint6Preview() {
 
       <section id="messenger" className="space-y-3">
         <h2 className="font-display text-xl font-semibold text-foreground">Inbox</h2>
-        {isClient ? (
-          <MessengerShell
-            localSearch
-            viewerId={MOCK_MESSENGER_VIEWER_ID}
-            conversations={conversations}
-            messages={messages}
-            selectedId={selectedId}
-            onSelect={onSelect}
-            onSend={onSend}
-            onStartConversation={onStartConversation}
-            typingVisible={typing}
-            className="h-[min(640px,78dvh)]"
-          />
-        ) : (
-          <div className="glass-elevated h-[min(640px,78dvh)] overflow-hidden rounded-[1.75rem]">
-            <ConversationListSkeleton />
-          </div>
-        )}
+        <MessengerShell
+          localSearch
+          viewerId={MOCK_MESSENGER_VIEWER_ID}
+          conversations={conversations}
+          messages={messages}
+          selectedId={selectedId}
+          onSelect={onSelect}
+          onSend={onSend}
+          onStartConversation={onStartConversation}
+          typingVisible={typing}
+          className="h-[min(640px,78dvh)]"
+        />
       </section>
 
       <section id="empty" className="space-y-3">
