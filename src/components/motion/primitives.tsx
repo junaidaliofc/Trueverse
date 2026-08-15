@@ -6,13 +6,13 @@ import { cn } from "@/lib/utils";
 export const easeOut = [0.22, 1, 0.36, 1] as const;
 
 export const fadeUp = {
-  hidden: { opacity: 0, y: 14 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: easeOut } }
+  hidden: { y: 8 },
+  show: { y: 0, transition: { duration: 0.2, ease: easeOut } }
 };
 
 export const fadeIn = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { duration: 0.35, ease: easeOut } }
+  hidden: { y: 0 },
+  show: { y: 0, transition: { duration: 0.18, ease: easeOut } }
 };
 
 export const stagger = {

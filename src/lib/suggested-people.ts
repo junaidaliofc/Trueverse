@@ -10,7 +10,7 @@ export type SuggestedPerson = {
 
 const LABELS: Record<SuggestionReason, string> = {
   community: "Same community",
-  location: "Near you · coming soon",
+  location: "Nearby",
   interests: "Shared interests",
   mutual_trust: "Mutual trust connection"
 };

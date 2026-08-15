@@ -4,8 +4,9 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
 import { RelativeTime } from "@/components/ui/relative-time";
+import { chipClass } from "@/lib/ui";
+
 import {
   ADMIN_TABS,
   reporterAccuracyLabel,
@@ -60,12 +61,7 @@ export function AdminTrustOsDashboard({
             key={item.id}
             type="button"
             onClick={() => setTab(item.id)}
-            className={cn(
-              "rounded-full px-3.5 py-1.5 text-xs font-bold tracking-wide",
-              tab === item.id
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-foreground/80 hover:text-foreground"
-            )}
+            className={chipClass(tab === item.id)}
           >
             {item.label}
           </button>

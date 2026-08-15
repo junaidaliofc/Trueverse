@@ -26,7 +26,7 @@ export function PeopleYouMayKnow({ people }: { people: SuggestedPerson[] }) {
           People you may know
         </h2>
         <p className="mt-1 text-sm text-foreground/80">
-          Same community, shared interests, and mutual trust. Location is coming later.
+          Same community, shared interests, and mutual trust — never a popularity list.
         </p>
       </div>
       <ul className="grid gap-3 sm:grid-cols-2">

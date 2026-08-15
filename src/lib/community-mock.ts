@@ -59,9 +59,7 @@ function post(options: {
     post_type: options.type,
     title: options.title ?? null,
     body: options.body,
-    image_url: options.image
-      ? "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=60"
-      : null,
+    image_url: null,
     category: options.type === "help" ? "Mutual aid" : "Neighborhood",
     location: options.tabs.includes("nearby") ? "Westside" : null,
     trust_act_id: options.type === "trust_act" ? "mock-trust-act" : null,

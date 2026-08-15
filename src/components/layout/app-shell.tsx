@@ -9,12 +9,16 @@ import { SessionAvatar } from "@/components/auth/session-avatar";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { NotificationBadge } from "@/components/notifications/notification-badge";
-import { FeedbackFab } from "@/components/feedback/feedback-fab";
 import { cn } from "@/lib/utils";
 
 const GlobalSearchOverlay = dynamic(
   () =>
     import("@/components/search/global-search-overlay").then((mod) => mod.GlobalSearchOverlay),
+  { ssr: false }
+);
+
+const FeedbackFab = dynamic(
+  () => import("@/components/feedback/feedback-fab").then((mod) => mod.FeedbackFab),
   { ssr: false }
 );
 
@@ -77,7 +81,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     key={item.href}
                     href={item.href}
                     className={cn(
-                      "relative inline-flex items-center gap-1.5 rounded-2xl px-3.5 py-2 text-sm font-semibold transition-colors",
+                      "relative inline-flex items-center gap-1.5 rounded-2xl px-3.5 py-2 text-sm font-semibold duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                       active
                         ? "bg-brand-soft text-brand"
                         : "text-foreground/75 hover:bg-muted hover:text-foreground"
@@ -152,8 +156,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   <Link
                     href={item.href}
                     className={cn(
-                      "relative flex min-h-12 flex-col items-center justify-center gap-0.5 px-0.5 py-2 text-[10px] font-semibold transition-colors",
-                      active ? "text-primary" : "text-foreground/70"
+                      "relative flex min-h-12 flex-col items-center justify-center gap-0.5 px-0.5 py-2 text-[10px] font-semibold duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                      active ? "text-primary" : "text-foreground/70 hover:text-foreground"
                     )}
                   >
                     <Icon className="size-5" strokeWidth={active ? 2.5 : 2} />
@@ -167,8 +171,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </nav>
       ) : null}
 
-        {searchOpen ? <GlobalSearchOverlay onClose={closeSearch} /> : null}
-        {!isMarketing ? <FeedbackFab /> : null}
+      {searchOpen ? <GlobalSearchOverlay onClose={closeSearch} /> : null}
+      {!isMarketing ? <FeedbackFab /> : null}
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { FEEDBACK_CATEGORIES, type FeedbackCategory } from "@/lib/trust-os";
+import { chipClass } from "@/lib/ui";
 
 export function FeedbackFab({ local = false }: { local?: boolean }) {
   const [open, setOpen] = useState(false);
@@ -41,7 +42,7 @@ export function FeedbackFab({ local = false }: { local?: boolean }) {
     <>
       <Button
         type="button"
-        className="fixed bottom-20 right-4 z-40 shadow-lg sm:bottom-6"
+        className="fixed bottom-[5.25rem] right-4 z-40 min-h-11 shadow-lg lg:bottom-6"
         onClick={() => setOpen(true)}
       >
         <MessageSquarePlus className="size-4" />
@@ -77,11 +78,7 @@ export function FeedbackFab({ local = false }: { local?: boolean }) {
                   key={item.id}
                   type="button"
                   onClick={() => setCategory(item.id)}
-                  className={
-                    category === item.id
-                      ? "rounded-full bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground"
-                      : "rounded-full bg-muted px-3 py-1.5 text-xs font-bold text-foreground/80"
-                  }
+                  className={chipClass(category === item.id)}
                 >
                   {item.label}
                 </button>

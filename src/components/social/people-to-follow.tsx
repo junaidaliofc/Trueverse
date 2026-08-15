@@ -12,9 +12,9 @@ import { MotionCard } from "@/components/motion/primitives";
 export function PeopleToFollow({ people }: { people: Profile[] }) {
   if (people.length === 0) {
     return (
-      <div className="glass rounded-[1.75rem] px-5 py-8 text-center">
-        <p className="font-display text-lg font-bold">You&apos;re well connected</p>
-        <p className="mt-2 text-sm text-muted-foreground">
+      <div className="glass-elevated rounded-[1.75rem] px-5 py-8 text-center">
+        <p className="font-display text-lg font-bold text-foreground">You&apos;re well connected</p>
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">
           Follow more people as the community grows.
         </p>
       </div>

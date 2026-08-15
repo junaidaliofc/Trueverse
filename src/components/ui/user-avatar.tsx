@@ -37,7 +37,7 @@ export function UserAvatar({
       size={size === "sm" ? "sm" : size === "lg" || size === "xl" ? "lg" : "default"}
     >
       {src ? <AvatarImage src={src} alt={name} className="rounded-2xl" /> : null}
-      <AvatarFallback className="rounded-2xl bg-muted font-semibold text-muted-foreground">
+      <AvatarFallback className="rounded-2xl bg-brand-soft font-semibold text-brand">
         {initials}
       </AvatarFallback>
     </Avatar>

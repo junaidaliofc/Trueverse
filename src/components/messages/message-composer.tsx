@@ -81,7 +81,7 @@ export function MessageComposer({
           size="icon-sm"
           variant="ghost"
           aria-label="Attachment"
-          onClick={() => setHint("Photo attachments are coming soon.")}
+          onClick={() => setHint("Photos are not part of this beta. Send a written message.")}
           disabled={disabled}
         >
           <Paperclip className="size-4" />

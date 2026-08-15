@@ -25,6 +25,7 @@ import {
 } from "@/lib/notifications";
 import { passportHrefFromHandle } from "@/components/identity/member-links";
 import { cn, formatRelativeTime } from "@/lib/utils";
+import { chipClass } from "@/lib/ui";
 import { Skeleton } from "@/components/ui/skeleton";
 
 function RelativeTimestamp({ iso }: { iso: string }) {
@@ -132,12 +133,7 @@ export function NotificationCenter({
             key={item}
             type="button"
             onClick={() => setFilter(item)}
-            className={cn(
-              "rounded-full px-3.5 py-1.5 text-xs font-bold capitalize tracking-wide",
-              filter === item
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-foreground/80 hover:text-foreground"
-            )}
+            className={chipClass(filter === item, "capitalize")}
           >
             {item}
           </button>

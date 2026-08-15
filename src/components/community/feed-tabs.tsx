@@ -39,10 +39,10 @@ export function CommunityFeedTabs({
             aria-selected={active}
             onClick={() => onChange(tab.id)}
             className={cn(
-              "inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-xl px-3.5 text-sm font-semibold transition-colors",
+              "inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-xl px-3.5 text-sm font-semibold duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
               active
                 ? "bg-background text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground"
+                : "text-muted-foreground hover:bg-background/60 hover:text-foreground"
             )}
           >
             <Icon className="size-3.5" />

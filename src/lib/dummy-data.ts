@@ -383,7 +383,7 @@ export const profiles: Profile[] = [
     id: "user-sarah",
     email: "sarah@example.com",
     full_name: "Sarah Kim",
-    photo_url: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=256&h=256&fit=crop",
+    photo_url: null,
     bio: "Regular blood donor and campus safety course facilitator. Building portable trust through verified community work.",
     trust_score: 89,
     streak: 33,

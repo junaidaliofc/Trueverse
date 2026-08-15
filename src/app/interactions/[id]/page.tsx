@@ -62,7 +62,7 @@ export default async function InteractionDetailPage({
         <div className="glass rounded-3xl p-4">
           <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Trust</p>
           <p className="mt-2 font-display text-xl font-bold">
-            {interaction.status === "accepted" ? "Updated" : "No change yet"}
+            {interaction.status === "accepted" ? "In review" : "No change yet"}
           </p>
         </div>
         <div className="glass rounded-3xl p-4">
@@ -91,8 +91,9 @@ export default async function InteractionDetailPage({
       {canReview ? (
         <section className="glass rounded-3xl p-5">
           <h2 className="font-display text-xl font-bold">Your decision</h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Accepting applies the existing simple trust update. Rejecting leaves trust unchanged.
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">
+            Confirming sends this Trust Act to moderation. Trust updates only after approval.
+            Declining leaves Trust unchanged.
           </p>
           <div className="mt-4">
             <TrustActActions interactionId={interaction.id} />

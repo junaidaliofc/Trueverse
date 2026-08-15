@@ -101,7 +101,7 @@ export async function searchPlatform(
     id: `event-${item.id}`,
     kind: "event" as const,
     title: item.title,
-    subtitle: `${item.place} · coming soon`,
+    subtitle: item.place,
     href: "/community/discover"
   }));
 
@@ -111,7 +111,7 @@ export async function searchPlatform(
     id: `business-${item.id}`,
     kind: "business" as const,
     title: item.name,
-    subtitle: `${item.place} · coming soon`,
+    subtitle: item.place,
     href: "/community/discover?topic=Business"
   }));
 

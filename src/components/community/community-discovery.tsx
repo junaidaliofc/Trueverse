@@ -9,7 +9,7 @@ import {
   type DiscoverTopic
 } from "@/lib/communities";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { chipClass } from "@/lib/ui";
 
 export function CommunityDiscovery({
   initialTopic
@@ -30,7 +30,7 @@ export function CommunityDiscovery({
           Communities
         </h1>
         <p className="mt-2 max-w-xl text-sm leading-6 text-foreground/80">
-          Suggested groups to join. Near You is a placeholder until location ships.
+          Calm groups for neighborhoods, volunteering, and shared work. Location is optional.
         </p>
       </header>
 
@@ -40,12 +40,7 @@ export function CommunityDiscovery({
             key={item}
             type="button"
             onClick={() => setTopic(item)}
-            className={cn(
-              "rounded-full px-3.5 py-1.5 text-xs font-bold tracking-wide",
-              topic === item
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-foreground/80 hover:text-foreground"
-            )}
+            className={chipClass(topic === item)}
           >
             {item}
           </button>

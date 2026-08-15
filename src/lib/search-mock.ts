@@ -40,7 +40,7 @@ export function searchMockCatalog(query: string): SearchHit[] {
       id: `event-${item.id}`,
       kind: "event",
       title: item.title,
-      subtitle: `${item.place} · coming soon`,
+      subtitle: item.place,
       href: "/community/discover"
     })
   );
@@ -52,7 +52,7 @@ export function searchMockCatalog(query: string): SearchHit[] {
       id: `business-${item.id}`,
       kind: "business",
       title: item.name,
-      subtitle: `${item.place} · coming soon`,
+      subtitle: item.place,
       href: "/community/discover?topic=Business"
     })
   );

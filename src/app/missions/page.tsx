@@ -33,13 +33,22 @@ export default function MissionsPage() {
 
       <MotionItem>
         <h2 className="mb-3 font-display text-xl font-bold tracking-tight">This week</h2>
-        <ul className="space-y-3">
-          {weekly.map((mission, index) => (
-            <li key={mission.id}>
-              <MissionCard mission={mission} index={index} />
-            </li>
-          ))}
-        </ul>
+        {weekly.length === 0 ? (
+          <div className="glass-elevated rounded-[1.5rem] px-5 py-10 text-center">
+            <p className="font-display text-lg font-bold text-foreground">No weekly missions</p>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">
+              Daily missions still count. XP never changes Trust Score.
+            </p>
+          </div>
+        ) : (
+          <ul className="space-y-3">
+            {weekly.map((mission, index) => (
+              <li key={mission.id}>
+                <MissionCard mission={mission} index={index} />
+              </li>
+            ))}
+          </ul>
+        )}
       </MotionItem>
     </MotionPage>
   );

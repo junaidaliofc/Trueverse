@@ -46,9 +46,9 @@ export default async function InteractionsPage() {
         <div>
           <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary">History</p>
           <h1 className="mt-2 font-display text-3xl font-bold tracking-tight">Trust Acts</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Accepted acts update trust with the existing simple calculation. Pending acts wait for
-            the recipient.
+          <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">
+            Recipients confirm the help. Trust Score updates only after a moderator approves.
+            Rejected acts change nothing.
           </p>
         </div>
         <Button asChild size="sm">
@@ -63,7 +63,7 @@ export default async function InteractionsPage() {
       ) : null}
 
       {!error && rows.length === 0 ? (
-        <div className="glass rounded-[1.75rem] px-6 py-12 text-center">
+        <div className="glass-elevated rounded-[1.75rem] px-6 py-12 text-center">
           <p className="font-display text-lg font-bold">No Trust Acts yet</p>
           <p className="mt-2 text-sm text-muted-foreground">
             Submit a positive Trust Act for someone you helped in the real world.
@@ -81,12 +81,12 @@ export default async function InteractionsPage() {
           const author = profilesById.get(item.author_id);
           const recipient = profilesById.get(item.recipient_id);
           return (
-            <li key={item.id} className="glass rounded-[1.75rem] p-5">
+            <li key={item.id} className="glass-elevated rounded-[1.75rem] p-5">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
                     {item.status}
-                    {item.status === "accepted" ? " · trust updated" : ""}
+                    {item.status === "accepted" ? " · awaiting review" : ""}
                   </p>
                   <h2 className="mt-1 font-display text-xl font-bold tracking-tight">{item.title}</h2>
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.description}</p>

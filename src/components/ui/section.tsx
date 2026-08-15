@@ -35,7 +35,11 @@ export function PageHeader({
         <h1 className="mt-2 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
           {title}
         </h1>
-        {description ? <p className="mt-3 text-base leading-7 text-muted-foreground">{description}</p> : null}
+        {description ? (
+          <p className="mt-3 max-w-xl text-sm leading-7 text-muted-foreground sm:text-base">
+            {description}
+          </p>
+        ) : null}
       </div>
       {actions ? <div className="flex flex-wrap items-center gap-3">{actions}</div> : null}
     </div>
@@ -52,9 +56,9 @@ export function EmptyState({
   action?: ReactNode;
 }) {
   return (
-    <div className="glass flex flex-col items-center rounded-3xl px-6 py-12 text-center">
+    <div className="glass-elevated flex flex-col items-center rounded-[1.75rem] px-6 py-12 text-center">
       <h3 className="font-display text-lg font-bold text-foreground">{title}</h3>
-      <p className="mt-2 max-w-sm text-sm text-muted-foreground">{description}</p>
+      <p className="mt-2 max-w-sm text-sm leading-6 text-muted-foreground">{description}</p>
       {action ? <div className="mt-5">{action}</div> : null}
     </div>
   );

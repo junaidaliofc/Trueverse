@@ -95,8 +95,8 @@ export const DISCOVER_COMMUNITIES: DiscoverCommunity[] = [
     name: "Nearby Block Watch",
     topic: "Near You",
     members: 52,
-    blurb: "Placeholder for location-aware groups.",
-    place: "Near you · coming soon"
+    blurb: "Neighbors looking out for the same streets.",
+    place: "Your city"
   }
 ];
 
@@ -105,19 +105,19 @@ export const PLACEHOLDER_BUSINESSES = [
     id: "biz-bakery",
     name: "Westside Bakery",
     place: "Westside",
-    blurb: "Neighborhood bakery · coming soon"
+    blurb: "Neighborhood bakery"
   },
   {
     id: "biz-clinic",
     name: "Riverside Clinic",
     place: "Riverside",
-    blurb: "Local care · coming soon"
+    blurb: "Local care"
   },
   {
     id: "biz-main",
     name: "Main Street Hardware",
     place: "Downtown",
-    blurb: "Trusted shop · coming soon"
+    blurb: "Neighborhood hardware"
   }
 ];
 
