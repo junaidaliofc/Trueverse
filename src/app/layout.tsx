@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Mono, Outfit, Plus_Jakarta_Sans } from "next/font/google";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import { AppShell } from "@/components/layout/app-shell";
 import { ThemeProvider } from "@/components/providers/theme-provider";
@@ -42,6 +43,7 @@ export default async function RootLayout({
           </TooltipProvider>
         </ThemeProvider>
       </body>
+      <GoogleAnalytics gaId="G-W7PCNB702F" />
     </html>
   );
 }
