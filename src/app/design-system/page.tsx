@@ -21,6 +21,7 @@ import { ReputationDnaCard } from "@/components/trust/reputation-dna";
 import { XPProgress, StreakPill } from "@/components/xp/xp-progress";
 import { currentUserReputation, userXp } from "@/lib/dummy-data";
 import { TRUST_LEVELS, TRUST_LEVEL_META } from "@/lib/design";
+import { CommunityFeedPreviewSamples } from "@/components/community/feed-preview-samples";
 
 /**
  * Phase 0 living style guide.
@@ -51,6 +52,21 @@ export default function DesignSystemPage() {
           </Button>
           <Button asChild variant="outline">
             <Link href="/dashboard">Open app shell</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/design-system/sprint4">Passport 2.0</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/design-system/sprint5">Community interactions</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/design-system/sprint6">Messages</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/design-system/sprint7">Search &amp; notifications</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/design-system/sprint8">Trust OS</Link>
           </Button>
         </div>
       </motion.header>
@@ -203,6 +219,14 @@ export default function DesignSystemPage() {
           <Skeleton className="h-4 w-full" />
           <Skeleton className="h-24 w-full rounded-3xl" />
         </Surface>
+      </section>
+
+      <section className="space-y-4" id="community-kit">
+        <SectionTitle title="Community feed kit" />
+        <p className="text-sm text-muted-foreground">
+          Design kit only — authenticated Community uses live Supabase data, never these samples.
+        </p>
+        <CommunityFeedPreviewSamples />
       </section>
     </div>
   );

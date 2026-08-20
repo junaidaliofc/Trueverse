@@ -21,6 +21,22 @@ export async function POST(request: NextRequest) {
 
   try {
     const payload = negativeReportSchema.parse(await request.json());
+    const { data: reporter } = await supabase
+      .from("profiles")
+      .select("reporting_suspended, reporting_cooldown_until")
+      .eq("id", user.id)
+      .maybeSingle<{ reporting_suspended: boolean; reporting_cooldown_until: string | null }>();
+
+    if (reporter?.reporting_suspended) {
+      return jsonError("Reporting privilege is suspended after repeated rejected reports.", 403);
+    }
+    if (
+      reporter?.reporting_cooldown_until &&
+      Date.parse(reporter.reporting_cooldown_until) > Date.now()
+    ) {
+      return jsonError("Reporting is in a temporary cooldown after rejected reports.", 429);
+    }
+
     const { data: reportedUser, error: reportedUserError } = await supabase
       .from("profiles")
       .select("id")

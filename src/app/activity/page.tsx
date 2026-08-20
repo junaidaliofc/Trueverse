@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { activities, followingIds } from "@/lib/dummy-data";
 import { ActivityFeedCard } from "@/components/social/activity-feed-card";
 import { MotionItem, MotionPage } from "@/components/motion/primitives";
-import { cn } from "@/lib/utils";
+import { chipClass } from "@/lib/ui";
 
 const filters = ["Following", "All", "Help", "Milestones", "Badges"] as const;
 
@@ -37,12 +37,7 @@ export default function ActivityPage() {
             key={item}
             type="button"
             onClick={() => setFilter(item)}
-            className={cn(
-              "rounded-full px-4 py-2 text-sm font-semibold transition",
-              filter === item
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground hover:text-foreground"
-            )}
+            className={chipClass(filter === item, "px-4 py-2 text-sm")}
           >
             {item}
           </button>
@@ -61,9 +56,9 @@ export default function ActivityPage() {
       </div>
 
       {filtered.length === 0 ? (
-        <MotionItem className="glass rounded-[1.75rem] px-6 py-12 text-center">
-          <p className="font-display text-lg font-bold">No activity yet</p>
-          <p className="mt-2 text-sm text-muted-foreground">
+        <MotionItem className="glass-elevated rounded-[1.75rem] px-6 py-12 text-center">
+          <p className="font-display text-lg font-bold text-foreground">No activity yet</p>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">
             Follow people in Community to fill this timeline.
           </p>
         </MotionItem>

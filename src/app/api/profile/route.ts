@@ -60,7 +60,27 @@ export async function PATCH(request: NextRequest) {
         full_name: payload.full_name,
         bio: payload.bio,
         photo_url: payload.photo_url || null,
-        ...(payload.username ? { username: payload.username } : {})
+        ...(payload.username ? { username: payload.username } : {}),
+        city: payload.city || null,
+        headline: payload.headline || null,
+        interests: payload.interests
+          ? payload.interests
+              .split(",")
+              .map((item) => item.trim())
+              .filter(Boolean)
+              .slice(0, 12)
+          : [],
+        skills: payload.skills
+          ? payload.skills
+              .split(",")
+              .map((item) => item.trim())
+              .filter(Boolean)
+              .slice(0, 12)
+          : [],
+        social_links: {
+          ...(payload.website ? { website: payload.website } : {}),
+          ...(payload.linkedin ? { linkedin: payload.linkedin } : {})
+        }
       })
       .eq("id", user.id)
       .select("*")

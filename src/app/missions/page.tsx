@@ -1,7 +1,8 @@
 "use client";
 
 import { dailyMissions, missions } from "@/lib/dummy-data";
-import { DailyMissions, MissionCard } from "@/components/missions/daily-missions";
+import { DailyMissionsCard } from "@/components/missions/daily-missions-card";
+import { MissionCard } from "@/components/missions/daily-missions";
 import { MotionItem, MotionPage } from "@/components/motion/primitives";
 
 export default function MissionsPage() {
@@ -11,24 +12,43 @@ export default function MissionsPage() {
     <MotionPage className="mx-auto max-w-lg space-y-8">
       <MotionItem>
         <h1 className="font-display text-3xl font-bold tracking-tight">Missions</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Three daily missions keep the habit alive. Rewards are XP and badges — never trust.
+        <p className="mt-2 text-sm text-foreground/80">
+          Daily missions give you a reason to return. Rewards are XP and badges — never trust.
         </p>
       </MotionItem>
 
       <MotionItem>
-        <DailyMissions missions={dailyMissions} showContinue />
+        <DailyMissionsCard
+          missions={dailyMissions.map((mission) => ({
+            id: mission.id,
+            title: mission.title,
+            description: mission.description,
+            href: mission.href ?? "/community",
+            completed: mission.completed,
+            progress: mission.progress,
+            target: mission.target
+          }))}
+        />
       </MotionItem>
 
       <MotionItem>
         <h2 className="mb-3 font-display text-xl font-bold tracking-tight">This week</h2>
-        <ul className="space-y-3">
-          {weekly.map((mission, index) => (
-            <li key={mission.id}>
-              <MissionCard mission={mission} index={index} />
-            </li>
-          ))}
-        </ul>
+        {weekly.length === 0 ? (
+          <div className="glass-elevated rounded-[1.5rem] px-5 py-10 text-center">
+            <p className="font-display text-lg font-bold text-foreground">No weekly missions</p>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">
+              Daily missions still count. XP never changes Trust Score.
+            </p>
+          </div>
+        ) : (
+          <ul className="space-y-3">
+            {weekly.map((mission, index) => (
+              <li key={mission.id}>
+                <MissionCard mission={mission} index={index} />
+              </li>
+            ))}
+          </ul>
+        )}
       </MotionItem>
     </MotionPage>
   );

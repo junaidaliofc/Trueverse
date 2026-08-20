@@ -6,26 +6,34 @@ import { MotionItem, MotionPage } from "@/components/motion/primitives";
 import { PassportHero } from "@/components/passport/passport-hero";
 import { PassportVerification } from "@/components/passport/verification-section";
 import { PassportBadgeGallery } from "@/components/passport/badge-gallery";
+import { PassportReputationSummary } from "@/components/passport/reputation-summary";
 import { PassportReputationTimeline } from "@/components/passport/reputation-timeline";
 import { PassportStatistics } from "@/components/passport/passport-stats";
 import { PassportSharePanel } from "@/components/passport/passport-share-panel";
 import { FollowButton } from "@/components/social/follow-button";
+import { MessageButton } from "@/components/messages/message-button";
 import { cn } from "@/lib/utils";
 
 export function TrueversePassport({
   passport,
   mode = "owner",
+  emailVerified = false,
   initialFollowing = false,
   className
 }: {
   passport: PassportViewModel;
   mode?: PassportMode;
+  emailVerified?: boolean;
   initialFollowing?: boolean;
   className?: string;
 }) {
   const isOwner = mode === "owner";
   const { privacy } = passport;
   const shareHref = `${passport.sharePath}/share`;
+  const memberSince = new Date(passport.profile.created_at).toLocaleDateString("en-US", {
+    month: "short",
+    year: "numeric"
+  });
 
   return (
     <MotionPage className={cn("mx-auto max-w-lg space-y-8 sm:max-w-3xl", className)}>
@@ -39,17 +47,22 @@ export function TrueversePassport({
               Verified reputation signals — not a safety guarantee.
             </p>
           </div>
-          <FollowButton
-            trueverseId={passport.trueverseId}
-            initialFollowing={initialFollowing}
-          />
+          <div className="flex flex-wrap items-center gap-2">
+            <MessageButton trueverseId={passport.trueverseId} />
+            <FollowButton
+              trueverseId={passport.trueverseId}
+              initialFollowing={initialFollowing}
+            />
+          </div>
         </MotionItem>
       ) : null}
 
       <MotionItem>
         <PassportHero
           profile={passport.profile}
+          username={passport.username}
           trustLevel={passport.trustLevel}
+          emailVerified={emailVerified}
           identityVerified={passport.identityVerified}
           xpLevel={passport.xpLevel}
           profileCompletion={passport.profileCompletion}
@@ -64,6 +77,15 @@ export function TrueversePassport({
           <p className="px-1 text-sm leading-6 text-muted-foreground">{passport.bio}</p>
         </MotionItem>
       ) : null}
+
+      <MotionItem>
+        <PassportReputationSummary
+          trustLevel={passport.trustLevel}
+          trustIndex={passport.trustIndex}
+          stats={passport.stats}
+          memberSince={memberSince}
+        />
+      </MotionItem>
 
       <MotionItem>
         <PassportVerification

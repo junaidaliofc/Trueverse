@@ -6,6 +6,8 @@ import { leaderboards } from "@/lib/dummy-data";
 import { MotionItem, MotionPage } from "@/components/motion/primitives";
 import { Surface } from "@/components/ui/surface";
 import { FollowButton } from "@/components/social/follow-button";
+import { TrueverseIdLink } from "@/components/identity/member-links";
+import { chipClass } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 const tabs = [
@@ -43,12 +45,7 @@ export default function LeaderboardsPage() {
             key={item.id}
             type="button"
             onClick={() => setTab(item.id)}
-            className={cn(
-              "rounded-full px-4 py-2 text-sm font-semibold transition",
-              tab === item.id
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground hover:text-foreground"
-            )}
+            className={chipClass(tab === item.id, "px-4 py-2 text-sm")}
           >
             {item.label}
           </button>
@@ -57,6 +54,14 @@ export default function LeaderboardsPage() {
 
       <MotionItem>
         <Surface elevated className="overflow-hidden p-0">
+          {rows.length === 0 ? (
+            <div className="px-5 py-12 text-center">
+              <p className="font-display text-lg font-bold text-foreground">No rankings yet</p>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                XP leaderboards fill as people complete missions. They never rank Trust.
+              </p>
+            </div>
+          ) : (
           <ol>
             {rows.map((row, index) => (
               <li
@@ -73,7 +78,7 @@ export default function LeaderboardsPage() {
                   <Link href={`/u/${String(row.id).replace(/^tv_/, "")}`} className="font-semibold hover:underline">
                     {row.name}
                   </Link>
-                  <p className="font-mono text-xs text-muted-foreground">{row.id}</p>
+                  <TrueverseIdLink id={String(row.id)} className="text-xs" />
                 </div>
                 <div className="text-right">
                   <p className="font-display text-lg font-bold text-xp">{row.score}</p>
@@ -85,6 +90,7 @@ export default function LeaderboardsPage() {
               </li>
             ))}
           </ol>
+          )}
         </Surface>
         <p className="mt-3 text-center text-xs text-muted-foreground">
           Scores reflect XP and participation only — not trustworthiness.

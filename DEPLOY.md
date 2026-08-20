@@ -27,6 +27,9 @@ Or apply in order:
 3. `003_core_loop.sql`
 4. `004_social_graph.sql`
 5. `005_passport.sql`
+6. `006_auth_profile_name.sql`
+7. `007_passport_profile_fields.sql`
+8. `008_community_feed.sql`
 
 Optional: `supabase/seed.sql`
 
@@ -53,10 +56,10 @@ Or: `vercel --prod` if the CLI is linked.
 1. Open `/` — Beta label, Get Started, View Demo Profile  
 2. Open `/u/sarahkim` — public Passport + disclaimer + share/QR  
 3. Sign up → verify if required → land on `/dashboard`  
-4. `/profile` — set username, name, photo URL, bio → save  
+4. `/passport` — set username, name, photo URL, bio → save  
 5. Log out → log in  
 6. Create Trust Act → recipient accept → trust updates; appears in `/interactions`  
 7. Follow / appreciate on Community or Activity  
 8. `/admin` as non-admin redirects away  
-9. Mobile: bottom nav (Home, Passport, Community, Alerts)  
-10. `/messages` and `/insights` redirect away  
+9. Mobile: bottom nav (Home, Passport, Community, Messages, Alerts)  
+10. `/messages` shows Coming soon (no messenger yet)  

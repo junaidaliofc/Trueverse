@@ -75,6 +75,18 @@ export default function LandingPage() {
             </Button>
           </motion.div>
 
+          <motion.div
+            variants={fadeUp}
+            className="mt-5 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm font-semibold"
+          >
+            <Link href="/trust" className="text-primary hover:underline">
+              Trust principles
+            </Link>
+            <Link href="/launch" className="text-primary hover:underline">
+              Launch readiness
+            </Link>
+          </motion.div>
+
           <motion.p
             variants={fadeUp}
             className="mx-auto mt-10 max-w-md text-[11px] leading-5 text-muted-foreground/80"

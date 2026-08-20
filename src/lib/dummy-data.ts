@@ -1,4 +1,5 @@
 import type { AdminReport, HelpRequest, PositiveInteraction, Profile } from "@/lib/types";
+import { TRUST_OS_BADGES } from "@/lib/trust-os";
 import {
   scoreToTrustLevel,
   toPassportDna,
@@ -382,7 +383,7 @@ export const profiles: Profile[] = [
     id: "user-sarah",
     email: "sarah@example.com",
     full_name: "Sarah Kim",
-    photo_url: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=256&h=256&fit=crop",
+    photo_url: null,
     bio: "Regular blood donor and campus safety course facilitator. Building portable trust through verified community work.",
     trust_score: 89,
     streak: 33,
@@ -415,12 +416,23 @@ export const userStreaks: StreakState = {
   lastActiveDate: "2026-06-25"
 };
 
-/** Exactly 3 daily missions — the habit loop. */
+/** Daily missions — habit loop. Rewards are XP only. */
 export const dailyMissions: Mission[] = [
+  {
+    id: "daily-profile",
+    title: "Complete profile",
+    description: "Add a photo, name, and bio on your Passport.",
+    cadence: "daily",
+    xp_reward: 30,
+    progress: 0,
+    target: 1,
+    completed: false,
+    href: "/profile"
+  },
   {
     id: "daily-appreciate",
     title: "Appreciate someone",
-    description: "Send an appreciation on a community activity.",
+    description: "Thank a neighbor on a community post. Appreciation never changes Trust.",
     cadence: "daily",
     xp_reward: 25,
     progress: 0,
@@ -430,8 +442,8 @@ export const dailyMissions: Mission[] = [
   },
   {
     id: "daily-help",
-    title: "Help one person",
-    description: "Finish one Trust Act or offer verified help.",
+    title: "Help someone",
+    description: "Record a Trust Act for real help you gave or received.",
     cadence: "daily",
     xp_reward: 40,
     progress: 0,
@@ -440,15 +452,37 @@ export const dailyMissions: Mission[] = [
     href: "/interactions/create"
   },
   {
-    id: "daily-photo",
-    title: "Upload profile photo",
-    description: "Add a clear photo so people recognize you.",
+    id: "daily-reply",
+    title: "Reply to a discussion",
+    description: "Leave a useful reply on a community thread.",
     cadence: "daily",
-    xp_reward: 30,
+    xp_reward: 20,
     progress: 0,
     target: 1,
     completed: false,
-    href: "/profile"
+    href: "/community"
+  },
+  {
+    id: "daily-join",
+    title: "Join a community",
+    description: "Find a group that matches how you show up.",
+    cadence: "daily",
+    xp_reward: 25,
+    progress: 0,
+    target: 1,
+    completed: false,
+    href: "/community/discover"
+  },
+  {
+    id: "daily-streak",
+    title: "Maintain streak",
+    description: "Check in today so your XP streak stays intact. Streaks never raise Trust.",
+    cadence: "daily",
+    xp_reward: 15,
+    progress: 0,
+    target: 1,
+    completed: false,
+    href: "/dashboard"
   }
 ];
 
@@ -788,7 +822,7 @@ export const missions: Mission[] = [
     progress: 1,
     target: 1,
     completed: true,
-    href: "/profile"
+    href: "/passport"
   },
   {
     id: "m-trust-act",
@@ -885,18 +919,15 @@ export type BadgeDef = {
   earned_at?: string;
 };
 
-export const badges: BadgeDef[] = [
-  { id: "b-neighbor", name: "Helpful Neighbor", description: "Helped neighbors in your area.", earned: true, earned_at: "2026-05-01" },
-  { id: "b-seller", name: "Reliable Seller", description: "Completed verified marketplace interactions.", earned: false },
-  { id: "b-blood", name: "Blood Donor", description: "Verified blood donation.", earned: true, earned_at: "2026-04-12" },
-  { id: "b-leader", name: "Community Leader", description: "Organized community missions.", earned: false },
-  { id: "b-volunteer", name: "Volunteer", description: "Logged verified volunteer hours.", earned: true, earned_at: "2026-03-20" },
-  { id: "b-mentor", name: "Mentor", description: "Supported learners or newcomers.", earned: false },
-  { id: "b-pro", name: "Verified Professional", description: "Identity and professional verification.", earned: false },
-  { id: "b-driver", name: "Safe Driver", description: "Verified safe ride contributions.", earned: true, earned_at: "2026-06-10" },
-  { id: "b-early", name: "Early Member", description: "Joined Trueverse in the early cohort.", earned: true, earned_at: "2026-01-12" },
-  { id: "b-top", name: "Top Contributor", description: "Top 10% community contribution this month.", earned: false }
-];
+const EARNED_TRUST_OS = new Set(["volunteer", "community-leader", "early-member"]);
+
+export const badges: BadgeDef[] = TRUST_OS_BADGES.map((badge) => ({
+  id: badge.id,
+  name: badge.label,
+  description: `${badge.description} Badges never raise Trust Score.`,
+  earned: EARNED_TRUST_OS.has(badge.id),
+  earned_at: EARNED_TRUST_OS.has(badge.id) ? "2026-05-01" : undefined
+}));
 
 export type Achievement = {
   id: string;

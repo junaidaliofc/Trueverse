@@ -6,14 +6,15 @@ import { scoreToTrustLevel } from "@/lib/design";
 import { UserAvatar } from "@/components/ui/user-avatar";
 import { TrustLevelBadge } from "@/components/trust/trust-level-badge";
 import { FollowButton } from "@/components/social/follow-button";
+import { TrueverseIdLink } from "@/components/identity/member-links";
 import { MotionCard } from "@/components/motion/primitives";
 
 export function PeopleToFollow({ people }: { people: Profile[] }) {
   if (people.length === 0) {
     return (
-      <div className="glass rounded-[1.75rem] px-5 py-8 text-center">
-        <p className="font-display text-lg font-bold">You&apos;re well connected</p>
-        <p className="mt-2 text-sm text-muted-foreground">
+      <div className="glass-elevated rounded-[1.75rem] px-5 py-8 text-center">
+        <p className="font-display text-lg font-bold text-foreground">You&apos;re well connected</p>
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">
           Follow more people as the community grows.
         </p>
       </div>
@@ -32,9 +33,12 @@ export function PeopleToFollow({ people }: { people: Profile[] }) {
         {people.map((person) => (
           <MotionCard key={person.id} className="glass rounded-[1.5rem] p-4">
             <div className="flex items-center gap-3">
-              <Link href={`/u/${person.trueverse_id.replace(/^tv_/, "")}`}>
-                <UserAvatar name={person.full_name} src={person.photo_url} size="md" />
-              </Link>
+              <UserAvatar
+                name={person.full_name}
+                src={person.photo_url}
+                size="md"
+                href={`/u/${person.trueverse_id.replace(/^tv_/, "")}`}
+              />
               <div className="min-w-0 flex-1">
                 <Link
                   href={`/u/${person.trueverse_id.replace(/^tv_/, "")}`}
@@ -43,7 +47,7 @@ export function PeopleToFollow({ people }: { people: Profile[] }) {
                   {person.full_name}
                 </Link>
                 <div className="mt-1 flex flex-wrap items-center gap-2">
-                  <p className="font-mono text-[10px] text-muted-foreground">{person.trueverse_id}</p>
+                  <TrueverseIdLink id={person.trueverse_id} />
                   <TrustLevelBadge level={scoreToTrustLevel(person.trust_score)} showLabel={false} />
                 </div>
               </div>

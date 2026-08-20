@@ -1,26 +1,58 @@
 "use client";
 
+import { useCallback, useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, Home, UserRound, Users } from "lucide-react";
+import { Bell, Home, MessageCircle, Search, UserRound, Users } from "lucide-react";
 import { SessionAvatar } from "@/components/auth/session-avatar";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Button } from "@/components/ui/button";
+import { NotificationBadge } from "@/components/notifications/notification-badge";
 import { cn } from "@/lib/utils";
+
+const GlobalSearchOverlay = dynamic(
+  () =>
+    import("@/components/search/global-search-overlay").then((mod) => mod.GlobalSearchOverlay),
+  { ssr: false }
+);
+
+const FeedbackFab = dynamic(
+  () => import("@/components/feedback/feedback-fab").then((mod) => mod.FeedbackFab),
+  { ssr: false }
+);
 
 const appNav = [
   { href: "/dashboard", label: "Home", icon: Home },
-  { href: "/profile", label: "Passport", icon: UserRound },
+  { href: "/passport", label: "Passport", icon: UserRound },
   { href: "/community", label: "Community", icon: Users },
-  { href: "/notifications", label: "Alerts", icon: Bell }
+  { href: "/messages", label: "Messages", icon: MessageCircle },
+  { href: "/notifications", label: "Notifications", icon: Bell }
 ] as const;
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const [searchOpen, setSearchOpen] = useState(false);
+  const closeSearch = useCallback(() => setSearchOpen(false), []);
   const isMarketing =
     pathname === "/" ||
     pathname.startsWith("/auth") ||
-    pathname === "/design-system";
+    pathname === "/trust" ||
+    pathname === "/launch" ||
+    pathname === "/design-system" ||
+    pathname.startsWith("/design-system/");
+
+  useEffect(() => {
+    if (isMarketing) return;
+    function onKey(event: KeyboardEvent) {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setSearchOpen(true);
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isMarketing]);
 
   return (
     <div className="min-h-dvh">
@@ -49,13 +81,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     key={item.href}
                     href={item.href}
                     className={cn(
-                      "rounded-2xl px-3.5 py-2 text-sm font-semibold transition-colors",
+                      "relative inline-flex items-center gap-1.5 rounded-2xl px-3.5 py-2 text-sm font-semibold duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                       active
                         ? "bg-brand-soft text-brand"
-                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                        : "text-foreground/75 hover:bg-muted hover:text-foreground"
                     )}
                   >
                     {item.label}
+                    {item.href === "/notifications" ? (
+                      <NotificationBadge compact className="static ml-0.5 min-w-4" />
+                    ) : null}
                   </Link>
                 );
               })}
@@ -73,7 +108,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           )}
 
           {!isMarketing ? (
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1">
+              <Button
+                type="button"
+                size="icon-sm"
+                variant="ghost"
+                aria-label="Search (Control K or Command K)"
+                aria-keyshortcuts="Control+K Meta+K"
+                title="Search ⌘K"
+                onClick={() => setSearchOpen(true)}
+              >
+                <Search className="size-4" />
+              </Button>
               <ThemeToggle />
               <SessionAvatar />
             </div>
@@ -86,7 +132,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           "mx-auto px-4 sm:px-6",
           isMarketing
             ? "max-w-6xl pb-10 pt-0"
-            : "max-w-lg pb-28 pt-5 sm:max-w-6xl sm:pb-12 sm:pt-8"
+            : pathname.startsWith("/messages")
+              ? "max-w-6xl px-0 pb-[4.35rem] pt-0 sm:px-4 sm:pb-6 sm:pt-4"
+              : "max-w-lg pb-28 pt-5 sm:max-w-6xl sm:pb-12 sm:pt-8"
         )}
       >
         {children}
@@ -97,7 +145,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           className="fixed inset-x-0 bottom-0 z-40 border-t border-border/70 bg-background/90 backdrop-blur-xl lg:hidden"
           aria-label="Mobile"
         >
-          <ul className="mx-auto grid max-w-lg grid-cols-4 px-1 safe-bottom">
+          <ul className="mx-auto grid max-w-lg grid-cols-5 px-0.5 safe-bottom">
             {appNav.map((item) => {
               const Icon = item.icon;
               const active =
@@ -108,12 +156,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   <Link
                     href={item.href}
                     className={cn(
-                      "flex flex-col items-center gap-1 px-1 py-2.5 text-[10px] font-semibold transition-colors",
-                      active ? "text-primary" : "text-muted-foreground"
+                      "relative flex min-h-12 flex-col items-center justify-center gap-0.5 px-0.5 py-2 text-[10px] font-semibold duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                      active ? "text-primary" : "text-foreground/70 hover:text-foreground"
                     )}
                   >
                     <Icon className="size-5" strokeWidth={active ? 2.5 : 2} />
-                    {item.label}
+                    <span className="max-w-full truncate leading-none">{item.label}</span>
+                    {item.href === "/notifications" ? <NotificationBadge compact /> : null}
                   </Link>
                 </li>
               );
@@ -121,6 +170,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </ul>
         </nav>
       ) : null}
+
+      {searchOpen ? <GlobalSearchOverlay onClose={closeSearch} /> : null}
+      {!isMarketing ? <FeedbackFab /> : null}
     </div>
   );
 }

@@ -14,9 +14,10 @@ export default async function CreateInteractionPage() {
         <div>
           <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary">Trust Acts</p>
           <h1 className="mt-2 font-display text-3xl font-bold tracking-tight">Record a Trust Act</h1>
-          <p className="mt-2 max-w-xl text-sm text-muted-foreground">
-            Positive Trust Acts change trust only after the recipient accepts. Reports need admin
-            review. XP is never affected here.
+          <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">
+            The recipient confirms the help, then a moderator reviews it. Trust updates only on
+            approval. Reports never change Trust until evidence is approved. XP is never affected
+            here.
           </p>
         </div>
         <Button asChild variant="outline" size="sm">

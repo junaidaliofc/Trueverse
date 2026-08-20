@@ -3,14 +3,17 @@ import { createServerClient } from "@supabase/ssr";
 
 const PROTECTED_PREFIXES = [
   "/dashboard",
+  "/passport",
   "/profile",
+  "/messages",
   "/interactions",
   "/notifications",
   "/missions",
   "/badges",
   "/community",
   "/activity",
-  "/admin"
+  "/admin",
+  "/appeals"
 ];
 
 export async function updateSession(request: NextRequest) {

@@ -1,46 +1,30 @@
 import { requireAdmin } from "@/lib/auth";
-import { AdminReportQueue } from "@/components/admin-report-queue";
-import type { AdminReport } from "@/lib/types";
+import { AdminTrustOsDashboard } from "@/components/admin/trust-os-dashboard";
+import { fetchAdminNegativeReports, fetchAdminTrustOs } from "@/lib/trust-os-server";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
   const { supabase } = await requireAdmin();
-
-  const { data: reports, error } = await supabase
-    .from("negative_reports")
-    .select("*")
-    .in("status", ["pending", "under_review", "disputed"])
-    .order("created_at", { ascending: true })
-    .limit(50);
+  const [os, reportsRes] = await Promise.all([
+    fetchAdminTrustOs(supabase),
+    fetchAdminNegativeReports(supabase)
+  ]);
 
   return (
-    <div className="mx-auto max-w-3xl space-y-8">
-      <div>
-        <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary">
-          Admin · Beta
-        </p>
-        <h1 className="mt-2 font-display text-3xl font-bold tracking-tight">Report review</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Evidence-backed reports only. Trust changes only after admin approval via the existing
-          simple calculation.
-        </p>
-      </div>
-
-      {error ? (
-        <div className="glass rounded-[1.75rem] p-6 text-sm text-danger">{error.message}</div>
+    <div className="mx-auto max-w-5xl space-y-6">
+      {os.error && !os.error.toLowerCase().includes("does not exist") ? (
+        <p className="rounded-[1.25rem] bg-danger-soft px-4 py-3 text-sm text-danger">{os.error}</p>
       ) : null}
-
-      {!error && (reports?.length ?? 0) === 0 ? (
-        <div className="glass rounded-[1.75rem] px-6 py-12 text-center">
-          <p className="font-display text-lg font-bold">No reports waiting</p>
-          <p className="mt-2 text-sm text-muted-foreground">The moderation queue is clear.</p>
-        </div>
-      ) : null}
-
-      {reports && reports.length > 0 ? (
-        <AdminReportQueue reports={reports as AdminReport[]} />
-      ) : null}
+      <AdminTrustOsDashboard
+        acts={os.acts}
+        reports={reportsRes.reports}
+        communityReports={os.communityReports}
+        flagged={os.flagged}
+        appeals={os.appeals}
+        audit={os.audit}
+        analytics={os.analytics}
+      />
     </div>
   );
 }

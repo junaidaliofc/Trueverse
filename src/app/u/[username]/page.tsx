@@ -4,11 +4,66 @@ import {
   followingIds,
   profiles
 } from "@/lib/dummy-data";
-import { findProfileByPublicSlug } from "@/lib/passport";
-import { PUBLIC_PROFILE_DISCLAIMER, scoreToTrustLevel } from "@/lib/design";
+import {
+  buildLivePassportViewModel,
+  findProfileByPublicSlug,
+  passportUsername,
+  type PassportViewModel
+} from "@/lib/passport";
+import { PUBLIC_PROFILE_DISCLAIMER } from "@/lib/design";
 import { TrueversePassport } from "@/components/passport/trueverse-passport";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Profile } from "@/lib/types";
+
+const DEMO_SLUGS = new Set(["sarahkim", "tv_sarahkim"]);
+
+async function loadLivePublicPassport(
+  key: string
+): Promise<PassportViewModel | null> {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) return null;
+
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { data } = await supabase
+      .from("profiles")
+      .select(
+        "id, full_name, photo_url, bio, trust_score, streak, trueverse_id, username, city, headline, interests, social_links, role, is_disabled, last_positive_at, created_at, updated_at"
+      )
+      .or(`username.eq.${key},trueverse_id.eq.${key},trueverse_id.eq.tv_${key}`)
+      .eq("is_disabled", false)
+      .maybeSingle<Profile>();
+
+    if (!data) return null;
+
+    const [{ data: xpRow }, { data: trustActs }] = await Promise.all([
+      supabase
+        .from("user_xp")
+        .select("total_xp")
+        .eq("profile_id", data.id)
+        .maybeSingle<{ total_xp: number }>(),
+      supabase
+        .from("positive_interactions")
+        .select(
+          "id, title, description, status, author_id, recipient_id, created_at, accepted_at"
+        )
+        .or(`author_id.eq.${data.id},recipient_id.eq.${data.id}`)
+        .eq("status", "accepted")
+        .order("created_at", { ascending: false })
+        .limit(20)
+    ]);
+
+    const passport = buildLivePassportViewModel(data, {
+      emailVerified: false,
+      totalXp: xpRow?.total_xp ?? 0,
+      trustActs: trustActs ?? []
+    });
+    // Email verification requires an auth session — omit on public Passport.
+    passport.verifications = passport.verifications.filter((item) => item.kind !== "email");
+    return passport;
+  } catch {
+    return null;
+  }
+}
 
 export default async function PublicPassportPage({
   params
@@ -16,58 +71,66 @@ export default async function PublicPassportPage({
   params: Promise<{ username: string }>;
 }) {
   const { username } = await params;
-  let profile = findProfileByPublicSlug(profiles, username) as Profile | undefined;
+  const key = decodeURIComponent(username).replace(/^@/, "").toLowerCase();
 
-  if (!profile && process.env.NEXT_PUBLIC_SUPABASE_URL) {
-    try {
-      const supabase = await createSupabaseServerClient();
-      const key = decodeURIComponent(username).replace(/^@/, "").toLowerCase();
-      const { data } = await supabase
-        .from("profiles")
-        .select("*")
-        .or(`username.eq.${key},trueverse_id.eq.${key},trueverse_id.eq.tv_${key}`)
-        .eq("is_disabled", false)
-        .maybeSingle<Profile>();
-      profile = data ?? undefined;
-    } catch {
-      profile = undefined;
-    }
+  // Explicit demo profile only — never mix demo data into live accounts.
+  if (DEMO_SLUGS.has(key)) {
+    const demo = findProfileByPublicSlug(profiles, key) as Profile | undefined;
+    if (!demo) notFound();
+
+    const passport = buildPassportViewModel(demo, {
+      mode: "public",
+      privacy: {
+        showDna: false,
+        showVerifications: true,
+        showBadges: true,
+        showTimeline: true,
+        showStatistics: true
+      }
+    });
+    passport.profile = demo;
+    passport.displayName = demo.full_name;
+    passport.username = passportUsername(demo);
+    passport.sharePath = `/u/${passport.username}`;
+    passport.trueverseId = demo.trueverse_id;
+    passport.bio = demo.bio;
+    // Demo must not present fake identity verification as live-backed.
+    passport.identityVerified = false;
+    passport.verifications = passport.verifications
+      .filter((item) => item.kind !== "organization")
+      .map((item) => {
+        if (item.kind === "identity" || item.kind === "phone" || item.kind === "professional" || item.kind === "community") {
+          return { ...item, status: "unverified" as const, completed_at: null, detail: undefined };
+        }
+        if (item.kind === "email") {
+          return { ...item, detail: item.status === "verified" ? "Verified" : undefined };
+        }
+        return item;
+      });
+    const demoEmailVerified =
+      passport.verifications.find((item) => item.kind === "email")?.status === "verified";
+
+    return (
+      <div className="space-y-4">
+        <TrueversePassport
+          passport={passport}
+          mode="public"
+          emailVerified={demoEmailVerified}
+          initialFollowing={followingIds.includes(demo.id)}
+        />
+        <p className="mx-auto max-w-lg pb-8 text-center text-xs leading-5 text-muted-foreground sm:max-w-3xl">
+          {PUBLIC_PROFILE_DISCLAIMER}
+        </p>
+      </div>
+    );
   }
 
-  if (!profile) notFound();
-
-  const passport = buildPassportViewModel(profile, {
-    mode: "public",
-    privacy: {
-      showDna: false,
-      showVerifications: true,
-      showBadges: true,
-      showTimeline: true,
-      showStatistics: true
-    }
-  });
-
-  passport.profile = profile;
-  passport.displayName = profile.full_name;
-  passport.username =
-    profile.username ?? profile.trueverse_id.replace(/^tv_/, "");
-  passport.sharePath = `/u/${passport.username}`;
-  passport.trueverseId = profile.trueverse_id;
-  passport.bio = profile.bio;
-  passport.trustLevel = scoreToTrustLevel(profile.trust_score);
-  passport.verifications = passport.verifications.filter(
-    (item) => item.kind !== "organization"
-  );
-
-  const isCurrent = profile.id === "user-aria";
+  const passport = await loadLivePublicPassport(key);
+  if (!passport) notFound();
 
   return (
     <div className="space-y-4">
-      <TrueversePassport
-        passport={passport}
-        mode="public"
-        initialFollowing={!isCurrent && followingIds.includes(profile.id)}
-      />
+      <TrueversePassport passport={passport} mode="public" emailVerified={false} />
       <p className="mx-auto max-w-lg pb-8 text-center text-xs leading-5 text-muted-foreground sm:max-w-3xl">
         {PUBLIC_PROFILE_DISCLAIMER}
       </p>
