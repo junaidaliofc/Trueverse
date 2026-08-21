@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, ShieldCheck, UserRound } from "lucide-react";
+import { Bell, Search, ShieldCheck, UserRound } from "lucide-react";
 import { SessionAvatar } from "@/components/auth/session-avatar";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 
 const appNav = [
   { href: "/dashboard", label: "Trust Center", icon: ShieldCheck },
+  { href: "/check", label: "Check", icon: Search },
   { href: "/notifications", label: "Requests", icon: Bell },
   { href: "/profile", label: "My Passport", icon: UserRound }
 ] as const;
@@ -62,6 +63,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           ) : (
             <nav className="flex items-center gap-2 sm:gap-3">
               <ThemeToggle />
+              <Button asChild variant="ghost" size="sm">
+                <Link href="/check">Check Someone</Link>
+              </Button>
               <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
                 <Link href="/auth/login">Sign In</Link>
               </Button>

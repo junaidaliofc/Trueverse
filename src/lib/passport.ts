@@ -19,6 +19,46 @@ import type { BadgeDef, TimelineEvent } from "@/lib/dummy-data";
 
 export type PassportMode = "owner" | "public";
 
+/**
+ * V1 reputation vocabulary. Only the first three states are derivable from the
+ * data we currently store. Established / Strong / Exceptional require a
+ * reputation engine that does not exist yet, so they are never assigned here.
+ */
+export const V1_REPUTATION_TIERS = [
+  "Unverified",
+  "Verified",
+  "Building",
+  "Established",
+  "Strong",
+  "Exceptional"
+] as const;
+
+export type V1ReputationTier = (typeof V1_REPUTATION_TIERS)[number];
+
+/** Truthful V1 reputation label from real signals only — never a numeric score. */
+export function deriveV1Reputation(input: {
+  accountVerified: boolean;
+  verifiedInteractions: number;
+}): { label: V1ReputationTier; note: string; index: number } {
+  let label: V1ReputationTier;
+  let note: string;
+  if (!input.accountVerified) {
+    label = "Unverified";
+    note = "Verification incomplete — account details are not yet confirmed.";
+  } else if (input.verifiedInteractions <= 0) {
+    label = "Verified";
+    note = "Account verified. Reputation grows through real, verified interactions.";
+  } else {
+    label = "Building";
+    note = "Building a verified interaction history.";
+  }
+  return { label, note, index: V1_REPUTATION_TIERS.indexOf(label) };
+}
+
+/** Shared disclaimer for Passport surfaces. */
+export const PASSPORT_SIGNAL_DISCLAIMER =
+  "Trueverse provides identity and interaction signals for context. It does not guarantee a person's safety, character, or future behavior.";
+
 export type PassportReputationEventKind =
   | "trust_act"
   | "achievement"
