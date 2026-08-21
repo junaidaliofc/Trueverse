@@ -2,17 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, Home, UserRound, Users } from "lucide-react";
+import { Bell, ShieldCheck, UserRound } from "lucide-react";
 import { SessionAvatar } from "@/components/auth/session-avatar";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const appNav = [
-  { href: "/dashboard", label: "Home", icon: Home },
-  { href: "/profile", label: "Passport", icon: UserRound },
-  { href: "/community", label: "Community", icon: Users },
-  { href: "/notifications", label: "Alerts", icon: Bell }
+  { href: "/dashboard", label: "Trust Center", icon: ShieldCheck },
+  { href: "/notifications", label: "Requests", icon: Bell },
+  { href: "/profile", label: "My Passport", icon: UserRound }
 ] as const;
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -64,10 +63,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <nav className="flex items-center gap-2 sm:gap-3">
               <ThemeToggle />
               <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
-                <Link href="/auth/login">Sign in</Link>
+                <Link href="/auth/login">Sign In</Link>
               </Button>
               <Button asChild size="sm">
-                <Link href="/auth/signup">Get Started</Link>
+                <Link href="/auth/signup">Create Passport</Link>
               </Button>
             </nav>
           )}
@@ -97,7 +96,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           className="fixed inset-x-0 bottom-0 z-40 border-t border-border/70 bg-background/90 backdrop-blur-xl lg:hidden"
           aria-label="Mobile"
         >
-          <ul className="mx-auto grid max-w-lg grid-cols-4 px-1 safe-bottom">
+          <ul
+            className="mx-auto grid max-w-lg px-1 safe-bottom"
+            style={{ gridTemplateColumns: `repeat(${appNav.length}, minmax(0, 1fr))` }}
+          >
             {appNav.map((item) => {
               const Icon = item.icon;
               const active =
@@ -108,7 +110,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   <Link
                     href={item.href}
                     className={cn(
-                      "flex flex-col items-center gap-1 px-1 py-2.5 text-[10px] font-semibold transition-colors",
+                      "flex flex-col items-center gap-1 px-1 py-2.5 text-center text-[10px] font-semibold leading-tight transition-colors",
                       active ? "text-primary" : "text-muted-foreground"
                     )}
                   >
