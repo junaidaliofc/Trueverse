@@ -38,16 +38,39 @@ export default async function TrustCenterPage() {
   const verifiedInteractions = incoming?.filter((row) => row.status === "accepted").length ?? 0;
   const pendingRequests = incoming?.filter((row) => row.status === "pending").length ?? 0;
 
-  const { data: activityRows, error: activityError } = await supabase
-    .from("notifications")
-    .select("id,type,title,body,created_at")
-    .eq("recipient_id", profile.id)
-    .in("type", ["positive_interaction_received", "positive_interaction_accepted"])
-    .order("created_at", { ascending: false })
-    .limit(6)
-    .returns<{ id: string; type: string; title: string; body: string; created_at: string }[]>();
+  const [{ data: activityRows, error: activityError }, { data: referenceRows }] = await Promise.all([
+    supabase
+      .from("notifications")
+      .select("id,type,title,body,created_at")
+      .eq("recipient_id", profile.id)
+      .in("type", ["positive_interaction_received", "positive_interaction_accepted"])
+      .order("created_at", { ascending: false })
+      .limit(6)
+      .returns<{ id: string; type: string; title: string; body: string; created_at: string }[]>(),
+    supabase
+      .from("passport_references")
+      .select("id,created_at")
+      .eq("subject_id", profile.id)
+      .order("created_at", { ascending: false })
+      .limit(6)
+      .returns<{ id: string; created_at: string }[]>()
+  ]);
 
-  const activity = activityError ? [] : activityRows ?? [];
+  const notificationActivity = (activityError ? [] : activityRows ?? []).map((row) => ({
+    id: row.id,
+    title: row.title,
+    body: row.body,
+    created_at: row.created_at
+  }));
+  const referenceActivity = (referenceRows ?? []).map((row) => ({
+    id: `ref-${row.id}`,
+    title: "Reference received",
+    body: "Someone added a reference to your Passport.",
+    created_at: row.created_at
+  }));
+  const activity = [...notificationActivity, ...referenceActivity]
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    .slice(0, 6);
 
   const emailVerified = Boolean(user.email_confirmed_at);
   const identityVerified = Boolean(profile.identity_verified);

@@ -16,9 +16,9 @@ export async function POST(
     return jsonError("Authentication required.", 401);
   }
 
-  const { data, error } = await supabase.rpc("accept_positive_interaction", {
+  const { data, error } = await supabase.rpc("confirm_positive_interaction", {
     interaction_id: id,
-    accepting_user_id: user.id
+    confirming_user_id: user.id
   });
 
   if (error) {

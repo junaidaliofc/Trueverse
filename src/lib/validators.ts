@@ -18,10 +18,37 @@ const publicHandle = z
   .toLowerCase()
   .regex(/^[a-z0-9_]{3,32}$/, "Use a valid username or Trueverse ID.");
 
+export const INTERACTION_CATEGORIES = [
+  "marketplace",
+  "professional",
+  "service",
+  "community",
+  "other"
+] as const;
+
 export const positiveInteractionSchema = z.object({
   recipient_trueverse_id: publicHandle,
+  category: z.enum(INTERACTION_CATEGORIES).default("other"),
   title: z.string().trim().min(4).max(120),
   description: z.string().trim().min(12).max(1000)
+});
+
+export const REFERENCE_RELATIONSHIPS = [
+  "worked_together",
+  "bought_sold",
+  "professional",
+  "community",
+  "other"
+] as const;
+
+export const referenceSchema = z.object({
+  subject_trueverse_id: publicHandle,
+  relationship: z.enum(REFERENCE_RELATIONSHIPS).default("other"),
+  reliable: z.boolean().default(false),
+  communicated_clearly: z.boolean().default(false),
+  followed_through: z.boolean().default(false),
+  would_interact_again: z.boolean().default(false),
+  note: z.string().trim().max(500).optional().or(z.literal(""))
 });
 
 export const negativeReportSchema = z.object({

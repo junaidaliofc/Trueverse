@@ -35,6 +35,7 @@ export type LivePassportProps = {
   sharePath: string;
   startInteractionHref?: string | null;
   reportHref?: string | null;
+  extra?: React.ReactNode;
 };
 
 function SignalTile({
@@ -220,6 +221,8 @@ export function LivePassport(props: LivePassportProps) {
           </>
         )}
       </section>
+
+      {props.extra}
 
       {!isOwner ? (
         <p className="px-1 pb-4 text-center text-xs leading-5 text-muted-foreground">

@@ -44,6 +44,7 @@ export async function POST(request: NextRequest) {
       .insert({
         author_id: user.id,
         recipient_id: recipient.id,
+        category: payload.category,
         title: payload.title,
         description: payload.description
       })

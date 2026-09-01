@@ -4,6 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
+/**
+ * Recipient confirmation controls for a pending interaction.
+ * "accept" confirms the interaction occurred; "reject" declines it.
+ */
 export function TrustActActions({ interactionId }: { interactionId: string }) {
   const router = useRouter();
   const [loading, setLoading] = useState<"accept" | "reject" | null>(null);
@@ -18,7 +22,12 @@ export function TrustActActions({ interactionId }: { interactionId: string }) {
     const payload = await response.json().catch(() => ({}));
     setLoading(null);
     if (!response.ok) {
-      setError(payload.error ?? `Unable to ${kind} this Trust Act.`);
+      setError(
+        payload.error ??
+          (kind === "accept"
+            ? "Unable to confirm this interaction."
+            : "Unable to decline this interaction.")
+      );
       return;
     }
     router.refresh();
@@ -28,16 +37,16 @@ export function TrustActActions({ interactionId }: { interactionId: string }) {
     <div className="space-y-3">
       <div className="flex flex-wrap gap-2">
         <Button disabled={loading !== null} onClick={() => act("accept")}>
-          {loading === "accept" ? "Accepting…" : "Accept"}
+          {loading === "accept" ? "Confirming…" : "Confirm Interaction"}
         </Button>
-        <Button
-          variant="outline"
-          disabled={loading !== null}
-          onClick={() => act("reject")}
-        >
-          {loading === "reject" ? "Rejecting…" : "Reject"}
+        <Button variant="outline" disabled={loading !== null} onClick={() => act("reject")}>
+          {loading === "reject" ? "Declining…" : "Decline"}
         </Button>
       </div>
+      <p className="text-xs text-muted-foreground">
+        Confirming means: &ldquo;I confirm that this interaction occurred and the description is
+        substantially accurate.&rdquo;
+      </p>
       {error ? <p className="text-sm text-danger">{error}</p> : null}
     </div>
   );

@@ -2,10 +2,26 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { TrustActActions } from "@/components/interactions/trust-act-actions";
 import { formatRelativeTime } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
+
+const CATEGORY_LABELS: Record<string, string> = {
+  marketplace: "Marketplace",
+  professional: "Professional",
+  service: "Service",
+  community: "Community",
+  other: "Other"
+};
+
+function statusLabel(status: string): string {
+  if (status === "accepted") return "Verified Interaction";
+  if (status === "pending") return "Pending confirmation";
+  if (status === "rejected") return "Declined";
+  return "Expired";
+}
 
 export default async function InteractionDetailPage({
   params
@@ -17,7 +33,9 @@ export default async function InteractionDetailPage({
 
   const { data: interaction } = await supabase
     .from("positive_interactions")
-    .select("id, title, description, status, author_id, recipient_id, created_at, accepted_at, rejected_at")
+    .select(
+      "id, title, description, status, category, reputation_eligible, author_id, recipient_id, created_at, accepted_at, rejected_at"
+    )
     .eq("id", id)
     .maybeSingle();
 
@@ -36,15 +54,19 @@ export default async function InteractionDetailPage({
   const recipient = people?.find((p) => p.id === interaction.recipient_id);
   const canReview =
     interaction.recipient_id === user.id && interaction.status === "pending";
+  const categoryLabel = CATEGORY_LABELS[interaction.category ?? "other"] ?? "Other";
 
   return (
     <div className="mx-auto max-w-2xl space-y-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary">
-            Trust Act
-          </p>
-          <h1 className="mt-2 font-display text-3xl font-bold tracking-tight">
+          <div className="flex flex-wrap items-center gap-2">
+            <StatusBadge tone={interaction.status === "accepted" ? "success" : "neutral"}>
+              {statusLabel(interaction.status)}
+            </StatusBadge>
+            <StatusBadge tone="neutral">{categoryLabel}</StatusBadge>
+          </div>
+          <h1 className="mt-3 font-display text-3xl font-bold tracking-tight">
             {interaction.title}
           </h1>
           <p className="mt-3 text-sm leading-6 text-muted-foreground">{interaction.description}</p>
@@ -57,12 +79,14 @@ export default async function InteractionDetailPage({
       <section className="grid gap-3 sm:grid-cols-3">
         <div className="glass rounded-3xl p-4">
           <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Status</p>
-          <p className="mt-2 font-display text-xl font-bold capitalize">{interaction.status}</p>
+          <p className="mt-2 font-display text-lg font-bold">{statusLabel(interaction.status)}</p>
         </div>
         <div className="glass rounded-3xl p-4">
-          <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Trust</p>
-          <p className="mt-2 font-display text-xl font-bold">
-            {interaction.status === "accepted" ? "Updated" : "No change yet"}
+          <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+            Reputation evidence
+          </p>
+          <p className="mt-2 font-display text-lg font-bold">
+            {interaction.status === "accepted" ? "Counted" : "Not yet"}
           </p>
         </div>
         <div className="glass rounded-3xl p-4">
@@ -70,6 +94,13 @@ export default async function InteractionDetailPage({
           <p className="mt-2 text-sm font-semibold">{formatRelativeTime(interaction.created_at)}</p>
         </div>
       </section>
+
+      {interaction.status === "accepted" && interaction.reputation_eligible === false ? (
+        <p className="rounded-2xl bg-muted px-4 py-3 text-sm text-muted-foreground">
+          This confirmed interaction is recorded as verified evidence, but it did not add reputation
+          credit — that is limited to one confirmation per person every 30 days.
+        </p>
+      ) : null}
 
       <section className="grid gap-4 sm:grid-cols-2">
         <div className="glass rounded-3xl p-5">
@@ -92,7 +123,7 @@ export default async function InteractionDetailPage({
         <section className="glass rounded-3xl p-5">
           <h2 className="font-display text-xl font-bold">Your decision</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Accepting applies the existing simple trust update. Rejecting leaves trust unchanged.
+            Confirm if this interaction occurred, or decline if it did not.
           </p>
           <div className="mt-4">
             <TrustActActions interactionId={interaction.id} />

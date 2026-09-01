@@ -7,13 +7,17 @@ import { LogoutButton } from "@/components/auth/logout-button";
 export const dynamic = "force-dynamic";
 
 export default async function ProfilePage() {
-  const { user, profile } = await requireProfile();
+  const { supabase, user, profile } = await requireProfile();
 
   const emailVerified = Boolean(user.email_confirmed_at);
   const identityVerified = Boolean(profile.identity_verified);
   const accountVerified = emailVerified || identityVerified;
   const verifiedInteractions = profile.trust_acts ?? 0;
-  const references = (profile as { references_count?: number }).references_count ?? 0;
+  const { count: referenceCount } = await supabase
+    .from("passport_references")
+    .select("id", { count: "exact", head: true })
+    .eq("subject_id", profile.id);
+  const references = referenceCount ?? 0;
   const reputation = deriveV1Reputation({ accountVerified, verifiedInteractions });
 
   const username = passportUsername(profile);
