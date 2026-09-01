@@ -1,12 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 type AuthMode = "signup" | "login";
 
-function siteUrl() {
+/** Current site origin for auth email redirects (never a hardcoded localhost in prod). */
+function siteOrigin() {
   return (
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
     (typeof window !== "undefined" ? window.location.origin : "http://localhost:3000")
@@ -23,7 +28,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
 
   function client() {
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-      throw new Error("Supabase is not configured.");
+      throw new Error("Authentication is not configured.");
     }
     return createSupabaseBrowserClient();
   }
@@ -33,19 +38,21 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
     setLoading(true);
     setMessage("");
 
+    // Normalize the email so stray whitespace / casing never causes a false mismatch.
+    const cleanEmail = email.trim().toLowerCase();
+
     try {
       const supabase = client();
-      const emailRedirectTo = `${siteUrl()}/auth/callback`;
 
       if (mode === "signup") {
         const result = await supabase.auth.signUp({
-          email,
+          email: cleanEmail,
           password,
           options: {
-            emailRedirectTo,
+            emailRedirectTo: `${siteOrigin()}/auth/callback`,
             data: {
-              name,
-              full_name: name
+              name: name.trim(),
+              full_name: name.trim()
             }
           }
         });
@@ -55,9 +62,8 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
           return;
         }
 
-        // Email confirmation required — never open a fake OTP screen.
         if (!result.data.session) {
-          router.push(`/auth/check-email?email=${encodeURIComponent(email)}`);
+          router.push(`/auth/check-email?email=${encodeURIComponent(cleanEmail)}`);
           return;
         }
 
@@ -66,79 +72,88 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
         return;
       }
 
-      const result = await supabase.auth.signInWithPassword({ email, password });
+      const result = await supabase.auth.signInWithPassword({
+        email: cleanEmail,
+        password
+      });
 
       if (result.error) {
-        setMessage(result.error.message);
+        // Generic, non-revealing message for authentication failures.
+        setMessage("Invalid email or password.");
         return;
       }
 
       router.refresh();
       router.push("/dashboard");
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Unable to authenticate.");
+    } catch {
+      setMessage("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <form onSubmit={onSubmit} className="glass-card mx-auto max-w-md space-y-5 rounded-3xl p-6">
-      <div>
-        <p className="text-sm font-semibold uppercase tracking-wide text-teal-700">
-          {mode === "signup" ? "Create account" : "Welcome back"}
-        </p>
-        <h1 className="mt-2 text-3xl font-black text-slate-950">
-          {mode === "signup" ? "Join Trueverse" : "Log in to Trueverse"}
-        </h1>
-      </div>
-
+    <form onSubmit={onSubmit} className="glass mx-auto max-w-md space-y-5 rounded-3xl p-6">
       {mode === "signup" ? (
-        <label className="block text-sm font-semibold text-slate-700">
-          Name
-          <input
+        <div className="space-y-1.5">
+          <Label htmlFor="name">Name</Label>
+          <Input
+            id="name"
             value={name}
             onChange={(event) => setName(event.target.value)}
-            className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-teal-500"
             required
             autoComplete="name"
+            className="h-11 rounded-2xl"
           />
-        </label>
+        </div>
       ) : null}
 
-      <label className="block text-sm font-semibold text-slate-700">
-        Email
-        <input
+      <div className="space-y-1.5">
+        <Label htmlFor="email">Email</Label>
+        <Input
+          id="email"
           type="email"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
-          className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-teal-500"
           required
           autoComplete="email"
+          className="h-11 rounded-2xl"
         />
-      </label>
+      </div>
 
-      <label className="block text-sm font-semibold text-slate-700">
-        Password
-        <input
+      <div className="space-y-1.5">
+        <div className="flex items-center justify-between gap-2">
+          <Label htmlFor="password">Password</Label>
+          {mode === "login" ? (
+            <Link
+              href="/auth/forgot-password"
+              className="text-sm font-semibold text-primary hover:underline"
+            >
+              Forgot password?
+            </Link>
+          ) : null}
+        </div>
+        <Input
+          id="password"
           type="password"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
-          className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-teal-500"
           required
           minLength={8}
           autoComplete={mode === "signup" ? "new-password" : "current-password"}
+          className="h-11 rounded-2xl"
         />
-      </label>
+      </div>
 
-      {message ? <p className="rounded-2xl bg-amber-50 p-3 text-sm text-amber-800">{message}</p> : null}
+      {message ? (
+        <p className="rounded-2xl bg-destructive/10 px-4 py-3 text-sm font-medium text-destructive">
+          {message}
+        </p>
+      ) : null}
 
-      <button
-        disabled={loading}
-        className="w-full rounded-2xl bg-teal-600 px-4 py-3 font-bold text-white shadow-sm hover:bg-teal-700 disabled:opacity-60"
-      >
-        {loading ? "Please wait..." : mode === "signup" ? "Sign up" : "Log in"}
-      </button>
+      <Button type="submit" disabled={loading} className="w-full" size="lg">
+        {loading ? "Please wait…" : mode === "signup" ? "Create account" : "Log in"}
+      </Button>
     </form>
   );
 }
