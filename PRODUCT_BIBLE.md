@@ -1,683 +1,302 @@
 # Trueverse Product Bible
 
-**Status:** Canonical  
-**Audience:** Product, Design, Engineering, Trust & Safety, Growth  
+**Status:** Canonical — Trueverse 2.0
+
+**Revised:** October 24, 2026 (America/Los_Angeles)
+
+**Audience:** Product, Design, Engineering, Trust & Safety, Growth
+
+**Engineering companion:** `docs/trueverse-2-implementation-plan.md`
+
 **Rule:** Every feature, screen, API, and migration must comply with this document. When implementation conflicts with this Bible, the Bible wins until it is formally revised.
+
+This revision replaces the portable-reputation product definition. Existing trust, Passport, XP, mission, and social-feed code and tables remain in the repository. They are retained infrastructure, not the current product.
 
 ---
 
 ## 1. Mission
 
-Help people make safer and more informed decisions by providing transparent, verified reputation signals based on real-world interactions.
+Trueverse connects people based on what they want to accomplish next.
 
-Trueverse is not a social network for entertainment. It is infrastructure for portable digital trust.
+A member describes a goal, the skills they offer, the help they need, and how they want to collaborate. Trueverse helps them discover suitable people, exchange a mutual connection request, and agree on a concrete first action.
+
+Trueverse is a goal-based human collaboration network. It is not an entertainment social network, a dating product, an advertising network, or a public reputation score.
 
 ---
 
 ## 2. Vision
 
-Become the world’s default portable reputation layer — a profile people can carry into dating, marketplaces, freelance work, universities, professional networks, communities, and volunteer organizations.
+### Initial audience
 
-In the long term, Trueverse should feel as natural to share as a LinkedIn URL, as emotionally engaging as Duolingo, and as trustworthy as a well-run financial product.
+People starting businesses, building applications, creating side projects, or learning useful skills.
 
----
+### Long-term vision
 
-## 3. Core Values
+After the initial market is validated, expand the same collaboration model to other meaningful personal goals. Validation means people repeatedly discover relevant collaborators, accept mutual requests, and complete first actions. Expansion does not begin by adding unrelated social, scoring, advertising, or dating products.
 
-1. **Signals over judgments** — Present verified evidence. Never declare someone “safe,” “good,” or “dateable.”
-2. **Trust is earned** — Trust changes only through verified, server-side processes.
-3. **Engagement is separate** — XP, streaks, and cosmetics never alter trust.
-4. **Dignity by default** — Design for real people in high-stakes contexts, not for gamified cruelty.
-5. **Privacy is a feature** — Portable reputation must respect what users choose to reveal.
-6. **Clarity over cleverness** — Prefer calm, premium interfaces over dense dashboards.
-7. **Accountability with fairness** — Evidence, review, and dispute paths exist before punishment.
-8. **Long-term integrity** — Prefer slower, correct trust systems over viral shortcuts.
+### Product promise
 
----
+Trueverse helps people find a practical collaborator for a stated goal. Recommendations explain why two goals overlap. They do not predict personal compatibility, character, or safety, and they do not guarantee an outcome.
 
-## 4. Product Principles
+Canonical disclaimer:
 
-1. **Not another social feed first** — Community features support reputation; they do not redefine the product as entertainment social media.
-2. **Consumer, not admin** — Member experiences must feel like Apple / Airbnb / Instagram quality. Moderation tools stay in a separate admin shell.
-3. **Mobile-first habit loop** — Daily return should feel natural: greeting → streak → trust snapshot → XP → three missions.
-4. **One job per screen region** — Avoid dashboard clutter, metric walls, and competing CTAs.
-5. **Reusable systems** — Components, tokens, and engines must scale across pages and platforms.
-6. **Server authority for trust** — Clients display trust; servers compute trust.
-7. **Delight without deception** — Animation and gamification increase retention, never misrepresent reputation.
-8. **Disclaimer always available** — Public and sensitive surfaces remind users that signals ≠ guarantees.
-
-Canonical product disclaimer:
-
-> Trueverse presents verified reputation signals only. It does not claim anyone is safe, trustworthy, or a good dating partner, and it does not predict compatibility or guarantee safety.
+> Recommendations are based on the goals, skills, availability, and languages members choose to share. They do not predict compatibility or guarantee outcomes or safety.
 
 ---
 
-## 5. User Personas
+## 3. What members can do
 
-### Persona A — “Portable Professional” (Primary)
-
-- Freelancer, seller, or community organizer
-- Needs credibility that travels across platforms
-- Values verified interactions, badges, and a clean public profile
-- Fear: fake reviews and opaque scores
-
-### Persona B — “Careful Connector”
-
-- Meeting people for dating, housing, or local help
-- Wants signals before real-world interaction
-- Values identity verification, references, and privacy controls
-- Fear: being manipulated by vanity metrics
-
-### Persona C — “Community Builder”
-
-- Runs mutual aid, campus, faith, or neighborhood groups
-- Wants appreciation, missions, and leaderboards as optional motivation
-- Values contribution visibility without toxic competition
-- Fear: admin-heavy tools that kill participation
-
-### Persona D — “Trust Operator” (Internal)
-
-- Reviews evidence-backed reports and disputes
-- Needs audit trails, role controls, and clear workflows
-- Success metric: fair, explainable outcomes — not volume throughput alone
+1. Describe a goal or project.
+2. Explain what skills they have.
+3. Explain what help they need.
+4. Discover people based on complementary skills, shared objectives, and availability.
+5. Send and accept mutual connection requests.
+6. Collaborate toward a real outcome, beginning with one concrete first action.
 
 ---
 
-## 6. Trust Philosophy
+## 4. MVP features
 
-Trust is a **reputation signal**, not a moral score and not a safety certificate.
+The first release contains these five features and the safety controls required to operate them.
 
-### What Trust is
+| Order | Feature | Member outcome | Routes |
+| --- | --- | --- | --- |
+| 1 | Authentication | Create an account, confirm email, sign in, recover a password, and reach the correct next step | `/auth/signup`, `/auth/login`, `/auth/check-email`, `/auth/callback`, password reset |
+| 2 | Goal-based onboarding | Create a goal, record offered and needed skills, and set collaboration preferences | `/onboarding`, `/goals` |
+| 3 | User discovery | Review explainable, privacy-safe recommendations for one active goal | `/discover` |
+| 4 | Mutual connections | Send, decline, cancel, and accept a request only with the recipient’s consent | `/connections` |
+| 5 | First collaboration action | Propose one concrete action with the request and track it after acceptance | Included in the connection request and accepted connection |
 
-- A level derived from verified real-world behavior and account integrity signals
-- Computed server-side
-- Immutable by the user
-- Shown publicly as a **level**, not a vanity number people can obsess over
+The public entry point is `/`. It explains the product and leads to signup or sign-in. It does not show member data.
 
-### What Trust is not
+### 4.1 Authentication
 
-- Not a dating score
-- Not a guarantee of safety or character
-- Not increased by daily login, streaks, or XP
-- Not manually editable by members
-- Not a substitute for personal judgment
+- Email and password signup and login remain the account mechanism.
+- Email confirmation is required before a goal can become discoverable or discovery can be used.
+- Password reset is part of this feature. Authentication is incomplete until a member can request a reset and set a new password through a same-origin completion page.
+- Successful authentication opens the requested safe relative path. A member without an active goal goes to `/onboarding`; a member with one goes to `/discover`.
+- A disabled account cannot authenticate into member surfaces.
+- `profiles.id` remains the same identifier as the Supabase Auth user. Do not create a second user table.
 
-### Public Trust Levels (0–100 index)
+### 4.2 Goal-based onboarding
 
-| Level | Index range |
-|-------|-------------|
-| New | 0–20 |
-| Developing | 21–40 |
-| Established | 41–65 |
-| Highly Established | 66–85 |
-| Exceptional | 86–100 |
+Onboarding collects:
 
-Stars may visualize level rank (1–5). The public UI emphasizes the **level name**, verification state, Trust Acts, appreciations, and community rank — not an intimidating credit-score aesthetic.
+- a specific goal or project;
+- skills offered;
+- skills needed;
+- collaboration style;
+- coarse availability, hours per week, timezone, work mode, and communication cadence;
+- one or more languages.
 
-### Inputs that may affect Trust
+A goal stays private until the member explicitly makes it discoverable. A member may manage more than one goal at `/goals`. Discovery uses one selected active goal at a time. Goals with connection history are archived rather than destroyed.
 
-- Verified interactions (Trust Acts)
-- Identity verification
-- Account age
-- Community consistency
-- Successful dispute resolution
-- Report history
+### 4.3 User discovery
 
-### Hard rule
+Discovery compares the member’s selected goal with other active, discoverable goals. It prioritizes:
 
-**XP never increases Trust. Daily login never increases Trust.**
+1. complementary skills, where one person offers a skill the other needs;
+2. compatible goals and categories;
+3. compatible coarse availability and collaboration constraints;
+4. shared language.
 
----
+At least one shared language is required. A member-selected hard constraint, such as remote-only collaboration, removes incompatible candidates. The same person, disabled accounts, either-direction blocks, and pending or accepted connections are also excluded.
 
-## 7. Reputation Engine Philosophy
+The ranking is deterministic and computed when requested. The MVP does not store match recommendations. The interface leads with two or three factual reasons. An internal numeric weight may order results, but the interface must not present a public score, percentage, or verdict. Copy may say “Potential fit.” It must include the canonical disclaimer and must not claim that an algorithm or AI system guarantees compatibility.
 
-Reputation is multi-dimensional. A single number is insufficient for human context.
+### 4.4 Mutual connections
 
-### Reputation DNA (Trust dimensions)
+- Seeing a recommendation does not create a connection.
+- The requester sends one request, an introduction, and a proposed first action.
+- The recipient alone can accept or decline it.
+- The requester can cancel a pending request.
+- A decline needs no reason, and private feedback is not shown to the requester.
+- Contact details and any richer collaboration channel remain hidden until acceptance and a separate consent decision.
+- One pending or accepted relationship exists for each unordered pair of members.
+- Participants cannot rewrite the participants, goals, or original proposal after sending.
 
-Trust-related contribution is expressed across:
+### 4.5 First collaboration action
 
-1. Helping Others  
-2. Reliability  
-3. Communication  
-4. Professionalism  
-5. Safety  
-6. Community  
-7. Leadership  
+Every request proposes one concrete next step, such as a 20-minute introduction, a scope review, a one-week milestone, or a learning-plan exchange. The recipient sees that proposal before accepting.
 
-Each dimension is a 0–100 signal used for explanation and profile storytelling. Dimensions inform understanding; they do not replace the Trust Level.
-
-### Reputation DNA UX
-
-- Visual bars (“Your Reputation DNA”)
-- Expandable explanation: “How does this person earn trust?”
-- Never imply destiny, compatibility, or absolute safety
-
-### Separation of engines
-
-| Engine | Purpose | Affects Trust? |
-|--------|---------|----------------|
-| Trust Engine | Verified reputation signals | Yes |
-| XP Engine | Habit, cosmetics, progression | No |
-| Mission Engine | Daily/weekly participation | No (XP/badges only) |
-| Moderation Engine | Reports, disputes, admin actions | Yes (via reviewed outcomes) |
+After acceptance, both people see the agreed action and can mark it complete. Completion is a private record of progress. It creates no public score and no reputation change. Direct messaging is a later project; the MVP coordinates the first action on the connection record.
 
 ---
 
-## 8. Design System
+## 5. Outside the MVP
 
-Trueverse uses a layered design architecture:
+The following are outside the MVP and must not be presented as current Trueverse features:
 
-1. **Tokens** — color, type, radius, spacing, motion  
-2. **Primitives** — shadcn/ui (Radix) components  
-3. **Product components** — Trust, XP, Missions, Timeline, Notifications  
-4. **Screens** — compose product components only; no one-off visual languages  
+| Area | Product boundary |
+| --- | --- |
+| Social feed | Community feeds, follows, appreciations, comments, activity timelines, and leaderboards stay out of primary navigation and marketing. |
+| Public TrueScore | Trust scores, trust levels, stars, Trust Acts, and reputation ledgers are not public profile or discovery content. |
+| Generic reputation scoring | Reputation DNA, XP, levels, streaks, missions, badges, and achievements do not rank collaborators or imply suitability. |
+| Advertising | There are no ads, sponsored rankings, or paid placements. |
+| Dating | Trueverse does not offer dating, romantic matching, or relationship-readiness features. |
 
-### Design north stars
+Existing routes and tables for these areas stay in place until a separate approved cleanup. New MVP screens must not import their dummy data or use their scores.
 
-- Apple: restraint, spacing, typography  
-- Linear: clarity and speed  
-- Airbnb: hospitality and trust in real-world contexts  
-- Instagram: mobile habit and visual hierarchy  
-- Duolingo: daily loop energy — without childish clutter  
-
-### Surface language
-
-- Soft gradients and atmospheric backgrounds  
-- Rounded cards (`rounded-2xl` / `rounded-3xl`)  
-- Glass surfaces where appropriate  
-- Generous whitespace  
-- Premium empty states  
-- Dark mode as a first-class peer to light mode  
-
-### Anti-patterns (forbidden in member UI)
-
-- Enterprise dashboard chrome  
-- Dense admin tables on consumer home  
-- Purple-on-white generic AI aesthetics  
-- Metric walls above the fold  
-- Floating promo stickers on hero media  
-- Cards used where plain layout would suffice (except interactive containers)
+Also deferred: direct messaging, AI-generated compatibility claims, organization tools, partner APIs, and expansion beyond the initial audience.
 
 ---
 
-## 9. Color System
+## 6. Principles
 
-### Brand role
-
-Teal/green signals **trust, calm, and integrity** — not entertainment purple, not alarm-red primary.
-
-### Semantic roles
-
-| Token role | Meaning |
-|------------|---------|
-| Primary / Brand | Trust actions, key CTAs, trust accents |
-| XP / Accent warm | Progression, streaks, missions (distinct from trust) |
-| Success | Verification, completed missions, positive confirmations |
-| Warning | Caution states, pending review |
-| Danger | Reports, destructive actions |
-| Muted | Secondary text and quiet UI |
-| Surface / Glass | Cards and overlays |
-
-### Rules
-
-- Trust UI uses brand/success tones  
-- XP UI uses XP/warm tones so users never confuse progression with trust  
-- Dark mode must preserve AA contrast for text and critical badges  
-- Do not invent new brand hues per feature  
+1. **A goal comes first.** Every discovery result and connection is anchored to a specific goal.
+2. **Consent is mutual.** One member’s interest never exposes the other member’s contact details.
+3. **Recommendations are explainable.** Members can see the skills, goal overlap, availability, and language facts used.
+4. **Privacy is the default.** Goals are private until published, and discovery receives an explicit safe field list.
+5. **Safety precedes growth.** Blocking, reporting, access control, and audit trails ship with discovery, not after it.
+6. **Servers decide authorization.** Route protection improves usability; Supabase RLS and checked server actions decide access.
+7. **One job per screen.** Mobile screens ask for the next meaningful action without dashboards or metric walls.
+8. **Craft over clutter.** The interface is calm, premium, and polished, with no deceptive urgency.
 
 ---
 
-## 10. Typography
+## 7. Initial personas
 
-| Role | Guidance |
-|------|----------|
-| Display / Brand | Expressive sans (e.g. Outfit) for Trueverse wordmark and major titles |
-| UI / Body | Premium humanistic sans (e.g. Plus Jakarta Sans) |
-| Mono | Trueverse IDs and technical identifiers only |
+### Builder
 
-### Rules
+A person creating an application or side project who needs a complementary skill and can offer one in return.
 
-- Large, confident type on consumer screens  
-- Tight tracking on display headlines  
-- Avoid Inter/Roboto/Arial as the defining brand voice  
-- One primary headline per section  
-- Body copy stays short; details expand progressively  
+### Founder
 
----
+A person starting a business who wants a collaborator for a defined launch goal, with limited weekly availability.
 
-## 11. Component Library
+### Learner
 
-### Primitive layer (shadcn/ui)
+A person developing a useful skill who wants peer accountability or guidance tied to a specific learning goal.
 
-Button, Input, Textarea, Label, Card, Badge, Avatar, Progress, Tabs, Sheet, Dialog, Dropdown, Tooltip, Separator, Skeleton, Scroll Area, Theme Toggle.
+### Safety operator
 
-### Product layer (required reusable systems)
-
-| Component | Purpose |
-|-----------|---------|
-| TrustLevelBadge | Public trust level chip |
-| TrustReputationCard | Level, stars, verification, Trust Acts, appreciations, rank |
-| ReputationDnaCard | Dimensional trust signals |
-| XPJourney / XPProgress | Level progress and unlocks |
-| StreakHero / StreakPill | Daily/weekly/monthly streak presentation |
-| DailyMissions / MissionCard | Habit loop missions |
-| ActivityTimeline | LinkedIn-like reputation/activity story |
-| AchievementGrid | Cosmetic milestone collection |
-| NotificationCenter | Typed notification list |
-| UserAvatar | Consistent person avatar |
-| Surface | Consumer glass/elevated card wrapper |
-| Motion primitives | Page/item/card motion standards |
-
-### Rules
-
-- Prefer composition over page-local styling  
-- No duplicate badge/progress/avatar implementations  
-- Admin-only components stay out of the member shell  
+An internal reviewer who handles reports, disputes, disabling, and appeals through an audited admin surface that never appears in member navigation.
 
 ---
 
-## 12. UX Rules
+## 8. Visual direction
 
-1. **Above-the-fold discipline**  
-   - Landing: brand, one headline, one sentence, two CTAs. No trust stats.  
-   - Home: greeting, trust snapshot, XP, streak, today’s missions. No tables/forms/admin widgets.
-2. **Encourage continuation** — Primary CTA should invite the next meaningful action (“Continue · …”).
-3. **Empty states are product moments** — Beautiful, brief, with one clear next step.
-4. **Motion with purpose** — Framer Motion for presence, progress, and feedback; respect `prefers-reduced-motion`.
-5. **Thumb-first targets** — Minimum ~44px interactive targets on mobile.
-6. **No false urgency** — Do not shame users for broken streaks in a punitive tone.
-7. **Explain sensitive signals** — Trust and relationship-adjacent sections always carry disclaimers.
-8. **Progressive disclosure** — Advanced settings and DNA details expand; they do not dominate.
+The MVP is mobile-first and intentionally simple. Desktop widens the same hierarchy; it does not introduce a second product.
 
----
+- Use the existing Outfit display face, Plus Jakarta Sans body face, teal primary actions, neutral surfaces, and dark mode.
+- Keep large headlines, short copy, generous whitespace, rounded surfaces, and subtle borders.
+- Make the primary action full width on mobile, with a target of at least 44px.
+- Use Framer Motion for entrance and confirmation, and honor reduced motion.
+- Lead each member screen with its purpose: goal, person, or connection state.
+- Show a person through their name, relevant goal, offered skill, needed skill, and a few reasons.
+- Use one overflow path for block and report actions.
+- Keep empty states brief and give each one a single next action.
+- Meet WCAG 2.2 AA contrast, visible focus, labels, semantic headings, and non-color status cues.
 
-## 13. Navigation Rules
+The landing page contains the Trueverse name, the mission sentence, one short audience sentence, and two actions: create an account and sign in. It does not show a demo Passport, a score, a feed, an advertisement, or member recommendations.
 
-### Member app navigation (canonical)
-
-- Home  
-- Profile  
-- Community  
-- Notifications  
-- Messages *(future; may appear disabled/soon)*  
-
-### Rules
-
-- Admin is **never** in the normal member nav  
-- Marketing shell ≠ app shell  
-- Bottom navigation on mobile; simplified top nav on desktop  
-- Deep links (missions, badges, insights) may exist, but primary IA stays five items  
-- Do not add nav items for every feature  
+Member navigation is Discover, Connections, and Goals, with account access through the session avatar. Admin remains outside member navigation.
 
 ---
 
-## 14. Notification Guidelines
+## 9. Privacy
 
-### Goals
-
-- Re-engage without anxiety spam  
-- Celebrate progress and social reciprocity  
-- Clearly distinguish Trust events from XP events  
-
-### Supported notification types
-
-- Appreciation received  
-- Mission completed  
-- Trust level changed  
-- Badge unlocked  
-- Streak milestone  
-- Weekly recap  
-- Friend/community join *(optional, low priority)*  
-
-### Rules
-
-- Group or rate-limit low-value notifications  
-- Weekly recap is digest-style, not a firehose  
-- Trust notifications must never claim safety  
-- Unread state should be obvious but calm  
-- Notifications are actionable when possible (deep link to relevant surface)
+1. Collect the goal, skills, and collaboration details needed for discovery, not a general personal dossier.
+2. New goals and preference records default to private.
+3. Discovery is available only to an authenticated member with a confirmed email and an active account.
+4. A recommendation may show display name, avatar, goal title and summary, offered and needed skills, shared languages, and coarse overlap. It omits email, precise schedule, timezone, private notes, role, report history, block data, and legacy reputation data.
+5. Publishing a goal is a separate choice from making any legacy public profile available.
+6. Pausing or hiding a goal removes it from new discovery without erasing connection history.
+7. Connection content is visible only to its participants and authorized reviewers.
+8. Block records are visible only to the blocker.
+9. Analytics must not record goal text, report text, tokens, or private connection content.
+10. Members need a documented path to export and delete collaboration content. Audit records may be retained only for safety, security, and legal duties, and the retention rule must be stated in the privacy policy.
 
 ---
 
-## 15. Badge Philosophy
+## 10. Account protection
 
-Badges are **recognition ornaments and social proof of participation**, not Trust.
-
-### Examples
-
-Helpful Neighbor · Reliable Seller · Blood Donor · Community Leader · Volunteer · Mentor · Verified Professional · Safe Driver · Early Member · Top Contributor · Community Helper · Reliable Neighbor  
-
-### Rules
-
-- Badges can be unlocked via XP, missions, or verified actions  
-- Earning a badge does **not** by itself raise Trust Level unless the underlying verified action also enters the Trust Engine  
-- Badge copy celebrates contribution, never superiority or purity  
-- Locked badges may show gentle progress, not shame  
+- Supabase Auth remains the identity provider.
+- Signup metadata may supply the initial profile name; the database trigger remains the provisioning path.
+- Sessions are refreshed in middleware, and member routes require an authenticated session.
+- Password reset uses a single-use, expiring link and a same-origin completion page.
+- Auth redirects accept only safe relative application paths.
+- Email confirmation, password reset, connection requests, and reports have rate limits that hold across server instances.
+- A disabled member loses member access and is removed from discovery and new requests.
+- Service-role credentials stay on the server and are reserved for operations that RLS cannot safely express.
+- The client is treated as hostile: hidden controls, profile fields, and query parameters are not authorization.
 
 ---
 
-## 16. Mission System
+## 11. Trust and safety
 
-### Purpose
+Safety is account integrity, consent, and moderation. It is not a public reputation score.
 
-Create a daily habit of meaningful participation.
+### Required controls
 
-### Daily missions
+- Every discovery and connection surface can block or report the other member.
+- A block works in both directions immediately. It removes both people from new discovery, prevents new requests, and makes pending requests non-actionable.
+- Blocking an accepted connection cancels that connection in the same server action. The interface does not reveal which person created the block.
+- Reports reuse the existing report, evidence, dispute, admin-review, and audit flow.
+- A report may refer to a discovery result or connection. An external evidence URL is optional when the product context identifies the event.
+- Report content is visible to the reporter and authorized reviewers at submission. The reported member receives a factual notice and a contest path when a reviewed action affects their account or connection; raw allegations are not disclosed automatically.
+- Submitting a report does not by itself change discovery, disable an account, or alter any legacy score.
+- Consequential actions are admin actions recorded in the audit log.
+- Admins can disable an account or role through the existing audited operations.
+- Members cannot edit another member’s goal, preferences, identity, role, or safety state.
 
-Every user receives **exactly three** daily missions.
+### Legacy trust data
 
-Example pool:
-
-- Appreciate someone  
-- Help one person  
-- Complete profile  
-- Upload profile photo  
-- Verify email  
-- Finish one Trust Act  
-
-### Weekly missions
-
-Longer arcs (volunteer, identity verification, referral, safety course).
-
-### Rewards
-
-- XP (required)  
-- Badges (optional)  
-- Coins *(future)*  
-- Cosmetics *(future)*  
-
-### Rules
-
-- Missions never modify Trust directly  
-- Mission UI lives primarily on Home; Missions screen elaborates, it does not invent a second product  
-- Completion should feel delightful and immediate  
+Existing trust and moderation tables remain available for security and audit continuity. MVP screens do not read them for ranking, public display, or collaboration eligibility. Any future use requires a new Bible revision. Members still cannot write trust or reputation fields directly.
 
 ---
 
-## 17. XP System
+## 12. Access control
 
-### Purpose
+RLS is enabled on every member-data table before a feature is exposed. The implementation plan’s policy matrix is the engineering baseline:
 
-Habit formation and cosmetic progression.
+- owners manage their goals, skills, and preferences;
+- the active skill catalog is read-only to members;
+- cross-member discovery uses a checked function that returns a fixed safe column set;
+- connection participants, and authorized admins where required, can read a request;
+- only the requester creates or cancels, and only the recipient accepts or declines;
+- only the blocker can read or change a block;
+- security-definer functions use a fixed search path, verify the caller and active account, and have explicit execute grants.
 
-### Independence
-
-XP is completely separate from Trust.  
-**XP never increases Trust.**
-
-### Example rewards
-
-| Action | Intent |
-|--------|--------|
-| Complete profile | Onboarding momentum |
-| Daily login | Habit spark (XP only) |
-| Complete mission | Core loop |
-| Receive appreciation | Social reciprocity |
-| Help someone | Contribution |
-| Volunteer | Community depth |
-| Verify identity | Integrity motivation (XP); Trust handled separately by Trust Engine |
-| Weekly streak | Retention |
-
-### Levels (canonical thresholds)
-
-| Level | XP |
-|------|-----|
-| 1 | 0 |
-| 2 | 100 |
-| 3 | 300 |
-| 4 | 700 |
-| 5 | 1200 |
-| 6 | 2000 |
-| 7 | 3200 |
-| 8 | 5000 |
-| 9 | 7500 |
-| 10 | 10000 |
-
-### Unlocks
-
-Levels · Badges · Themes · Profile decorations · Animations  
-
-### UX requirements
-
-- Beautiful XP progress bar  
-- Clear “XP to next level”  
-- Next unlock and upcoming badge visibility  
-- Always remind: XP ≠ Trust  
+Anonymous, unrelated, blocked, and disabled callers are part of the acceptance tests. UI checks do not replace these controls.
 
 ---
 
-## 18. Trust System
+## 13. Data boundaries
 
-### Public presentation
+The MVP adds goals, a canonical skill catalog, goal skills, goal-scoped collaboration preferences, connection requests, and blocks. It does not add a stored recommendation table. Accepted requests represent connections. Schema changes are new migrations; existing migrations and production data remain untouched by planning and specification work.
 
-- Trust Level name  
-- Stars (level visualization)  
-- Verified Identity state  
-- Trust Acts count  
-- Appreciations count  
-- Community Rank *(optional, contextual)*  
-
-### Internal mechanics
-
-- Maintain auditable events for trust mutations  
-- Positive interactions require recipient acceptance before trust impact  
-- Negative reports require evidence and admin review before trust impact  
-- Disputes can restore or adjust trust only through server-side resolution  
-- Users cannot PATCH trust fields  
-
-### Reputation DNA
-
-Shown as explanatory signals under Trust Philosophy / Reputation Engine sections.
+The detailed columns, indexes, grants, and file sequence live in `docs/trueverse-2-implementation-plan.md`.
 
 ---
 
-## 19. Verification Levels
+## 14. API and release boundaries
 
-Verification increases confidence in **identity and process**, not moral worth.
+MVP writes pass through validated server endpoints or checked database functions. Discovery reads return only the safe field list. Clients cannot set authorization fields, connection status, or another member’s identifiers.
 
-| Tier | Meaning |
-|------|---------|
-| Unverified | Basic account |
-| Email verified | Contactable account |
-| Identity verified | Government/ID or approved identity flow completed |
-| Selfie verified *(optional contexts)* | Liveness/selfie check for higher-risk contexts |
-| Reference verified *(optional)* | Attestations from verified members |
-
-### Rules
-
-- Verification badges are factual (“Verified Identity”), not praise (“Trusted Person”)  
-- Higher verification may unlock features or improve Trust inputs, but UI must not equate verification with safety  
-- Relationship-adjacent verification sections require the relationship disclaimer  
-
-Relationship disclaimer:
-
-> This information provides verified signals only. It does not predict compatibility or guarantee safety.
+No migration is applied to production as part of documentation work. Production migration and deployment require a separate approved release after non-production RLS and end-to-end tests pass.
 
 ---
 
-## 20. Privacy Principles
+## 15. Monetization boundary
 
-1. **Minimum necessary exposure** — Public profiles show only what the user allows and what is essential for portable reputation.  
-2. **Section-level controls** — Relationship readiness, contact details, and sensitive stats can be hidden.  
-3. **No dark patterns** — Do not force public oversharing to use core features.  
-4. **Portable ≠ fully public** — Sharing a profile link must still honor privacy settings.  
-5. **Data retention clarity** — Trust/moderation audit logs may persist longer than cosmetic preferences; communicate this in policy.  
-6. **Right to contest** — Users can dispute harmful reports through product flows.  
+The MVP has no advertising and no paid ranking. Future revenue must not sell private information, charge for safety or privacy controls, or let payment influence discovery. Existing prohibitions on buying a reputation outcome remain in force for legacy data.
 
 ---
 
-## 21. Security Principles
+## 16. Roadmap
 
-1. **Supabase RLS on all user data tables**  
-2. **Trust calculations server-side only** (security definer RPCs / trusted backend)  
-3. **No client-side trust mutation**  
-4. **XP award paths isolated from trust functions**  
-5. **Admin actions audited**  
-6. **Evidence storage private by default**  
-7. **Auth session refresh via middleware; route protection for member/admin areas**  
-8. **Principle of least privilege** for service role usage  
-9. **Input validation** with schema validators (e.g. Zod) at API boundaries  
-10. **Assume hostile clients** — UI convenience never equals authorization  
+### Now
 
----
+Ship the five MVP features with privacy, account protection, blocking, reporting, and RLS.
 
-## 22. Public Profile Standards
+### After validation
 
-Route pattern: `/u/{trueverseId}` (and future `/u/{username}` if usernames ship).
+Improve skill taxonomy, ranking quality, notifications, and the first-action completion experience. Consider a consented messaging system only after the connection model is proven.
 
-### Must show (when privacy allows)
+### Later
 
-- Display name  
-- Trueverse ID  
-- Trust Level  
-- Verification status  
-- Badges / achievements *(as permitted)*  
-- Verified interaction highlights  
-- Community contributions  
-- Recent public activities  
-- Share + QR affordances  
-
-### Must include
-
-- Product disclaimer on public reputation surfaces  
-
-### Must not show
-
-- Private contact data  
-- Internal numeric trust ledgers by default  
-- Admin notes  
-- Hidden relationship fields  
-- Unpublished reports  
-
-### Tone
-
-Calm, premium, portable. Feels shareable on dating apps and marketplaces without looking like a rap sheet or a game scoreboard.
-
----
-
-## 23. Accessibility Standards
-
-1. WCAG 2.2 AA contrast minimum for text and essential controls  
-2. Visible focus states on all interactive elements  
-3. Semantic headings and landmarks  
-4. `aria` labels for icon-only controls  
-5. Respect `prefers-reduced-motion`  
-6. Form inputs have labels  
-7. Status is not conveyed by color alone (icons/text too)  
-8. Hit targets sized for mobile  
-9. Screen-reader friendly trust/XP distinctions (“Trust level Established”, “XP Level 5”)  
-10. Do not autoplay disruptive motion  
-
----
-
-## 24. Future API Strategy
-
-### Principles
-
-- Clean resource-oriented HTTP APIs under `/api/*` for web  
-- Server Components + route handlers for first-party web reads where practical  
-- Zod (or equivalent) validation at boundaries  
-- Idempotent writes for mission completion and XP awards where retries are likely  
-
-### Domain APIs (target)
-
-| Domain | Examples |
-|--------|----------|
-| Profile | GET/PATCH profile, public profile by ID |
-| Trust | timeline/events (read), never client write of score |
-| XP | balance, history, award via trusted server procedures |
-| Missions | today’s missions, complete mission |
-| Social | follow, appreciate, comment |
-| Activity | timeline feed |
-| Notifications | list, mark read |
-| Admin | reports, disputes, user management |
-
-### Contracts
-
-- Trust endpoints never accept “set trust to X” from clients  
-- XP award endpoints reject any field that attempts to alter trust  
-- Public APIs honor privacy flags server-side  
-
-### Future platform APIs
-
-- Partner embed / verify widget for marketplaces and campuses  
-- Read-only reputation token or signed profile snapshot for third parties  
-- Webhooks for “verification completed” / “trust level changed” to consented partners  
-
----
-
-## 25. Mobile Strategy
-
-1. **Mobile-first design and QA** — Desktop enhances; mobile defines.  
-2. Bottom tab IA for core loops  
-3. Home is the daily habit surface  
-4. Offline-tolerant reads later; writes remain explicit and confirmed  
-5. Share sheets + QR for portable profiles  
-6. Push notifications (future) follow Notification Guidelines and frequency caps  
-7. Performance budgets: fast first paint, light images, deferred non-critical motion  
-8. Native apps only after web habit loop is proven — architecture should not block them (clean APIs, tokenized UI)  
-
----
-
-## 26. Monetization Ideas
-
-Monetization must never sell Trust or allow pay-to-win reputation.
-
-### Acceptable directions
-
-1. **Premium cosmetics** — themes, decorations, animations (XP-adjacent, not Trust)  
-2. **Verified organization seats** — universities, companies, nonprofits managing communities  
-3. **Partner API access** — marketplaces/dating platforms consuming consented reputation signals  
-4. **Advanced insights** — deeper weekly summaries for power users  
-5. **Priority review SLA** — faster evidence review for organizations *(not buying outcomes)*  
-
-### Forbidden
-
-- Paying to raise Trust Level  
-- Paying to remove legitimate reports without review  
-- Selling private user data  
-- Dark-pattern subscriptions that block basic safety/privacy controls  
-
----
-
-## 27. Long-Term Roadmap
-
-### Horizon A — Foundation (complete / in progress)
-
-- Design system and consumer shell  
-- Landing + Home habit composition  
-- Trust levels + Reputation DNA  
-- XP engine + missions + streaks  
-- Profile timeline + notifications  
-
-### Horizon B — Social reputation graph
-
-- Follow graph  
-- Appreciations + comments on activities  
-- Community feed quality and ranking  
-- Leaderboards as optional, non-trust rankings  
-
-### Horizon C — Portable verification network
-
-- Stronger identity rails  
-- Relationship readiness (optional, disclaimer-first)  
-- Shareable profile cards + QR everywhere  
-- Partner embeds  
-
-### Horizon D — Platform
-
-- Public developer API  
-- Organization dashboards  
-- Cross-platform reputation export  
-- AI insights that summarize signals without making safety claims  
-
-### Permanent constraints across all horizons
-
-- Trust ≠ XP  
-- Signals ≠ guarantees  
-- Privacy and RLS first  
-- Consumer craft over admin sprawl  
+Extend goal categories to other meaningful personal goals. Revisit retained legacy surfaces only through an explicit product revision.
 
 ---
 
@@ -685,34 +304,25 @@ Monetization must never sell Trust or allow pay-to-win reputation.
 
 ### Change control
 
-Material changes to Trust rules, XP→Trust boundaries, privacy defaults, or public profile standards require an explicit Product Bible revision and engineering checklist update.
+Changes to consent, discovery exposure, blocking, report disclosure, account recovery, or RLS require a Bible revision and an implementation-plan update.
 
-### Implementation checklist (every PR)
+### Checklist
 
-- [ ] Does this change Trust? If yes: server-side only, audited, documented.  
-- [ ] Does this award XP? If yes: confirm it cannot mutate Trust.  
-- [ ] Is the UI consumer-grade and mobile-first?  
-- [ ] Are disclaimers present on sensitive surfaces?  
-- [ ] Are components reused from the design system?  
-- [ ] Are privacy and RLS implications handled?  
-- [ ] Does navigation remain simple?  
-
----
-
-## Closing Standard
-
-Trueverse should always create the feeling:
-
-**“I want to keep building a reputation I can carry with me.”**
-
-Never:
-
-**“I optimized a dashboard metric.”**
-
-And never:
-
-**“This app told me someone is safe.”**
+- [ ] The change serves one of the five MVP features or a required safety control.
+- [ ] It leaves social feed, public TrueScore, generic reputation scoring, advertising, and dating outside the member experience.
+- [ ] Recommendations remain explainable and make no compatibility or safety guarantee.
+- [ ] Mutual consent is preserved.
+- [ ] Privacy defaults and the safe discovery field list are preserved.
+- [ ] RLS, grants, account checks, and audit behavior are tested.
+- [ ] The interface remains mobile-first, simple, and accessible.
+- [ ] No existing route, table, or production data is deleted by the change.
 
 ---
 
-*End of Trueverse Product Bible*
+## Closing standard
+
+Trueverse should leave a member thinking:
+
+**“I found someone to take the next step on this goal.”**
+
+It should not leave them thinking that a feed, a public score, an advertisement, or a dating decision brought them there.

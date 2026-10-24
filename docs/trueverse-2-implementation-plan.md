@@ -1,5 +1,7 @@
 # Trueverse 2.0 repository audit and implementation plan
 
+> **Status update — October 24, 2026 (America/Los_Angeles):** `PRODUCT_BIBLE.md` is now the canonical Trueverse 2.0 specification. The conflict described below was accurate at audit time and is resolved. This plan remains the engineering sequence. The Bible adopts its computed-match, mutual-consent, block, and privacy recommendations as product requirements.
+
 ## Scope and constraints
 
 This document audits the current `main` branch as the starting point for the Trueverse 2.0 pivot:
@@ -10,11 +12,10 @@ The initial audience is people building side projects, launching startups, and l
 skills. This is a plan only. No existing page or table was deleted, no production data was read or
 changed, no migration was executed, and no deployment was performed.
 
-The current `PRODUCT_BIBLE.md` says it is canonical and defines Trueverse as a portable digital
-trust product. That conflicts materially with the new goals-and-collaboration vision. The product
-bible should be revised and approved before feature implementation so future work does not have two
-competing product definitions. Existing trust and moderation capabilities can remain available, but
-they should not determine or imply compatibility.
+At audit time, `PRODUCT_BIBLE.md` defined Trueverse as a portable digital trust product. That
+conflicted with the goals-and-collaboration vision and was resolved by the October 24, 2026 Bible
+revision. Existing trust and moderation capabilities can remain available, but they should not
+determine or imply compatibility.
 
 ## 1. Current repository state
 
@@ -476,8 +477,8 @@ when middleware protects the page.
 
 ### Documentation and product contract
 
-- Revise `PRODUCT_BIBLE.md` to make the 2.0 vision canonical and distinguish retained trust
-  infrastructure from matching.
+- `PRODUCT_BIBLE.md` was revised on October 24, 2026. Keep later product changes in that file and
+  distinguish retained trust infrastructure from matching.
 - Update `README.md`, `DEPLOY.md`, and `supabase/README.md` after migrations exist; current docs are
   already stale and `DEPLOY.md` omits migration 006.
 
@@ -536,8 +537,9 @@ when middleware protects the page.
 
 ## 9. Ordered implementation sequence
 
-1. **Approve the pivot contract.** Revise `PRODUCT_BIBLE.md`, define discovery fields, report
-   disclosure rules, connection cancellation on block, taxonomy ownership, and MVP analytics.
+1. **Pivot contract approved.** `PRODUCT_BIBLE.md` now defines discovery exposure, report disclosure,
+   block cancellation, and the five MVP features. Remaining pre-build choices are the starter skill
+   catalog and the minimum MVP analytics events.
 2. **Add verification infrastructure.** Introduce database/RLS tests and route validation tests
    before schema changes. Add CI for lint, tests, and build.
 3. **Harden the existing security baseline.** Correct `is_admin` calls and function grants, remove
@@ -600,8 +602,8 @@ Acceptance criteria:
 
 ## 11. Principal risks and decisions still required
 
-1. **Conflicting canonical vision:** the current product bible and most UI copy describe a
-   different product. Resolve this before implementation.
+1. **Canonical vision:** resolved by the October 24, 2026 `PRODUCT_BIBLE.md` revision. Application
+   copy still describes the legacy product and changes only in the implementation sequence below.
 2. **Public profile exposure:** current profile RLS can expose email; fix before discovery.
 3. **Safety semantics:** decide report disclosure timing, block effects on accepted connections,
    retention, appeals, and emergency/escalation guidance.
