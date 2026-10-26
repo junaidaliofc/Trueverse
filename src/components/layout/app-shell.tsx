@@ -17,13 +17,13 @@ const appNav = [
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const isHome = pathname === "/";
   const isMarketing =
-    pathname === "/" ||
-    pathname.startsWith("/auth") ||
-    pathname === "/design-system";
+    isHome || pathname.startsWith("/auth") || pathname === "/design-system";
 
   return (
-    <div className="min-h-dvh">
+    <div className={cn("min-h-dvh", isHome && "bg-[#070b18]")}>
+      {isHome ? null : (
       <header className="sticky top-0 z-40 border-b border-border/60 bg-background/65 backdrop-blur-xl">
         <div className="mx-auto flex h-14 max-w-lg items-center justify-between gap-3 px-4 sm:h-16 sm:max-w-6xl sm:px-6">
           <Link
@@ -80,13 +80,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           ) : null}
         </div>
       </header>
+      )}
 
       <main
         className={cn(
-          "mx-auto px-4 sm:px-6",
-          isMarketing
-            ? "max-w-6xl pb-10 pt-0"
-            : "max-w-lg pb-28 pt-5 sm:max-w-6xl sm:pb-12 sm:pt-8"
+          isHome ? "max-w-none p-0" : "mx-auto px-4 sm:px-6",
+          !isHome &&
+            (isMarketing
+              ? "max-w-6xl pb-10 pt-0"
+              : "max-w-lg pb-28 pt-5 sm:max-w-6xl sm:pb-12 sm:pt-8")
         )}
       >
         {children}

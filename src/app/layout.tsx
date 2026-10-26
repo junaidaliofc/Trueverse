@@ -24,9 +24,9 @@ const mono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Trueverse | Portable digital trust",
+  title: "Trueverse | What do you want to accomplish next?",
   description:
-    "Help people make safer and more informed decisions with transparent, verified reputation signals based on real-world interactions."
+    "Find people who share your ambition, complement your skills, and help turn your goals into reality."
 };
 
 export default async function RootLayout({
