@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
@@ -130,6 +131,14 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
           autoComplete={mode === "signup" ? "new-password" : "current-password"}
         />
       </label>
+
+      {mode === "login" ? (
+        <p className="text-right text-sm">
+          <Link href="/auth/forgot-password" className="font-semibold text-teal-700 hover:text-teal-800">
+            Forgot password?
+          </Link>
+        </p>
+      ) : null}
 
       {message ? <p className="rounded-2xl bg-amber-50 p-3 text-sm text-amber-800">{message}</p> : null}
 
